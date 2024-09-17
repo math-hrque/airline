@@ -1,0 +1,41 @@
+services:
+
+  ms-auth:
+    container_name: ms-auth-container
+    build:
+      context: ./ms-auth/auth
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/auth
+    networks:
+      - company-network
+
+  mongodb:
+    image: mongo
+    container_name: db-mongodb-container
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    networks:
+      - company-network
+
+  postgres-db:
+    image: postgres
+    container_name: db-postgres-container
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - company-network
+
+networks:
+  company-network:
+    driver: bridge
