@@ -1,22 +1,8 @@
 services:
 
-  ms-auth:
-    container_name: ms-auth-container
-    build:
-      context: ./ms-auth/auth
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongodb
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/auth
-    networks:
-      - company-network
-
-  mongodb:
+  mongo-db:
     image: mongo
-    container_name: db-mongodb-container
+    container_name: mongodb-container
     ports:
       - "27018:27017"
     environment:
@@ -27,12 +13,49 @@ services:
 
   postgres-db:
     image: postgres
-    container_name: db-postgres-container
+    container_name: postgresdb-container
     ports:
       - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - company-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  ms-auth:
+    container_name: ms-auth-container
+    build:
+      context: ./ms-auth/auth
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo-db
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/auth
+    networks:
+      - company-network
+
+  ms-cliente:
+    container_name: ms-cliente-container
+    build:
+      context: ./ms-cliente/cliente
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/cliente
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     networks:
       - company-network
 
