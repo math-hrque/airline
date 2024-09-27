@@ -2,62 +2,100 @@ services:
 
   mongo-db:
     image: mongo
-    container_name: mongodb-container
+    container_name: mongo-db
     ports:
       - "27018:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongodb
-      MONGO_INITDB_ROOT_PASSWORD: mongodb
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
     networks:
       - company-network
 
-  postgres-db:
+  # ms-auth:
+  #   container_name: ms-auth
+  #   build:
+  #     context: ./ms-auth/auth
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - mongo-db
+  #   environment:
+  #     - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/auth
+  #   networks:
+  #     - company-network
+
+
+  cliente-db:
     image: postgres
-    container_name: postgresdb-container
-    ports:
-      - "5433:5432"
+    container_name: cliente-db
     environment:
+      POSTGRES_DB: cliente
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - company-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-
-  ms-auth:
-    container_name: ms-auth-container
-    build:
-      context: ./ms-auth/auth
-      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-    depends_on:
-      - mongo-db
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/auth
+      - "5433:5432"
     networks:
       - company-network
 
-  ms-cliente:
-    container_name: ms-cliente-container
-    build:
-      context: ./ms-cliente/cliente
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    depends_on:
-      - postgres-db
+  # ms-cliente:
+  #   container_name: ms-cliente
+  #   build:
+  #     context: ./ms-cliente/cliente
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8081:8080"
+  #   depends_on:
+  #     - cliente-db
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://cliente-db:5432/cliente
+  #     - SPRING_DATASOURCE_USERNAME=postgres
+  #     - SPRING_DATASOURCE_PASSWORD=postgres
+  #     - DB_HOST=cliente-db
+  #     - DB_PORT=5432
+  #     - DB_USER=postgres
+  #     - DB_PASSWORD=postgres
+  #     - DB_NAME=cliente
+  #   networks:
+  #     - company-network
+
+
+  funcionario-db:
+    image: postgres
+    container_name: funcionario-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/cliente
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      POSTGRES_DB: funcionario
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
     networks:
       - company-network
+
+  reserva-db:
+    image: postgres
+    container_name: reserva-db
+    environment:
+      POSTGRES_DB: conta
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    networks:
+      - company-network
+
+  voos-db:
+    image: postgres
+    container_name: voos-db
+    environment:
+      POSTGRES_DB: voos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    networks:
+      - company-network
+
 
 networks:
   company-network:
