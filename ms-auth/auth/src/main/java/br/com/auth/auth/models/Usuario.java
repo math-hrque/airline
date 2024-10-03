@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Usuario implements UserDetails {
     //@Indexed(unique = true)
     @Id
-    private String login;
+    private String email;
     @NonNull
     private String senha;
     @NonNull
@@ -36,7 +36,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return login;
+        return email;
     }
 
     @Override

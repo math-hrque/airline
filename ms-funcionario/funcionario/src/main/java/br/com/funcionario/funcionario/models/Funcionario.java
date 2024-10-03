@@ -27,4 +27,7 @@ public class Funcionario implements Serializable {
 
     @Column(name="telefone", nullable = false)
     private String telefone;
+
+    @Column(name="ativo", insertable = false)
+    private boolean ativo = true;
 }

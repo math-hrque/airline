@@ -4,6 +4,7 @@ CREATE TABLE milhas (
 	valor_reais NUMERIC(10,2) NOT NULL,
 	quantidade_milhas INTEGER NOT NULL,
 	descricao VARCHAR(50) NOT NULL,
+	codigo_reserva VARCHAR(8),
 	id_cliente INTEGER NOT NULL,
 	id_transacao INTEGER NOT NULL,
 	CONSTRAINT fk_milhas_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
