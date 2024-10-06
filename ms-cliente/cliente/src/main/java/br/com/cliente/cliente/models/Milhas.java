@@ -30,7 +30,7 @@ public class Milhas implements Serializable {
     private Integer quantidadeMilhas;
 
     @Column(name="descricao", nullable = false)
-    private String descricao;
+    private String descricao = "COMPRA DE MILHAS";
 
     @Column(name="codigo_reserva")
     private String codigoReserva;

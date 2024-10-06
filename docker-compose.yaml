@@ -60,6 +60,6 @@ services:
   #   networks:
   #     - company-network
 
-  networks:
-    company-network:
-      driver: bridge
+networks:
+  company-network:
+    driver: bridge
