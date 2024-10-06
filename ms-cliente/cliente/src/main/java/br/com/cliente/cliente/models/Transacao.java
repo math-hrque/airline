@@ -16,9 +16,9 @@ public class Transacao implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_transacao")
-    private Long idTransacao;
+    private Long idTransacao = 0L;
 
     @Enumerated(EnumType.STRING)
     @Column(name="tipo_transacao", insertable = false, updatable = false, nullable = false, unique = true)
-    private TipoTransacao tipoTransacao;
+    private TipoTransacao tipoTransacao = TipoTransacao.ENTRADA;
 }

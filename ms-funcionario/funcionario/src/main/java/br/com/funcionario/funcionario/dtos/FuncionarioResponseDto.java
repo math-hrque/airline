@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.br.CPF;
 @AllArgsConstructor
 public class FuncionarioResponseDto {
 
-    private Long idFuncionario;
+    private Long idFuncionario = 0L;
 
     @CPF(message = "CPF invalido")
     private String cpf;

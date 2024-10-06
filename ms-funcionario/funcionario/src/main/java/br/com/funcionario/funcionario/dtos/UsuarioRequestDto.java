@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UsuarioRequestDto {
     String email;
-    String senha;
+    String senha = "";
     String tipo = "FUNCIONARIO";
 }

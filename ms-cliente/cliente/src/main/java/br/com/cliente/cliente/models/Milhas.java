@@ -17,7 +17,7 @@ public class Milhas implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_milhas")
-    private Long idMilhas;
+    private Long idMilhas = 0L;
 
     @CreationTimestamp
     @Column(name = "data_transacao", insertable = false, updatable = false, nullable = false)
