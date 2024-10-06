@@ -26,7 +26,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/usuario/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
             ).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class).build();

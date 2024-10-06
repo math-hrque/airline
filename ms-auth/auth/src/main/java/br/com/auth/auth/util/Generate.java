@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component;
 import java.security.SecureRandom;
 
 @Component
-public class GeneratePassword {
+public class Generate {
 
-    private static final String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final String caracteres = "0123456789";
 
     public static String generatePassword() {
-        int tamanho = 8;
+        int tamanho = 4;
         SecureRandom random = new SecureRandom();
         StringBuilder password = new StringBuilder(tamanho);
 

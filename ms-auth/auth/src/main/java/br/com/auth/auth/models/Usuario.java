@@ -11,22 +11,24 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import br.com.auth.auth.enums.Tipo;
+
 @Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "usuario")
 public class Usuario implements UserDetails {
-    //@Indexed(unique = true)
     @Id
     private String email;
     @NonNull
     private String senha;
     @NonNull
-    private String tipo;
+    private Tipo tipo;
+    private boolean ativo = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(tipo));
+        return Collections.singletonList(new SimpleGrantedAuthority(tipo.name()));
     }
 
     @Override
@@ -56,6 +58,6 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return ativo;
     }
 }

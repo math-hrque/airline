@@ -24,11 +24,11 @@ public class TokenService {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(secret);
             String token = JWT.create()
-                    .withIssuer("ms-auth")
-                    .withSubject(usuario.getUsername())
-                    .withClaim("role", usuario.getAuthorities().toArray()[0].toString())
-                    .withExpiresAt(dataExpiracao())
-                    .sign(algoritmo);
+                .withIssuer("ms-auth")
+                .withSubject(usuario.getUsername())
+                .withClaim("role", usuario.getAuthorities().toArray()[0].toString())
+                .withExpiresAt(dataExpiracao())
+                .sign(algoritmo);
             return token;
         } catch (JWTCreationException exception){
             throw new RuntimeException("erro ao gerar token jwt", exception);
