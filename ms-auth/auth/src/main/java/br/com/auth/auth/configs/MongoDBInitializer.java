@@ -18,6 +18,10 @@ public class MongoDBInitializer {
         return args -> {
             if (!mongoTemplate.collectionExists(Usuario.class)) {
                 mongoTemplate.createCollection(Usuario.class);
+            }
+
+            long count = mongoTemplate.count(new org.springframework.data.mongodb.core.query.Query(), Usuario.class);
+            if (count == 0) {
                 String senha = "pass";
                 String senhaCriptografada1 = passwordEncoder.encode(senha);
                 String senhaCriptografada2 = passwordEncoder.encode(senha);
@@ -29,16 +33,16 @@ public class MongoDBInitializer {
                 String senhaCriptografada8 = passwordEncoder.encode(senha);
                 String senhaCriptografada9 = passwordEncoder.encode(senha);
                 String senhaCriptografada10 = passwordEncoder.encode(senha);
-                mongoTemplate.insert(new Usuario("matheus@gmail.com", senhaCriptografada1, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("maria@gmail.com", senhaCriptografada2, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("murilo@gmail.com", senhaCriptografada3, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("michele@gmail.com", senhaCriptografada4, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("michael@gmail.com", senhaCriptografada5, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("maira@gmail.com", senhaCriptografada6, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("marcelo@gmail.com", senhaCriptografada7, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("muriel@gmail.com", senhaCriptografada8, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("michaela@gmail.com", senhaCriptografada9, Tipo.FUNCIONARIO, true));
-                mongoTemplate.insert(new Usuario("mauro@gmail.com", senhaCriptografada10, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "matheus@gmail.com", senhaCriptografada1, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "maria@gmail.com", senhaCriptografada2, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "murilo@gmail.com", senhaCriptografada3, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "michele@gmail.com", senhaCriptografada4, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "michael@gmail.com", senhaCriptografada5, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "maira@gmail.com", senhaCriptografada6, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "marcelo@gmail.com", senhaCriptografada7, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "muriel@gmail.com", senhaCriptografada8, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "michaela@gmail.com", senhaCriptografada9, Tipo.FUNCIONARIO, true));
+                mongoTemplate.insert(new Usuario(null, "mauro@gmail.com", senhaCriptografada10, Tipo.FUNCIONARIO, true));
             }
         };
     }

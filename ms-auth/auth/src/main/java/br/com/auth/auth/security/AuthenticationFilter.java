@@ -27,7 +27,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenJWT = recuperarToken(request);
-        System.out.println("\nToken de entrada: " + tokenJWT);
 
         if (tokenJWT != null) {
             String subject = tokenService.getSubject(tokenJWT);

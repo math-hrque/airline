@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,11 +20,18 @@ import br.com.auth.auth.enums.Tipo;
 @Document(collection = "usuario")
 public class Usuario implements UserDetails {
     @Id
+    private String id;
+
+    @NonNull
+    @Indexed(unique = true)
     private String email;
+
     @NonNull
     private String senha;
+
     @NonNull
     private Tipo tipo;
+
     private boolean ativo = true;
 
     @Override

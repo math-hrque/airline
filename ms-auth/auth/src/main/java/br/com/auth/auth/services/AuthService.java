@@ -1,5 +1,7 @@
 package br.com.auth.auth.services;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -55,13 +57,20 @@ public class AuthService implements UserDetailsService {
     }
 
     public UsuarioResponseDto cadastrar(UsuarioRequestDto usuarioRequestDto) throws OutroUsuarioDadosJaExistente {
-        if (usuarioRepository.existsById(usuarioRequestDto.getEmail())) {
-            throw new OutroUsuarioDadosJaExistente("Outro usuario com Email ja existente!");
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
+        if (usuarioExistente.isPresent() && usuarioExistente.get().isEnabled()) {
+            throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
         }
-        
+
+        if (usuarioRequestDto.getSenha() == null) {
+            usuarioRequestDto.setSenha("");
+        }
         String senha = Generate.generatePassword();
         Usuario usuario = mapper.map(usuarioRequestDto, Usuario.class);
         usuario.setSenha(passwordEncoder.encode(senha));
+        if (usuarioExistente.isPresent() && !usuarioExistente.get().isEnabled()) {
+            usuario.setId(usuarioExistente.get().getId());
+        }
         Usuario usuarioCriadoBD = usuarioRepository.save(usuario);
         UsuarioResponseDto usuarioCriadoDto = mapper.map(usuarioCriadoBD, UsuarioResponseDto.class);
 
@@ -74,21 +83,24 @@ public class AuthService implements UserDetailsService {
     }
 
     public UsuarioResponseDto atualizar(String email, UsuarioRequestDto usuarioRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
-        Usuario usuarioExistente = usuarioRepository.findByEmailAndAtivo(email, true);
-        if (usuarioExistente == null) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(email);
+        if (!usuarioExistente.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
-        } 
-        if (usuarioRepository.existsById(usuarioRequestDto.getEmail())) {
-            throw new OutroUsuarioDadosJaExistente("Outro usuario com email ja existente!");
         }
-
+        if (usuarioExistente.get().isEnabled() && !usuarioRequestDto.getEmail().equals(email)) {
+            throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
+        }
+        
+        if (usuarioRequestDto.getSenha() == null) {
+            usuarioRequestDto.setSenha("");
+        }
         Usuario usuario = mapper.map(usuarioRequestDto, Usuario.class);
-        if (usuarioRequestDto.getSenha() == null && usuarioRequestDto.getSenha().isEmpty()) {
-            usuario.setSenha(usuarioExistente.getSenha());
+        usuario.setId(usuarioExistente.get().getId());
+        if (usuarioRequestDto.getSenha().isEmpty()) {
+            usuario.setSenha(usuarioExistente.get().getSenha());
         } else {
             usuario.setSenha(passwordEncoder.encode(usuarioRequestDto.getSenha()));
         }
-        usuarioRepository.deleteById(email);
         Usuario usuarioAtualizadoBD = usuarioRepository.save(usuario);
         UsuarioResponseDto usuarioCriadoDto = mapper.map(usuarioAtualizadoBD, UsuarioResponseDto.class);
         return usuarioCriadoDto;
@@ -97,7 +109,7 @@ public class AuthService implements UserDetailsService {
     public UsuarioResponseDto inativar(String email) throws UsuarioNaoExisteException {
         Usuario usuarioBD = usuarioRepository.findByEmailAndAtivo(email, true);
         if (usuarioBD == null) {
-            throw new UsuarioNaoExisteException("Usuario nao existe!");
+            throw new UsuarioNaoExisteException("Usuario ativo nao existe!");
         }
 
         usuarioBD.setAtivo(false);
@@ -111,7 +123,7 @@ public class AuthService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails usuario = usuarioRepository.findByEmailAndAtivo(username, true);
         if (usuario == null) {
-            throw new UsernameNotFoundException("Usuario nao encontrado: " + username);
+            throw new UsernameNotFoundException("Usuario ativo nao encontrado: " + username);
         }
 
         return usuario;
