@@ -17,7 +17,6 @@ import br.com.funcionario.funcionario.dtos.FuncionarioResponseDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.ListaFuncionarioVaziaException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
-import br.com.funcionario.funcionario.exeptions.OutroUsuarioDadosJaExistente;
 import br.com.funcionario.funcionario.services.FuncionarioService;
 import jakarta.validation.Valid;
 
@@ -37,8 +36,6 @@ public class FuncionarioController {
             return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioCriado);
         } catch (OutroFuncionarioDadosJaExistente e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (OutroUsuarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -52,8 +49,6 @@ public class FuncionarioController {
         } catch (FuncionarioNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (OutroFuncionarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (OutroUsuarioDadosJaExistente e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

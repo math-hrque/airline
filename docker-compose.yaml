@@ -14,14 +14,26 @@ services:
   postgres-db:
     image: postgres
     container_name: postgres-db
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cliente
-    ports:
-      - "5433:5432"
     volumes:
       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - company-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
     networks:
       - company-network
 
@@ -34,6 +46,7 @@ services:
   #     - "8080:8080"
   #   depends_on:
   #     - mongo-db
+  #     - rabbitmq
   #   environment:
   #     - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/auth
   #   networks:
@@ -48,6 +61,7 @@ services:
   #     - "8081:8080"
   #   depends_on:
   #     - cliente-db
+  #     - rabbitmq
   #   environment:
   #     - SPRING_DATASOURCE_URL=jdbc:postgresql://cliente-db:5432/cliente
   #     - SPRING_DATASOURCE_USERNAME=postgres

@@ -1,4 +1,4 @@
-package br.com.auth.auth.util;
+package br.com.auth.auth.utils;
 
 import org.springframework.stereotype.Component;
 

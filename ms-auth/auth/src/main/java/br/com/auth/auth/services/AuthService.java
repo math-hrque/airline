@@ -23,7 +23,7 @@ import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.models.Usuario;
 import br.com.auth.auth.repositories.UsuarioRepository;
 import br.com.auth.auth.security.TokenService;
-import br.com.auth.auth.util.Generate;
+import br.com.auth.auth.utils.Generate;
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -115,6 +115,18 @@ public class AuthService implements UserDetailsService {
         usuarioBD.setAtivo(false);
         Usuario usuarioInativadoBD = usuarioRepository.save(usuarioBD);
         UsuarioResponseDto funcionarioInativadoDto = mapper.map(usuarioInativadoBD, UsuarioResponseDto.class);
+        return funcionarioInativadoDto;
+    }
+
+    public UsuarioResponseDto remover(String email) throws UsuarioNaoExisteException {
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(email);
+        if (!usuarioBD.isPresent()) {
+            throw new UsuarioNaoExisteException("Usuario nao existe!");
+        }
+
+        Usuario usuario = usuarioBD.get();
+        usuarioRepository.deleteById(usuario.getId());
+        UsuarioResponseDto funcionarioInativadoDto = mapper.map(usuarioBD, UsuarioResponseDto.class);
         return funcionarioInativadoDto;
     }
 

@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
 import br.com.funcionario.funcionario.dtos.FuncionarioResponseDto;
+import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.ListaFuncionarioVaziaException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
-import br.com.funcionario.funcionario.exeptions.OutroUsuarioDadosJaExistente;
 import br.com.funcionario.funcionario.models.Funcionario;
 import br.com.funcionario.funcionario.repositories.FuncionarioRepository;
 
@@ -26,7 +26,7 @@ public class FuncionarioService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public FuncionarioResponseDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistente, OutroUsuarioDadosJaExistente {
+    public UsuarioRequestDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistente {
         Optional<List<Funcionario>> existFuncionarioBD = funcionarioRepository.findByCpfOrEmail(funcionarioRequestDto.getCpf(), funcionarioRequestDto.getEmail());
         if (existFuncionarioBD.isPresent() && !existFuncionarioBD.get().isEmpty()) {
             boolean cpfExists = false;
@@ -51,20 +51,22 @@ public class FuncionarioService {
         }
 
         Funcionario funcionario = mapper.map(funcionarioRequestDto, Funcionario.class);
-        if (existFuncionarioBD.get().size() == 1) {
+
+        if (existFuncionarioBD.get().size() == 0) {
+            funcionario.setIdFuncionario(0L);
+        } else if (existFuncionarioBD.get().size() == 1) {
             funcionario.setIdFuncionario(existFuncionarioBD.get().get(0).getIdFuncionario());
         } else if (existFuncionarioBD.get().size() > 1) {
             throw new OutroFuncionarioDadosJaExistente("Outros funcionarios inativos, um com cpf e outro com email, já existentes!");
         }
 
-        // #MENSAGERIA -> MS AUTH (cadastrar usuario)
-
         Funcionario funcionarioCriadoBD = funcionarioRepository.save(funcionario);
-        FuncionarioResponseDto funcionarioCriadoDto = mapper.map(funcionarioCriadoBD, FuncionarioResponseDto.class);
-        return funcionarioCriadoDto;
+        UsuarioRequestDto usuarioRequestDto = mapper.map(funcionarioCriadoBD, UsuarioRequestDto.class);
+        usuarioRequestDto.setSenha(funcionarioRequestDto.getSenha());
+        return usuarioRequestDto;
     }
 
-    public FuncionarioResponseDto atualizar(Long idFuncionario, FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistente, OutroUsuarioDadosJaExistente {
+    public FuncionarioResponseDto atualizar(Long idFuncionario, FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistente {
         Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(idFuncionario, true);
         if (!funcionarioBD.isPresent()) {
             throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
@@ -105,6 +107,18 @@ public class FuncionarioService {
         funcionario.setAtivo(false);
         Funcionario funcionarioInativadoBD = funcionarioRepository.save(funcionario);
         FuncionarioResponseDto funcionarioInativadoDto = mapper.map(funcionarioInativadoBD, FuncionarioResponseDto.class);
+        return funcionarioInativadoDto;
+    }
+
+    public FuncionarioResponseDto remover(String email) throws FuncionarioNaoExisteException {
+        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByEmail(email);
+        if (!funcionarioBD.isPresent()) {
+            throw new FuncionarioNaoExisteException("Funcionario nao existe!");
+        }
+
+        Funcionario funcionario = funcionarioBD.get();
+        funcionarioRepository.deleteById(funcionario.getIdFuncionario());
+        FuncionarioResponseDto funcionarioInativadoDto = mapper.map(funcionario, FuncionarioResponseDto.class);
         return funcionarioInativadoDto;
     }
 
