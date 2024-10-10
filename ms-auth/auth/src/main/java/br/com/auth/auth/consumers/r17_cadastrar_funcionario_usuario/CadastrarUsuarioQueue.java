@@ -1,4 +1,4 @@
-package br.com.auth.auth.consumers;
+package br.com.auth.auth.consumers.r17_cadastrar_funcionario_usuario;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -12,21 +12,14 @@ import org.springframework.stereotype.Component;
 @Configuration
 public class CadastrarUsuarioQueue {
 
-    public static final String EXCHANGE_NAME = "saga-exchange";
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE_NAME);
-    }
-
     @Bean
     public Queue usuarioCadastrarQueue() {
         return new Queue("ms-auth-cadastrar");
     }
 
     @Bean
-    public Queue compensarUsuarioQueue() {
-        return new Queue("ms-auth-compensar-email");
+    public Queue usuarioCadastroCompensarEmailQueue() {
+        return new Queue("ms-auth-cadastro-compensar-email");
     }
 
     @Bean
@@ -35,8 +28,8 @@ public class CadastrarUsuarioQueue {
     }
 
     @Bean
-    public Binding compensarUsuarioBinding(Queue compensarUsuarioQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(compensarUsuarioQueue).to(exchange).with("ms-auth-compensar-email");
+    public Binding usuarioCadastroCompensarEmailBinding(Queue usuarioCadastroCompensarEmailQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioCadastroCompensarEmailQueue).to(exchange).with("ms-auth-cadastro-compensar-email");
     }
 
 }

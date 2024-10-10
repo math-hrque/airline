@@ -38,42 +38,42 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<Object> cadastrar(@RequestBody @Valid UsuarioRequestDto usuarioRequestDto) {
-        try {
-            Object token = authService.cadastrar(usuarioRequestDto);
-            return ResponseEntity.status(HttpStatus.OK).body(token);
-        } catch (OutroUsuarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @PostMapping("/cadastrar")
+    // public ResponseEntity<Object> cadastrar(@RequestBody @Valid UsuarioRequestDto usuarioRequestDto) {
+    //     try {
+    //         Object token = authService.cadastrar(usuarioRequestDto);
+    //         return ResponseEntity.status(HttpStatus.OK).body(token);
+    //     } catch (OutroUsuarioDadosJaExistente e) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
-    @PutMapping("/atualizar/{email}")
-    public ResponseEntity<Object> atualizar(@PathVariable("email") String email, @RequestBody @Valid UsuarioRequestDto usuarioRequestDto) {
-        try {
-            Object usuarioAtualizado = authService.atualizar(email, usuarioRequestDto);
-            return ResponseEntity.status(HttpStatus.OK).body(usuarioAtualizado);
-        } catch (UsuarioNaoExisteException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (OutroUsuarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @PutMapping("/atualizar/{email}")
+    // public ResponseEntity<Object> atualizar(@PathVariable("email") String email, @RequestBody @Valid UsuarioRequestDto usuarioRequestDto) {
+    //     try {
+    //         Object usuarioAtualizado = authService.atualizar(email, usuarioRequestDto);
+    //         return ResponseEntity.status(HttpStatus.OK).body(usuarioAtualizado);
+    //     } catch (UsuarioNaoExisteException e) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    //     } catch (OutroUsuarioDadosJaExistente e) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
-    @DeleteMapping("/inativar/{email}")
-    public ResponseEntity<Object> inativar(@PathVariable("email") String email) {
-        try {
-            Object usuarioInativado = authService.inativar(email);
-            return ResponseEntity.status(HttpStatus.OK).body(usuarioInativado);
-        } catch (UsuarioNaoExisteException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @DeleteMapping("/inativar/{email}")
+    // public ResponseEntity<Object> inativar(@PathVariable("email") String email) {
+    //     try {
+    //         Object usuarioInativado = authService.inativar(email);
+    //         return ResponseEntity.status(HttpStatus.OK).body(usuarioInativado);
+    //     } catch (UsuarioNaoExisteException e) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
 }

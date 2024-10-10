@@ -66,8 +66,8 @@ public class FuncionarioService {
         return usuarioRequestDto;
     }
 
-    public FuncionarioResponseDto atualizar(Long idFuncionario, FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistente {
-        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(idFuncionario, true);
+    public UsuarioRequestDto atualizar(FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistente {
+        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(funcionarioRequestDto.getIdFuncionario(), true);
         if (!funcionarioBD.isPresent()) {
             throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
         }
@@ -86,28 +86,39 @@ public class FuncionarioService {
             }
         }
 
-        // #MENSAGERIA -> MS AUTH (atualizar usuario)
-
         Funcionario funcionario = mapper.map(funcionarioRequestDto, Funcionario.class);
-        funcionario.setIdFuncionario(idFuncionario);
+        funcionario.setIdFuncionario(funcionarioRequestDto.getIdFuncionario());
         Funcionario funcionarioAtualizadoBD = funcionarioRepository.save(funcionario);
-        FuncionarioResponseDto funcionarioCriadoDto = mapper.map(funcionarioAtualizadoBD, FuncionarioResponseDto.class);
-        return funcionarioCriadoDto;
+
+        UsuarioRequestDto usuarioRequestDto = mapper.map(funcionarioAtualizadoBD, UsuarioRequestDto.class);
+        usuarioRequestDto.setSenha(funcionarioRequestDto.getSenha());
+        return usuarioRequestDto;
     }
 
-    public FuncionarioResponseDto inativar(Long idFuncionario) throws FuncionarioNaoExisteException {
-        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(idFuncionario, true);
+    public FuncionarioResponseDto inativar(String email) throws FuncionarioNaoExisteException {
+        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByEmailAndAtivo(email, true);
         if (!funcionarioBD.isPresent()) {
             throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
         }
-
-        // #MENSAGERIA -> MS AUTH (inativar usuario)
 
         Funcionario funcionario = funcionarioBD.get();
         funcionario.setAtivo(false);
         Funcionario funcionarioInativadoBD = funcionarioRepository.save(funcionario);
         FuncionarioResponseDto funcionarioInativadoDto = mapper.map(funcionarioInativadoBD, FuncionarioResponseDto.class);
         return funcionarioInativadoDto;
+    }
+
+    public FuncionarioResponseDto ativar(String email) throws FuncionarioNaoExisteException {
+        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByEmailAndAtivo(email, false);
+        if (!funcionarioBD.isPresent()) {
+            throw new FuncionarioNaoExisteException("Funcionario inativo nao existe!");
+        }
+
+        Funcionario funcionario = funcionarioBD.get();
+        funcionario.setAtivo(true);
+        Funcionario funcionarioAtivadoBD = funcionarioRepository.save(funcionario);
+        FuncionarioResponseDto funcionarioAtivadoDto = mapper.map(funcionarioAtivadoBD, FuncionarioResponseDto.class);
+        return funcionarioAtivadoDto;
     }
 
     public FuncionarioResponseDto remover(String email) throws FuncionarioNaoExisteException {

@@ -1,4 +1,4 @@
-package br.com.funcionario.funcionario.consumers.r17_cadastrar_funcionario_usuario;
+package br.com.funcionario.funcionario.consumers.r18_atualizar_funcionario_usuario;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,7 +12,7 @@ import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente
 import br.com.funcionario.funcionario.services.FuncionarioService;
 
 @Component
-public class CadastrarFuncionarioConsumer {
+public class AtualizarFuncionarioConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -22,20 +22,22 @@ public class CadastrarFuncionarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-funcionario-cadastrar")
-    public void cadastrarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
+    @RabbitListener(queues = "ms-funcionario-atualizar")
+    public void atualizarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
-            UsuarioRequestDto usuarioRequestDto = funcionarioService.cadastrar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastrado", usuarioRequestDto);
-        } catch (OutroFuncionarioDadosJaExistente e) {
+            UsuarioRequestDto usuarioRequestDto = funcionarioService.atualizar(funcionarioRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualizado", usuarioRequestDto);
+        } catch (FuncionarioNaoExisteException e) {
 
+        } catch (OutroFuncionarioDadosJaExistente e) {
+        
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", funcionarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", funcionarioRequestDto.getEmail());
         }
     }
 
-    @RabbitListener(queues = "ms-funcionario-cadastro-compensar-email")
-    public void compensarCadastroFuncionario(String email) {
+    @RabbitListener(queues = "ms-funcionario-atualiza-compensar-email")
+    public void compensarAtualizaFuncionario(String email) {
         try {
             funcionarioService.remover(email);
         } catch (FuncionarioNaoExisteException e) {

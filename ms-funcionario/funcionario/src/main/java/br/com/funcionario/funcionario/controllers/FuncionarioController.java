@@ -29,45 +29,45 @@ public class FuncionarioController {
     @Autowired
     FuncionarioService funcionarioService;
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<Object> cadastrar(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
-        try {
-            Object funcionarioCriado = funcionarioService.cadastrar(funcionarioRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioCriado);
-        } catch (OutroFuncionarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @PostMapping("/cadastrar")
+    // public ResponseEntity<Object> cadastrar(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
+    //     try {
+    //         Object funcionarioCriado = funcionarioService.cadastrar(funcionarioRequestDto);
+    //         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioCriado);
+    //     } catch (OutroFuncionarioDadosJaExistente e) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
-    @PutMapping("/atualizar/{idFuncionario}")
-    public ResponseEntity<Object> atualizar(@PathVariable("idFuncionario") Long idFuncionario, @RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
-        try {
-            Object funcionarioAtualizado = funcionarioService.atualizar(idFuncionario, funcionarioRequestDto);
-            return ResponseEntity.status(HttpStatus.OK).body(funcionarioAtualizado);
-        } catch (FuncionarioNaoExisteException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (OutroFuncionarioDadosJaExistente e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @PutMapping("/atualizar")
+    // public ResponseEntity<Object> atualizar(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
+    //     try {
+    //         Object funcionarioAtualizado = funcionarioService.atualizar(funcionarioRequestDto);
+    //         return ResponseEntity.status(HttpStatus.OK).body(funcionarioAtualizado);
+    //     } catch (FuncionarioNaoExisteException e) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    //     } catch (OutroFuncionarioDadosJaExistente e) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
-    @DeleteMapping("/inativar/{idFuncionario}")
-    public ResponseEntity<Object> inativar(@PathVariable("idFuncionario") Long idFuncionario) {
-        try {
-            Object funcionarioInativado = funcionarioService.inativar(idFuncionario);
-            return ResponseEntity.status(HttpStatus.OK).body(funcionarioInativado);
-        } catch (FuncionarioNaoExisteException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @DeleteMapping("/inativar/{idFuncionario}")
+    // public ResponseEntity<Object> inativar(@PathVariable("idFuncionario") Long idFuncionario) {
+    //     try {
+    //         Object funcionarioInativado = funcionarioService.inativar(idFuncionario);
+    //         return ResponseEntity.status(HttpStatus.OK).body(funcionarioInativado);
+    //     } catch (FuncionarioNaoExisteException e) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
-    @GetMapping("/consultarId/{idFuncionario}")
+    @GetMapping("/consultarIdFuncionario/{idFuncionario}")
     public ResponseEntity<Object> consultarId(@PathVariable("idFuncionario") Long idFuncionario) {
         try {
             Object funcionarioConsultado = funcionarioService.consultarId(idFuncionario);

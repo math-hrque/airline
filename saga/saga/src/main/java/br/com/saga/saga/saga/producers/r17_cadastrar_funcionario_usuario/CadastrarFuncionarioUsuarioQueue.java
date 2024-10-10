@@ -12,13 +12,6 @@ import org.springframework.stereotype.Component;
 @Configuration
 public class CadastrarFuncionarioUsuarioQueue {
 
-    public static final String EXCHANGE_NAME = "saga-exchange";
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE_NAME);
-    }
-
     @Bean
     public Queue funcionarioCadastradoQueue() {
         return new Queue("ms-funcionario-cadastrado");

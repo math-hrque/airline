@@ -48,14 +48,6 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public TokenDto login(Login login) {
-        manager = context.getBean(AuthenticationManager.class);
-        var authenticationToken = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
-        var authentication = this.manager.authenticate(authenticationToken);
-        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
-        return new TokenDto(tokenJWT);
-    }
-
     public UsuarioResponseDto cadastrar(UsuarioRequestDto usuarioRequestDto) throws OutroUsuarioDadosJaExistente {
         Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
         if (usuarioExistente.isPresent() && usuarioExistente.get().isEnabled()) {
@@ -82,13 +74,13 @@ public class AuthService implements UserDetailsService {
         return usuarioCriadoDto;
     }
 
-    public UsuarioResponseDto atualizar(String email, UsuarioRequestDto usuarioRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(email);
+    public UsuarioResponseDto atualizar(UsuarioRequestDto usuarioRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
         if (!usuarioExistente.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
         }
-        if (usuarioExistente.get().isEnabled() && !usuarioRequestDto.getEmail().equals(email)) {
-            throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
+        if (!usuarioExistente.get().isEnabled()) {
+            throw new OutroUsuarioDadosJaExistente("Outro usuario inativo com email ja existente!");
         }
         
         if (usuarioRequestDto.getSenha() == null) {
@@ -114,8 +106,20 @@ public class AuthService implements UserDetailsService {
 
         usuarioBD.setAtivo(false);
         Usuario usuarioInativadoBD = usuarioRepository.save(usuarioBD);
-        UsuarioResponseDto funcionarioInativadoDto = mapper.map(usuarioInativadoBD, UsuarioResponseDto.class);
-        return funcionarioInativadoDto;
+        UsuarioResponseDto usuarioInativadoDto = mapper.map(usuarioInativadoBD, UsuarioResponseDto.class);
+        return usuarioInativadoDto;
+    }
+
+    public UsuarioResponseDto ativar(String email) throws UsuarioNaoExisteException {
+        Usuario usuarioBD = usuarioRepository.findByEmailAndAtivo(email, false);
+        if (usuarioBD == null) {
+            throw new UsuarioNaoExisteException("Usuario inativo nao existe!");
+        }
+
+        usuarioBD.setAtivo(true);
+        Usuario usuarioAtivadoBD = usuarioRepository.save(usuarioBD);
+        UsuarioResponseDto usuarioAtivadoDto = mapper.map(usuarioAtivadoBD, UsuarioResponseDto.class);
+        return usuarioAtivadoDto;
     }
 
     public UsuarioResponseDto remover(String email) throws UsuarioNaoExisteException {
@@ -130,6 +134,14 @@ public class AuthService implements UserDetailsService {
         return funcionarioInativadoDto;
     }
 
+    public TokenDto login(Login login) {
+        manager = context.getBean(AuthenticationManager.class);
+        var authenticationToken = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
+        var authentication = this.manager.authenticate(authenticationToken);
+        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+        return new TokenDto(tokenJWT);
+    }
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -139,5 +151,6 @@ public class AuthService implements UserDetailsService {
         }
 
         return usuario;
-    }    
+    }
+   
 }

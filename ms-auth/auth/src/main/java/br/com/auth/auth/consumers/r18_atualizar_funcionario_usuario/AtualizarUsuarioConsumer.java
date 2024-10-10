@@ -1,4 +1,4 @@
-package br.com.auth.auth.consumers;
+package br.com.auth.auth.consumers.r18_atualizar_funcionario_usuario;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,7 +12,7 @@ import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.services.AuthService;
 
 @Component
-public class CadastrarUsuarioConsumer {
+public class AtualizarUsuarioConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -22,20 +22,22 @@ public class CadastrarUsuarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-auth-cadastrar")
-    public void cadastrarUsuario(UsuarioRequestDto usuarioRequestDto) {
+    @RabbitListener(queues = "ms-auth-atualizar")
+    public void atualizarUsuario(UsuarioRequestDto usuarioRequestDto) {
         try {
-            UsuarioResponseDto usuarioResponse = authService.cadastrar(usuarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastrado", usuarioResponse);
+            UsuarioResponseDto usuarioResponse = authService.atualizar(usuarioRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualizado", usuarioResponse);
+        } catch (UsuarioNaoExisteException e) {
+
         } catch (OutroUsuarioDadosJaExistente e) {
 
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastro-erro", usuarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-erro", usuarioRequestDto.getEmail());
         }
     }
 
-    @RabbitListener(queues = "ms-auth-compensar-email")
-    public void compensarCadastroFuncionario(String email) {
+    @RabbitListener(queues = "ms-auth-atualiza-compensar-email")
+    public void compensarAtualizaFuncionario(String email) {
         try {
             authService.remover(email);
         } catch (UsuarioNaoExisteException e) {
