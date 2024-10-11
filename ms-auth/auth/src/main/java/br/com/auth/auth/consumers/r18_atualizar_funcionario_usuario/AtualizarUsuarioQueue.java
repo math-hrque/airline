@@ -31,5 +31,4 @@ public class AtualizarUsuarioQueue {
     public Binding usuarioAtualizaCompensarEmailBinding(Queue usuarioAtualizaCompensarEmailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(usuarioAtualizaCompensarEmailQueue).to(exchange).with("ms-auth-atualiza-compensar-email");
     }
-
 }

@@ -43,8 +43,6 @@ public class InativarFuncionarioUsuarioProducer {
 
     @RabbitListener(queues = "ms-auth-inativo-erro")
     public void usuarioInativoErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-compensar-email", email);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativo-compensar-email", email);
     }
-
 }

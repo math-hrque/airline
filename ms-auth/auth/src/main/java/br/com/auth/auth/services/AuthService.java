@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.auth.auth.dtos.Login;
 import br.com.auth.auth.dtos.TokenDto;
+import br.com.auth.auth.dtos.UsuarioIdRequestDto;
 import br.com.auth.auth.dtos.UsuarioRequestDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
 import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistente;
@@ -24,6 +25,7 @@ import br.com.auth.auth.models.Usuario;
 import br.com.auth.auth.repositories.UsuarioRepository;
 import br.com.auth.auth.security.TokenService;
 import br.com.auth.auth.utils.Generate;
+import br.com.auth.auth.utils.RedisUsuarioCache;
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -44,6 +46,9 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RedisUsuarioCache redisUsuarioCache;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -74,25 +79,31 @@ public class AuthService implements UserDetailsService {
         return usuarioCriadoDto;
     }
 
-    public UsuarioResponseDto atualizar(UsuarioRequestDto usuarioRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
-        if (!usuarioExistente.isPresent()) {
+    public UsuarioResponseDto atualizar(UsuarioIdRequestDto usuarioIdRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioIdRequestDto.getEmail());
+        if (!usuarioBD.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
         }
-        if (!usuarioExistente.get().isEnabled()) {
+        if (!usuarioBD.get().isEnabled()) {
             throw new OutroUsuarioDadosJaExistente("Outro usuario inativo com email ja existente!");
         }
         
-        if (usuarioRequestDto.getSenha() == null) {
-            usuarioRequestDto.setSenha("");
+        if (usuarioIdRequestDto.getSenha() == null) {
+            usuarioIdRequestDto.setSenha("");
         }
-        Usuario usuario = mapper.map(usuarioRequestDto, Usuario.class);
-        usuario.setId(usuarioExistente.get().getId());
-        if (usuarioRequestDto.getSenha().isEmpty()) {
-            usuario.setSenha(usuarioExistente.get().getSenha());
+        Usuario usuario = mapper.map(usuarioIdRequestDto, Usuario.class);
+        usuario.setId(usuarioBD.get().getId());
+        if (usuarioIdRequestDto.getSenha().isEmpty()) {
+            usuario.setSenha(usuarioBD.get().getSenha());
         } else {
-            usuario.setSenha(passwordEncoder.encode(usuarioRequestDto.getSenha()));
+            usuario.setSenha(passwordEncoder.encode(usuarioIdRequestDto.getSenha()));
         }
+
+        Usuario usuarioCache = redisUsuarioCache.getCache(usuarioBD.get().getId());
+        if (usuarioCache == null) {
+            redisUsuarioCache.saveCache(usuarioBD.get());
+        }
+
         Usuario usuarioAtualizadoBD = usuarioRepository.save(usuario);
         UsuarioResponseDto usuarioCriadoDto = mapper.map(usuarioAtualizadoBD, UsuarioResponseDto.class);
         return usuarioCriadoDto;
@@ -134,6 +145,23 @@ public class AuthService implements UserDetailsService {
         return funcionarioInativadoDto;
     }
 
+    public UsuarioResponseDto reverter(String email) throws UsuarioNaoExisteException {
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(email);
+        if (!usuarioBD.isPresent()) {
+            throw new UsuarioNaoExisteException("Usuario nao existe!");
+        }
+
+        Usuario usuarioCache = redisUsuarioCache.getCache(usuarioBD.get().getId());
+        if (usuarioCache == null) {
+            throw new UsuarioNaoExisteException("Usuario nao existe no cache!");
+        }
+
+        Usuario usuario = usuarioRepository.save(usuarioCache);
+        redisUsuarioCache.removeCache(usuarioCache.getId());
+        UsuarioResponseDto usuarioRevertidoDto = mapper.map(usuario, UsuarioResponseDto.class);
+        return usuarioRevertidoDto;
+    }
+
     public TokenDto login(Login login) {
         manager = context.getBean(AuthenticationManager.class);
         var authenticationToken = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
@@ -152,5 +180,4 @@ public class AuthService implements UserDetailsService {
 
         return usuario;
     }
-   
 }

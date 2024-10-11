@@ -46,8 +46,6 @@ public class CadastrarFuncionarioUsuarioProducer {
 
     @RabbitListener(queues = "ms-auth-cadastro-erro")
     public void usuarioCadastroErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-compensar-email", email);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastro-compensar-email", email);
     }
-
 }

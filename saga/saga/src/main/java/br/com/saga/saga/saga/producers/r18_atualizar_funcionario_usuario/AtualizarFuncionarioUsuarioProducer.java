@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.saga.saga.saga.dtos.FuncionarioRequestDto;
-import br.com.saga.saga.saga.dtos.UsuarioRequestDto;
+import br.com.saga.saga.saga.dtos.UsuarioIdRequestDto;
 import br.com.saga.saga.saga.dtos.UsuarioResponseDto;
 import jakarta.validation.Valid;
 
@@ -30,13 +30,13 @@ public class AtualizarFuncionarioUsuarioProducer {
     }
 
     @RabbitListener(queues = "ms-funcionario-atualizado")
-    public void funcionarioAtualizadoListener(UsuarioRequestDto usuarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualizar", usuarioRequestDto);
+    public void funcionarioAtualizadoListener(UsuarioIdRequestDto usuarioIdRequestDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualizar", usuarioIdRequestDto);
     }
 
     @RabbitListener(queues = "ms-funcionario-atualiza-erro")
-    public void funcionarioAtualizaErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-compensar-email", email);
+    public void funcionarioAtualizaErroListener(Long idFuncionario) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-compensar-idFuncionario", idFuncionario);
     }
 
     @RabbitListener(queues = "ms-auth-atualizado")
@@ -45,9 +45,7 @@ public class AtualizarFuncionarioUsuarioProducer {
     }
 
     @RabbitListener(queues = "ms-auth-atualiza-erro")
-    public void usuarioAtualizaErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-compensar-email", email);
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-compensar-email", email);
+    public void usuarioAtualizaErroListener(UsuarioIdRequestDto usuarioIdRequestDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-compensar-email", usuarioIdRequestDto.getEmail());
     }
-
 }

@@ -18,8 +18,8 @@ public class AtualizarFuncionarioQueue {
     }
 
     @Bean
-    public Queue funcionarioAtualizaCompensarEmailQueue() {
-        return new Queue("ms-funcionario-atualiza-compensar-email");
+    public Queue funcionarioAtualizaCompensarIdFuncionarioQueue() {
+        return new Queue("ms-funcionario-atualiza-compensar-idFuncionario");
     }
 
     @Bean
@@ -28,8 +28,7 @@ public class AtualizarFuncionarioQueue {
     }
 
     @Bean
-    public Binding funcionarioAtualizaCompensarEmailBinding(Queue funcionarioAtualizaCompensarEmailQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizaCompensarEmailQueue).to(exchange).with("ms-funcionario-atualiza-compensar-email");
+    public Binding funcionarioAtualizaCompensarIdFuncionarioBinding(Queue funcionarioAtualizaCompensarIdFuncionarioQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioAtualizaCompensarIdFuncionarioQueue).to(exchange).with("ms-funcionario-atualiza-compensar-idFuncionario");
     }
-
 }

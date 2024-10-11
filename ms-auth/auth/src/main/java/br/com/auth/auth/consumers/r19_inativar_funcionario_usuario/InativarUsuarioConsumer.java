@@ -25,8 +25,9 @@ public class InativarUsuarioConsumer {
             authService.inativar(email);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativado", email);
         } catch (UsuarioNaoExisteException e) {
-
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-erro", email);
         } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-erro", email);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativo-erro", email);
         }
     }
@@ -41,5 +42,4 @@ public class InativarUsuarioConsumer {
 
         }
     }
-
 }

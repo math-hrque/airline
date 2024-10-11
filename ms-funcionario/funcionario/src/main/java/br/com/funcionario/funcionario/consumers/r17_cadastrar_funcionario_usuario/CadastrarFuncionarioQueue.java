@@ -31,5 +31,4 @@ public class CadastrarFuncionarioQueue {
     public Binding funcionarioCadastroCompensarEmailBinding(Queue funcionarioCadastroCompensarEmailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(funcionarioCadastroCompensarEmailQueue).to(exchange).with("ms-funcionario-cadastro-compensar-email");
     }
-
 }

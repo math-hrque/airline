@@ -31,5 +31,4 @@ public class CadastrarUsuarioQueue {
     public Binding usuarioCadastroCompensarEmailBinding(Queue usuarioCadastroCompensarEmailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(usuarioCadastroCompensarEmailQueue).to(exchange).with("ms-auth-cadastro-compensar-email");
     }
-
 }

@@ -39,7 +39,7 @@ public class AtualizarFuncionarioUsuarioQueue {
 
     @Bean
     public Binding funcionarioAtualizadoErroBinding(Queue funcionarioAtualizadoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizadoErroQueue).to(exchange).with("ms-funcionario-atualizado-erro");
+        return BindingBuilder.bind(funcionarioAtualizadoErroQueue).to(exchange).with("ms-funcionario-atualiza-erro");
     }
 
     @Bean
@@ -49,7 +49,6 @@ public class AtualizarFuncionarioUsuarioQueue {
 
     @Bean
     public Binding usuarioAtualizadoErroBinding(Queue usuarioAtualizadoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioAtualizadoErroQueue).to(exchange).with("ms-auth-atualizado-erro");
+        return BindingBuilder.bind(usuarioAtualizadoErroQueue).to(exchange).with("ms-auth-atualiza-erro");
     }
-
 }

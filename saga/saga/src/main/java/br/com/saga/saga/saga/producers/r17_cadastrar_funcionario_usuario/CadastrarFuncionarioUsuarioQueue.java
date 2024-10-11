@@ -51,5 +51,4 @@ public class CadastrarFuncionarioUsuarioQueue {
     public Binding usuarioCadastroErroBinding(Queue usuarioCadastroErroQueue, TopicExchange exchange) {
         return BindingBuilder.bind(usuarioCadastroErroQueue).to(exchange).with("ms-auth-cadastro-erro");
     }
-
 }

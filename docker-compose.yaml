@@ -37,6 +37,17 @@ services:
     networks:
       - company-network
 
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=redis
+    command: ["redis-server", "--requirepass", "redis"]
+    networks:
+      - company-network
+
   # ms-auth:
   #   container_name: ms-auth
   #   build:

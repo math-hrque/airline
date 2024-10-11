@@ -31,5 +31,4 @@ public class InativarUsuarioQueue {
     public Binding usuarioInativoCompensarEmailBinding(Queue usuarioInativoCompensarEmailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(usuarioInativoCompensarEmailQueue).to(exchange).with("ms-auth-inativo-compensar-email");
     }
-
 }

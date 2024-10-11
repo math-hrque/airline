@@ -5,7 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.auth.auth.dtos.UsuarioRequestDto;
+import br.com.auth.auth.dtos.UsuarioIdRequestDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
 import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistente;
 import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
@@ -23,28 +23,27 @@ public class AtualizarUsuarioConsumer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @RabbitListener(queues = "ms-auth-atualizar")
-    public void atualizarUsuario(UsuarioRequestDto usuarioRequestDto) {
+    public void atualizarUsuario(UsuarioIdRequestDto usuarioIdRequestDto) {
         try {
-            UsuarioResponseDto usuarioResponse = authService.atualizar(usuarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualizado", usuarioResponse);
+            UsuarioResponseDto usuarioResponse = authService.atualizar(usuarioIdRequestDto);
         } catch (UsuarioNaoExisteException e) {
-
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
         } catch (OutroUsuarioDadosJaExistente e) {
-
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-erro", usuarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-erro", usuarioIdRequestDto);
         }
     }
 
     @RabbitListener(queues = "ms-auth-atualiza-compensar-email")
     public void compensarAtualizaFuncionario(String email) {
         try {
-            authService.remover(email);
+            authService.reverter(email);
         } catch (UsuarioNaoExisteException e) {
 
         } catch (Exception e) {
 
         }
     }
-
 }

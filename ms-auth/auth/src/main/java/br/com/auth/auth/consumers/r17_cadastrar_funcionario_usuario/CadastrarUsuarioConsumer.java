@@ -28,8 +28,9 @@ public class CadastrarUsuarioConsumer {
             UsuarioResponseDto usuarioResponse = authService.cadastrar(usuarioRequestDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastrado", usuarioResponse);
         } catch (OutroUsuarioDadosJaExistente e) {
-
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", usuarioRequestDto.getEmail());
         } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", usuarioRequestDto.getEmail());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastro-erro", usuarioRequestDto.getEmail());
         }
     }
@@ -44,5 +45,4 @@ public class CadastrarUsuarioConsumer {
 
         }
     }
-
 }

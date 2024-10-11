@@ -31,5 +31,4 @@ public class InativarFuncionarioQueue {
     public Binding funcionarioInativoCompensarEmailBinding(Queue funcionarioInativoCompensarEmailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(funcionarioInativoCompensarEmailQueue).to(exchange).with("ms-funcionario-inativo-compensar-email");
     }
-
 }

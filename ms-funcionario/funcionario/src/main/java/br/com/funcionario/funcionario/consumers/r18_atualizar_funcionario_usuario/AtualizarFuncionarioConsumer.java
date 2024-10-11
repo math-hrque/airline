@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
-import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
+import br.com.funcionario.funcionario.dtos.UsuarioIdRequestDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
 import br.com.funcionario.funcionario.services.FuncionarioService;
@@ -25,26 +25,25 @@ public class AtualizarFuncionarioConsumer {
     @RabbitListener(queues = "ms-funcionario-atualizar")
     public void atualizarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
-            UsuarioRequestDto usuarioRequestDto = funcionarioService.atualizar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualizado", usuarioRequestDto);
+            UsuarioIdRequestDto usuarioIdRequestDto = funcionarioService.atualizar(funcionarioRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualizado", usuarioIdRequestDto);
         } catch (FuncionarioNaoExisteException e) {
 
         } catch (OutroFuncionarioDadosJaExistente e) {
         
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", funcionarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", funcionarioRequestDto.getIdFuncionario());
         }
     }
 
-    @RabbitListener(queues = "ms-funcionario-atualiza-compensar-email")
-    public void compensarAtualizaFuncionario(String email) {
+    @RabbitListener(queues = "ms-funcionario-atualiza-compensar-idFuncionario")
+    public void compensarAtualizaFuncionario(Long idFuncionario) {
         try {
-            funcionarioService.remover(email);
+            funcionarioService.reverter(idFuncionario);
         } catch (FuncionarioNaoExisteException e) {
 
         } catch (Exception e) {
 
         }
     }
-
 }

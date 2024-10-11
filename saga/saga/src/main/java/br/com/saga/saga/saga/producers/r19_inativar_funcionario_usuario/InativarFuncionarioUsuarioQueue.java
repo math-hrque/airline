@@ -51,5 +51,4 @@ public class InativarFuncionarioUsuarioQueue {
     public Binding usuarioInativoErroBinding(Queue usuarioInativoErroQueue, TopicExchange exchange) {
         return BindingBuilder.bind(usuarioInativoErroQueue).to(exchange).with("ms-auth-inativo-erro");
     }
-
 }
