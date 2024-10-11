@@ -102,6 +102,7 @@ public class FuncionarioService {
         Funcionario funcionarioAtualizadoBD = funcionarioRepository.save(funcionario);
         UsuarioIdRequestDto usuarioIdRequestDto = mapper.map(funcionarioAtualizadoBD, UsuarioIdRequestDto.class);
         usuarioIdRequestDto.setId(funcionarioBD.get().getIdFuncionario());
+        usuarioIdRequestDto.setOldEmail(funcionarioBD.get().getEmail());
         usuarioIdRequestDto.setSenha(funcionarioRequestDto.getSenha());
         return usuarioIdRequestDto;
     }

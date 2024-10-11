@@ -80,12 +80,22 @@ public class AuthService implements UserDetailsService {
     }
 
     public UsuarioResponseDto atualizar(UsuarioIdRequestDto usuarioIdRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
-        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioIdRequestDto.getEmail());
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioIdRequestDto.getOldEmail());
         if (!usuarioBD.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
         }
         if (!usuarioBD.get().isEnabled()) {
-            throw new OutroUsuarioDadosJaExistente("Outro usuario inativo com email ja existente!");
+            throw new OutroUsuarioDadosJaExistente("Usuario desse email esta inativo!");
+        }
+        if (!usuarioIdRequestDto.getEmail().equals(usuarioIdRequestDto.getOldEmail())) {
+            Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioIdRequestDto.getEmail());
+            if (usuarioExistente.isPresent()) {
+                if (usuarioExistente.get().isEnabled()) {
+                    throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
+                } else {
+                    throw new OutroUsuarioDadosJaExistente("Outro usuario inativo com email ja existente!");
+                }
+            }
         }
         
         if (usuarioIdRequestDto.getSenha() == null) {
@@ -93,6 +103,7 @@ public class AuthService implements UserDetailsService {
         }
         Usuario usuario = mapper.map(usuarioIdRequestDto, Usuario.class);
         usuario.setId(usuarioBD.get().getId());
+
         if (usuarioIdRequestDto.getSenha().isEmpty()) {
             usuario.setSenha(usuarioBD.get().getSenha());
         } else {

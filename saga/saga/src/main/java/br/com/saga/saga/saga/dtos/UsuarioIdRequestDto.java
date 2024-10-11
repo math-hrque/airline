@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UsuarioIdRequestDto {
     Long id;
+    String oldEmail;
     String email;
     String senha = "";
     Tipo tipo;
