@@ -1,4 +1,4 @@
-package br.com.auth.auth.consumers.r17_cadastrar_funcionario_usuario;
+package br.com.auth.auth.consumers.r01_cadastrar_cliente_usuario;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import br.com.auth.auth.dtos.UsuarioRequestDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
-import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistente;
+import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistenteException;
 import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.services.AuthService;
 
 @Component
-public class CadastrarUsuarioConsumer {
+public class CadastrarUsuarioClienteConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -22,21 +22,21 @@ public class CadastrarUsuarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-auth-cadastrar")
+    @RabbitListener(queues = "ms-auth-cliente-cadastrar")
     public void cadastrarUsuario(UsuarioRequestDto usuarioRequestDto) {
         try {
             UsuarioResponseDto usuarioResponse = authService.cadastrar(usuarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastrado", usuarioResponse);
-        } catch (OutroUsuarioDadosJaExistente e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", usuarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-cliente-cadastrado", usuarioResponse);
+        } catch (OutroUsuarioDadosJaExistenteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", usuarioRequestDto.getEmail());
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", usuarioRequestDto.getEmail());
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastro-erro", usuarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", usuarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-cliente-cadastrado-erro", usuarioRequestDto.getEmail());
         }
     }
 
-    @RabbitListener(queues = "ms-auth-cadastro-compensar-email")
-    public void compensarCadastroFuncionario(String email) {
+    @RabbitListener(queues = "ms-auth-cliente-cadastrado-compensar")
+    public void compensarUsuarioCadastrado(String email) {
         try {
             authService.remover(email);
         } catch (UsuarioNaoExisteException e) {

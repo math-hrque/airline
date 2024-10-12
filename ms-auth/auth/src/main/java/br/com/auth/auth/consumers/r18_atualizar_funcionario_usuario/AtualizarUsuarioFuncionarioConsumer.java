@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import br.com.auth.auth.dtos.UsuarioIdRequestDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
-import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistente;
+import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistenteException;
 import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.services.AuthService;
 
 @Component
-public class AtualizarUsuarioConsumer {
+public class AtualizarUsuarioFuncionarioConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -22,22 +22,23 @@ public class AtualizarUsuarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-auth-atualizar")
+    @RabbitListener(queues = "ms-auth-funcionario-atualizar")
     public void atualizarUsuario(UsuarioIdRequestDto usuarioIdRequestDto) {
         try {
             UsuarioResponseDto usuarioResponse = authService.atualizar(usuarioIdRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-funcionario-atualizado", usuarioResponse);
         } catch (UsuarioNaoExisteException e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
-        } catch (OutroUsuarioDadosJaExistente e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado-erro", usuarioIdRequestDto.getId());
+        } catch (OutroUsuarioDadosJaExistenteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado-erro", usuarioIdRequestDto.getId());
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", usuarioIdRequestDto.getId());
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-erro", usuarioIdRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado-erro", usuarioIdRequestDto.getId());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-funcionario-atualizado-erro", usuarioIdRequestDto);
         }
     }
 
-    @RabbitListener(queues = "ms-auth-atualiza-compensar-email")
-    public void compensarAtualizaFuncionario(String email) {
+    @RabbitListener(queues = "ms-auth-funcionario-atualizado-compensar")
+    public void compensarUsuarioAtualizado(String email) {
         try {
             authService.reverter(email);
         } catch (UsuarioNaoExisteException e) {

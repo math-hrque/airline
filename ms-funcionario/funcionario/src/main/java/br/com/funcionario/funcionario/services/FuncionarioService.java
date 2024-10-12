@@ -10,7 +10,7 @@ import br.com.funcionario.funcionario.dtos.UsuarioIdRequestDto;
 import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.ListaFuncionarioVaziaException;
-import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
+import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
 import br.com.funcionario.funcionario.models.Funcionario;
 import br.com.funcionario.funcionario.repositories.FuncionarioRepository;
 import br.com.funcionario.funcionario.utils.RedisFuncionarioCache;
@@ -31,7 +31,7 @@ public class FuncionarioService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public UsuarioRequestDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistente {
+    public UsuarioRequestDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistenteException {
         Optional<List<Funcionario>> existFuncionarioBD = funcionarioRepository.findByCpfOrEmail(funcionarioRequestDto.getCpf(), funcionarioRequestDto.getEmail());
         if (existFuncionarioBD.isPresent() && !existFuncionarioBD.get().isEmpty()) {
             boolean cpfExists = false;
@@ -47,11 +47,11 @@ public class FuncionarioService {
                 }
             }
             if (cpfExists && emailExists) {
-                throw new OutroFuncionarioDadosJaExistente("Outro funcionario ativo com cpf e email já existente!");
+                throw new OutroFuncionarioDadosJaExistenteException("Outro funcionario ativo com cpf e email ja existente!");
             } else if (cpfExists) {
-                throw new OutroFuncionarioDadosJaExistente("Outro funcionario ativo com cpf já existente!");
+                throw new OutroFuncionarioDadosJaExistenteException("Outro funcionario ativo com cpf ja existente!");
             } else if (emailExists) {
-                throw new OutroFuncionarioDadosJaExistente("Outro funcionario ativo com email já existente!");
+                throw new OutroFuncionarioDadosJaExistenteException("Outro funcionario ativo com email ja existente!");
             }
         }
 
@@ -62,7 +62,7 @@ public class FuncionarioService {
         } else if (existFuncionarioBD.get().size() == 1) {
             funcionario.setIdFuncionario(existFuncionarioBD.get().get(0).getIdFuncionario());
         } else if (existFuncionarioBD.get().size() > 1) {
-            throw new OutroFuncionarioDadosJaExistente("Outros funcionarios inativos, um com cpf e outro com email, já existentes!");
+            throw new OutroFuncionarioDadosJaExistenteException("Outros funcionarios inativos, um com cpf e outro com email, ja existentes!");
         }
 
         Funcionario funcionarioCriadoBD = funcionarioRepository.save(funcionario);
@@ -71,7 +71,7 @@ public class FuncionarioService {
         return usuarioRequestDto;
     }
 
-    public UsuarioIdRequestDto atualizar(FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistente {
+    public UsuarioIdRequestDto atualizar(FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistenteException {
         Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(funcionarioRequestDto.getIdFuncionario(), true);
         if (!funcionarioBD.isPresent()) {
             throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
@@ -84,9 +84,9 @@ public class FuncionarioService {
             if (cpfOrEmailExists) {
                 boolean cpfExists = listaFuncionarioExistente.stream().anyMatch(funcionario -> !funcionario.getIdFuncionario().equals(funcionarioBD.get().getIdFuncionario()) && funcionario.getCpf().equals(funcionarioBD.get().getCpf()));
                 if (cpfExists) {
-                    throw new OutroFuncionarioDadosJaExistente("Outro funcionario com cpf ja existente!");
+                    throw new OutroFuncionarioDadosJaExistenteException("Outro funcionario com cpf ja existente!");
                 } else {
-                    throw new OutroFuncionarioDadosJaExistente("Outro funcionario com email ja existente!");
+                    throw new OutroFuncionarioDadosJaExistenteException("Outro funcionario com email ja existente!");
                 }
             }
         }
@@ -141,8 +141,8 @@ public class FuncionarioService {
 
         Funcionario funcionario = funcionarioBD.get();
         funcionarioRepository.deleteById(funcionario.getIdFuncionario());
-        FuncionarioResponseDto funcionarioInativadoDto = mapper.map(funcionario, FuncionarioResponseDto.class);
-        return funcionarioInativadoDto;
+        FuncionarioResponseDto funcionarioRemovidoDto = mapper.map(funcionario, FuncionarioResponseDto.class);
+        return funcionarioRemovidoDto;
     }
 
     public FuncionarioResponseDto reverter(Long idFuncionario) throws FuncionarioNaoExisteException {
@@ -162,15 +162,15 @@ public class FuncionarioService {
         return funcionarioRevertidoDto;
     }
 
-    public FuncionarioResponseDto consultarId(Long idFuncionario) throws FuncionarioNaoExisteException {
-        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(idFuncionario, true);
-        if (!funcionarioBD.isPresent()) {
-            throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
+
+    public List<FuncionarioResponseDto> listar() throws ListaFuncionarioVaziaException {
+        Optional<List<Funcionario>> listaFuncionarioBD = funcionarioRepository.findByAtivo(true);
+        if (!listaFuncionarioBD.isPresent() && listaFuncionarioBD.get().isEmpty()) {
+            throw new ListaFuncionarioVaziaException("Lista de funcionarios ativos vazia!");
         }
 
-        Funcionario funcionarioConsultadoBD = funcionarioBD.get();
-        FuncionarioResponseDto funcionarioConsultadoDto = mapper.map(funcionarioConsultadoBD, FuncionarioResponseDto.class);
-        return funcionarioConsultadoDto;
+        List<FuncionarioResponseDto> listaFuncionarioDto = listaFuncionarioBD.get().stream().map(funcionarioBD -> mapper.map(funcionarioBD, FuncionarioResponseDto.class)).collect(Collectors.toList());
+        return listaFuncionarioDto;
     }
 
     public FuncionarioResponseDto consultarEmail(String email) throws FuncionarioNaoExisteException {
@@ -184,13 +184,14 @@ public class FuncionarioService {
         return funcionarioConsultadoDto;
     }
 
-    public List<FuncionarioResponseDto> listar() throws ListaFuncionarioVaziaException {
-        Optional<List<Funcionario>> listaFuncionarioBD = funcionarioRepository.findByAtivo(true);
-        if (!listaFuncionarioBD.isPresent() && listaFuncionarioBD.get().isEmpty()) {
-            throw new ListaFuncionarioVaziaException("Lista de funcionarios ativos vazia!");
+    public FuncionarioResponseDto consultarIdFuncionario(Long idFuncionario) throws FuncionarioNaoExisteException {
+        Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(idFuncionario, true);
+        if (!funcionarioBD.isPresent()) {
+            throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
         }
 
-        List<FuncionarioResponseDto> listaFuncionarioDto = listaFuncionarioBD.get().stream().map(funcionarioBD -> mapper.map(funcionarioBD, FuncionarioResponseDto.class)).collect(Collectors.toList());
-        return listaFuncionarioDto;
+        Funcionario funcionarioConsultadoBD = funcionarioBD.get();
+        FuncionarioResponseDto funcionarioConsultadoDto = mapper.map(funcionarioConsultadoBD, FuncionarioResponseDto.class);
+        return funcionarioConsultadoDto;
     }
 }

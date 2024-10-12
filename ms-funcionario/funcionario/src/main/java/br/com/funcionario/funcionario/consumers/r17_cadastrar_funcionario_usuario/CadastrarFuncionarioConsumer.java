@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
 import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
-import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
+import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
 import br.com.funcionario.funcionario.services.FuncionarioService;
 
 @Component
@@ -22,20 +22,20 @@ public class CadastrarFuncionarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-funcionario-cadastrar")
+    @RabbitListener(queues = "ms-funcionario-funcionario-cadastrar")
     public void cadastrarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
             UsuarioRequestDto usuarioRequestDto = funcionarioService.cadastrar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastrado", usuarioRequestDto);
-        } catch (OutroFuncionarioDadosJaExistente e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-cadastrado", usuarioRequestDto);
+        } catch (OutroFuncionarioDadosJaExistenteException e) {
 
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-erro", funcionarioRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-cadastrado-erro", funcionarioRequestDto.getEmail());
         }
     }
 
-    @RabbitListener(queues = "ms-funcionario-cadastro-compensar-email")
-    public void compensarCadastroFuncionario(String email) {
+    @RabbitListener(queues = "ms-funcionario-funcionario-cadastrado-compensar")
+    public void compensarFuncionarioCadastrado(String email) {
         try {
             funcionarioService.remover(email);
         } catch (FuncionarioNaoExisteException e) {

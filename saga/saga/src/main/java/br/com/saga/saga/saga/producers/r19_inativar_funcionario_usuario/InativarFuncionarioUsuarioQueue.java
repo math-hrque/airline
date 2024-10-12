@@ -13,42 +13,42 @@ import org.springframework.stereotype.Component;
 public class InativarFuncionarioUsuarioQueue {
 
     @Bean
-    public Queue funcionarioInativadoQueue() {
-        return new Queue("ms-funcionario-inativado");
+    public Queue funcionarioUsuarioInativadoQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-inativado");
     }
 
     @Bean
-    public Queue funcionarioInativoErroQueue() {
-        return new Queue("ms-funcionario-inativo-erro");
+    public Queue funcionarioUsuarioInativadoErroQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-inativado-erro");
     }
 
     @Bean
-    public Queue usuarioInativadoQueue() {
-        return new Queue("ms-auth-inativado");
+    public Queue usuarioFuncionarioInativadoQueue() {
+        return new Queue("saga-ms-auth-funcionario-inativado");
     }
 
     @Bean
-    public Queue usuarioInativoErroQueue() {
-        return new Queue("ms-auth-inativo-erro");
+    public Queue usuarioFuncionarioInativadoErroQueue() {
+        return new Queue("saga-ms-auth-funcionario-inativado-erro");
     }
 
     @Bean
-    public Binding funcionarioInativadoBinding(Queue funcionarioInativadoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioInativadoQueue).to(exchange).with("ms-funcionario-inativado");
+    public Binding funcionarioUsuarioInativadoBinding(Queue funcionarioUsuarioInativadoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioInativadoQueue).to(exchange).with("saga-ms-funcionario-funcionario-inativado");
     }
 
     @Bean
-    public Binding funcionarioInativoErroBinding(Queue funcionarioInativoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioInativoErroQueue).to(exchange).with("ms-funcionario-inativo-erro");
+    public Binding funcionarioUsuarioInativadoErroBinding(Queue funcionarioUsuarioInativadoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioInativadoErroQueue).to(exchange).with("saga-ms-funcionario-funcionario-inativado-erro");
     }
 
     @Bean
-    public Binding usuarioInativadoBinding(Queue usuarioInativadoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioInativadoQueue).to(exchange).with("ms-auth-inativado");
+    public Binding usuarioFuncionarioInativadoBinding(Queue usuarioFuncionarioInativadoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioInativadoQueue).to(exchange).with("saga-ms-auth-funcionario-inativado");
     }
 
     @Bean
-    public Binding usuarioInativoErroBinding(Queue usuarioInativoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioInativoErroQueue).to(exchange).with("ms-auth-inativo-erro");
+    public Binding usuarioFuncionarioInativadoErroBinding(Queue usuarioFuncionarioInativadoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioInativadoErroQueue).to(exchange).with("saga-ms-auth-funcionario-inativado-erro");
     }
 }

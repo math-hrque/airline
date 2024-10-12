@@ -22,19 +22,19 @@ public class FuncionarioController {
     @Autowired
     FuncionarioService funcionarioService;
 
-    @GetMapping("/consultarIdFuncionario/{idFuncionario}")
-    public ResponseEntity<Object> consultarId(@PathVariable("idFuncionario") Long idFuncionario) {
+    @GetMapping("/listar")
+    public ResponseEntity<?> listar() {
         try {
-            Object funcionarioConsultado = funcionarioService.consultarId(idFuncionario);
-            return ResponseEntity.status(HttpStatus.OK).body(funcionarioConsultado);
-        } catch (FuncionarioNaoExisteException e) {
+            List<FuncionarioResponseDto> listaFuncionario = funcionarioService.listar();
+            return ResponseEntity.status(HttpStatus.OK).body(listaFuncionario);
+        } catch (ListaFuncionarioVaziaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    @GetMapping("/consultarEmail/{email}")
+    @GetMapping("/consultar-email/{email}")
     public ResponseEntity<Object> consultarEmail(@PathVariable("email") String email) {
         try {
             Object funcionarioConsultado = funcionarioService.consultarEmail(email);
@@ -46,12 +46,12 @@ public class FuncionarioController {
         }
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity<?> listar() {
+    @GetMapping("/consultar-idfuncionario/{idFuncionario}")
+    public ResponseEntity<Object> consultarIdFuncionario(@PathVariable("idFuncionario") Long idFuncionario) {
         try {
-            List<FuncionarioResponseDto> listaFuncionario = funcionarioService.listar();
-            return ResponseEntity.status(HttpStatus.OK).body(listaFuncionario);
-        } catch (ListaFuncionarioVaziaException e) {
+            Object funcionarioConsultado = funcionarioService.consultarIdFuncionario(idFuncionario);
+            return ResponseEntity.status(HttpStatus.OK).body(funcionarioConsultado);
+        } catch (FuncionarioNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

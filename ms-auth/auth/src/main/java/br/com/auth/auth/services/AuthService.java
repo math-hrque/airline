@@ -19,7 +19,7 @@ import br.com.auth.auth.dtos.TokenDto;
 import br.com.auth.auth.dtos.UsuarioIdRequestDto;
 import br.com.auth.auth.dtos.UsuarioRequestDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
-import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistente;
+import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistenteException;
 import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.models.Usuario;
 import br.com.auth.auth.repositories.UsuarioRepository;
@@ -53,10 +53,10 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public UsuarioResponseDto cadastrar(UsuarioRequestDto usuarioRequestDto) throws OutroUsuarioDadosJaExistente {
+    public UsuarioResponseDto cadastrar(UsuarioRequestDto usuarioRequestDto) throws OutroUsuarioDadosJaExistenteException {
         Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
         if (usuarioExistente.isPresent() && usuarioExistente.get().isEnabled()) {
-            throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
+            throw new OutroUsuarioDadosJaExistenteException("Outro usuario ativo com email ja existente!");
         }
 
         if (usuarioRequestDto.getSenha() == null) {
@@ -79,21 +79,21 @@ public class AuthService implements UserDetailsService {
         return usuarioCriadoDto;
     }
 
-    public UsuarioResponseDto atualizar(UsuarioIdRequestDto usuarioIdRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistente {
+    public UsuarioResponseDto atualizar(UsuarioIdRequestDto usuarioIdRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistenteException {
         Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioIdRequestDto.getOldEmail());
         if (!usuarioBD.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
         }
         if (!usuarioBD.get().isEnabled()) {
-            throw new OutroUsuarioDadosJaExistente("Usuario desse email esta inativo!");
+            throw new OutroUsuarioDadosJaExistenteException("Usuario desse email esta inativo!");
         }
         if (!usuarioIdRequestDto.getEmail().equals(usuarioIdRequestDto.getOldEmail())) {
             Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioIdRequestDto.getEmail());
             if (usuarioExistente.isPresent()) {
                 if (usuarioExistente.get().isEnabled()) {
-                    throw new OutroUsuarioDadosJaExistente("Outro usuario ativo com email ja existente!");
+                    throw new OutroUsuarioDadosJaExistenteException("Outro usuario ativo com email ja existente!");
                 } else {
-                    throw new OutroUsuarioDadosJaExistente("Outro usuario inativo com email ja existente!");
+                    throw new OutroUsuarioDadosJaExistenteException("Outro usuario inativo com email ja existente!");
                 }
             }
         }
@@ -116,8 +116,8 @@ public class AuthService implements UserDetailsService {
         }
 
         Usuario usuarioAtualizadoBD = usuarioRepository.save(usuario);
-        UsuarioResponseDto usuarioCriadoDto = mapper.map(usuarioAtualizadoBD, UsuarioResponseDto.class);
-        return usuarioCriadoDto;
+        UsuarioResponseDto usuarioAtualizadoDto = mapper.map(usuarioAtualizadoBD, UsuarioResponseDto.class);
+        return usuarioAtualizadoDto;
     }
 
     public UsuarioResponseDto inativar(String email) throws UsuarioNaoExisteException {
@@ -152,8 +152,8 @@ public class AuthService implements UserDetailsService {
 
         Usuario usuario = usuarioBD.get();
         usuarioRepository.deleteById(usuario.getId());
-        UsuarioResponseDto funcionarioInativadoDto = mapper.map(usuarioBD, UsuarioResponseDto.class);
-        return funcionarioInativadoDto;
+        UsuarioResponseDto usuarioRemoverDto = mapper.map(usuarioBD, UsuarioResponseDto.class);
+        return usuarioRemoverDto;
     }
 
     public UsuarioResponseDto reverter(String email) throws UsuarioNaoExisteException {

@@ -23,26 +23,26 @@ public class InativarFuncionarioUsuarioProducer {
 
     @DeleteMapping("/inativar-funcionario/{email}")
     public void inativarFuncionario(@PathVariable("email") String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativar", email);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-inativar", email);
     }
 
-    @RabbitListener(queues = "ms-funcionario-inativado")
-    public void funcionarioInativadoListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativar", email);
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-inativado")
+    public void funcionarioInativarListener(String email) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-inativar", email);
     }
 
-    @RabbitListener(queues = "ms-funcionario-inativo-erro")
-    public void funcionarioInativoErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-compensar-email", email);
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-inativado-erro")
+    public void funcionarioInativadoErroListener(String email) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-inativado-compensar", email);
     }
 
-    @RabbitListener(queues = "ms-auth-inativado")
+    @RabbitListener(queues = "saga-ms-auth-funcionario-inativado")
     public void usuarioInativadoListener(UsuarioResponseDto usuarioResponseDto) {
-        System.out.println("Funcionário e Usuário inativados com sucesso!");
+        System.out.println("Funcionario e Usuario inativados com sucesso!");
     }
 
-    @RabbitListener(queues = "ms-auth-inativo-erro")
-    public void usuarioInativoErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativo-compensar-email", email);
+    @RabbitListener(queues = "saga-ms-auth-funcionario-inativado-erro")
+    public void usuarioInativadoErroListener(String email) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-inativado-compensar", email);
     }
 }

@@ -9,7 +9,7 @@ import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
 import br.com.auth.auth.services.AuthService;
 
 @Component
-public class InativarUsuarioConsumer {
+public class InativarUsuarioFuncionarioConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -19,21 +19,21 @@ public class InativarUsuarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-auth-inativar")
+    @RabbitListener(queues = "ms-auth-funcionario-inativar")
     public void inativarUsuario(String email) {
         try {
             authService.inativar(email);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativado", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-funcionario-inativado", email);
         } catch (UsuarioNaoExisteException e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-erro", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-inativado-erro", email);
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-erro", email);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-inativo-erro", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-inativado-erro", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-auth-funcionario-inativado-erro", email);
         }
     }
 
-    @RabbitListener(queues = "ms-auth-inativo-compensar-email")
-    public void compensarInativoFuncionario(String email) {
+    @RabbitListener(queues = "ms-auth-funcionario-inativado-compensar")
+    public void compensarUsuarioInativado(String email) {
         try {
             authService.ativar(email);
         } catch (UsuarioNaoExisteException e) {

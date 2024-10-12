@@ -1,5 +1,6 @@
 package br.com.saga.saga.saga.dtos;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,8 +15,8 @@ import org.hibernate.validator.constraints.br.CPF;
 @Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FuncionarioRequestDto {
-    private Long idFuncionario = 0L;
+public class ClienteRequestDto {
+    private Long idCliente = 0L;
 
     @CPF(message = "CPF invalido")
     private String cpf;
@@ -30,8 +31,9 @@ public class FuncionarioRequestDto {
     @Size(min = 4, max = 100, message = "Nome deve ter entre 4 e 100 caracteres")
     private String nome;
 
-    @Pattern(regexp = "^\\d{11}$", message = "Telefone eh obrigatorio e deve conter exatamente 11 digitos numericos")
-    private String telefone;
+    @Pattern(regexp = "^\\d+$", message = "SaldoMilhas invalido")
+    private Integer saldoMilhas = 0;
 
-    String senha;
+    @Valid
+    private EnderecoDto endereco;
 }

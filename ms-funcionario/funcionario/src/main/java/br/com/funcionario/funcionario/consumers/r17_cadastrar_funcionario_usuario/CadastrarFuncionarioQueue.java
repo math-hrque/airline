@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 public class CadastrarFuncionarioQueue {
 
     @Bean
-    public Queue funcionarioCadastrarQueue() {
-        return new Queue("ms-funcionario-cadastrar");
+    public Queue funcionarioUsuarioCadastrarQueue() {
+        return new Queue("ms-funcionario-funcionario-cadastrar");
     }
 
     @Bean
-    public Queue funcionarioCadastroCompensarEmailQueue() {
-        return new Queue("ms-funcionario-cadastro-compensar-email");
+    public Queue funcionarioUsuarioCadastradoCompensarQueue() {
+        return new Queue("ms-funcionario-funcionario-cadastrado-compensar");
     }
 
     @Bean
-    public Binding funcionarioCadastrarBinding(Queue funcionarioCadastrarQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioCadastrarQueue).to(exchange).with("ms-funcionario-cadastrar");
+    public Binding funcionarioUsuarioCadastrarBinding(Queue funcionarioUsuarioCadastrarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioCadastrarQueue).to(exchange).with("ms-funcionario-funcionario-cadastrar");
     }
 
     @Bean
-    public Binding funcionarioCadastroCompensarEmailBinding(Queue funcionarioCadastroCompensarEmailQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioCadastroCompensarEmailQueue).to(exchange).with("ms-funcionario-cadastro-compensar-email");
+    public Binding funcionarioUsuarioCadastradoCompensarBinding(Queue funcionarioUsuarioCadastradoCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioCadastradoCompensarQueue).to(exchange).with("ms-funcionario-funcionario-cadastrado-compensar");
     }
 }

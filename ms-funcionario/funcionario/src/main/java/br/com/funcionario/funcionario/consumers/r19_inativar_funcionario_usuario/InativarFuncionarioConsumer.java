@@ -19,20 +19,20 @@ public class InativarFuncionarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-funcionario-inativar")
+    @RabbitListener(queues = "ms-funcionario-funcionario-inativar")
     public void inativarFuncionario(String email) {
         try {
             funcionarioService.inativar(email);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativado", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-inativado", email);
         } catch (FuncionarioNaoExisteException e) {
 
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-inativo-erro", email);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-inativado-erro", email);
         }
     }
 
-    @RabbitListener(queues = "ms-funcionario-inativo-compensar-email")
-    public void compensarInativoFuncionario(String email) {
+    @RabbitListener(queues = "ms-funcionario-funcionario-inativado-compensar")
+    public void compensarFuncionarioInativado(String email) {
         try {
             funcionarioService.ativar(email);
         } catch (FuncionarioNaoExisteException e) {

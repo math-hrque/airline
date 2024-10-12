@@ -13,42 +13,42 @@ import org.springframework.stereotype.Component;
 public class AtualizarFuncionarioUsuarioQueue {
 
     @Bean
-    public Queue funcionarioAtualizadoQueue() {
-        return new Queue("ms-funcionario-atualizado");
+    public Queue funcionarioUsuarioAtualizadoQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-atualizado");
     }
 
     @Bean
-    public Queue funcionarioAtualizadoErroQueue() {
-        return new Queue("ms-funcionario-atualiza-erro");
+    public Queue funcionarioUsuarioAtualizadoErroQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-atualizado-erro");
     }
 
     @Bean
-    public Queue usuarioAtualizadoQueue() {
-        return new Queue("ms-auth-atualizado");
+    public Queue usuarioFuncionarioAtualizadoQueue() {
+        return new Queue("saga-ms-auth-funcionario-atualizado");
     }
 
     @Bean
-    public Queue usuarioAtualizadoErroQueue() {
-        return new Queue("ms-auth-atualiza-erro");
+    public Queue usuarioFuncionarioAtualizadoErroQueue() {
+        return new Queue("saga-ms-auth-funcionario-atualizado-erro");
     }
 
     @Bean
-    public Binding funcionarioAtualizadoBinding(Queue funcionarioAtualizadoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizadoQueue).to(exchange).with("ms-funcionario-atualizado");
+    public Binding funcionarioUsuarioAtualizadoBinding(Queue funcionarioUsuarioAtualizadoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioAtualizadoQueue).to(exchange).with("saga-ms-funcionario-funcionario-atualizado");
     }
 
     @Bean
-    public Binding funcionarioAtualizadoErroBinding(Queue funcionarioAtualizadoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizadoErroQueue).to(exchange).with("ms-funcionario-atualiza-erro");
+    public Binding funcionarioUsuarioAtualizadoErroBinding(Queue funcionarioUsuarioAtualizadoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioAtualizadoErroQueue).to(exchange).with("saga-ms-funcionario-funcionario-atualizado-erro");
     }
 
     @Bean
-    public Binding usuarioAtualizadoBinding(Queue usuarioAtualizadoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioAtualizadoQueue).to(exchange).with("ms-auth-atualizado");
+    public Binding usuarioFuncionarioAtualizadoBinding(Queue usuarioFuncionarioAtualizadoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioAtualizadoQueue).to(exchange).with("saga-ms-auth-funcionario-atualizado");
     }
 
     @Bean
-    public Binding usuarioAtualizadoErroBinding(Queue usuarioAtualizadoErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioAtualizadoErroQueue).to(exchange).with("ms-auth-atualiza-erro");
+    public Binding usuarioFuncionarioAtualizadoErroBinding(Queue usuarioFuncionarioAtualizadoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioAtualizadoErroQueue).to(exchange).with("saga-ms-auth-funcionario-atualizado-erro");
     }
 }

@@ -26,26 +26,26 @@ public class CadastrarFuncionarioUsuarioProducer {
 
     @PostMapping("/cadastrar-funcionario")
     public void cadastrarFuncionario(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastrar", funcionarioRequestDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-cadastrar", funcionarioRequestDto);
     }
 
-    @RabbitListener(queues = "ms-funcionario-cadastrado")
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-cadastrado")
     public void funcionarioCadastradoListener(UsuarioRequestDto usuarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastrar", usuarioRequestDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-cadastrar", usuarioRequestDto);
     }
 
-    @RabbitListener(queues = "ms-funcionario-cadastro-erro")
-    public void funcionarioCadastroErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-cadastro-compensar-email", email);
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-cadastrado-erro")
+    public void funcionarioCadastradoErroListener(String email) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-cadastrado-compensar", email);
     }
 
-    @RabbitListener(queues = "ms-auth-cadastrado")
+    @RabbitListener(queues = "saga-ms-auth-funcionario-cadastrado")
     public void usuarioCadastradoListener(UsuarioResponseDto usuarioResponseDto) {
-        System.out.println("Funcionário e Usuário criados com sucesso!");
+        System.out.println("Funcionario e Usuario criados com sucesso!");
     }
 
-    @RabbitListener(queues = "ms-auth-cadastro-erro")
-    public void usuarioCadastroErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cadastro-compensar-email", email);
+    @RabbitListener(queues = "saga-ms-auth-funcionario-cadastrado-erro")
+    public void usuarioCadastradoErroListener(String email) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-cadastrado-compensar", email);
     }
 }

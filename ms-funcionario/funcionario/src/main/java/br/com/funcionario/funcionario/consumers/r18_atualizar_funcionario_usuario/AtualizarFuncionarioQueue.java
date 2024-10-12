@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 public class AtualizarFuncionarioQueue {
 
     @Bean
-    public Queue funcionarioAtualizarQueue() {
-        return new Queue("ms-funcionario-atualizar");
+    public Queue funcionarioUsuarioAtualizarQueue() {
+        return new Queue("ms-funcionario-funcionario-atualizar");
     }
 
     @Bean
-    public Queue funcionarioAtualizaCompensarIdFuncionarioQueue() {
-        return new Queue("ms-funcionario-atualiza-compensar-idFuncionario");
+    public Queue funcionarioUsuarioAtualizadoCompensarQueue() {
+        return new Queue("ms-funcionario-funcionario-atualizado-compensar");
     }
 
     @Bean
-    public Binding funcionarioAtualizarBinding(Queue funcionarioAtualizarQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizarQueue).to(exchange).with("ms-funcionario-atualizar");
+    public Binding funcionarioUsuarioAtualizarBinding(Queue funcionarioUsuarioAtualizarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioAtualizarQueue).to(exchange).with("ms-funcionario-funcionario-atualizar");
     }
 
     @Bean
-    public Binding funcionarioAtualizaCompensarIdFuncionarioBinding(Queue funcionarioAtualizaCompensarIdFuncionarioQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioAtualizaCompensarIdFuncionarioQueue).to(exchange).with("ms-funcionario-atualiza-compensar-idFuncionario");
+    public Binding funcionarioUsuarioAtualizadoCompensarBinding(Queue funcionarioUsuarioAtualizadoCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioAtualizadoCompensarQueue).to(exchange).with("ms-funcionario-funcionario-atualizado-compensar");
     }
 }

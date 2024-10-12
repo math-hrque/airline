@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 public class InativarFuncionarioQueue {
 
     @Bean
-    public Queue funcionarioInativarQueue() {
-        return new Queue("ms-funcionario-inativar");
+    public Queue funcionarioUsuarioInativarQueue() {
+        return new Queue("ms-funcionario-funcionario-inativar");
     }
 
     @Bean
-    public Queue funcionarioInativoCompensarEmailQueue() {
-        return new Queue("ms-funcionario-inativo-compensar-email");
+    public Queue funcionarioUsuarioInativadoCompensarQueue() {
+        return new Queue("ms-funcionario-funcionario-inativado-compensar");
     }
 
     @Bean
-    public Binding funcionarioInativarBinding(Queue funcionarioInativarQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioInativarQueue).to(exchange).with("ms-funcionario-inativar");
+    public Binding funcionarioUsuarioInativarBinding(Queue funcionarioUsuarioInativarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioInativarQueue).to(exchange).with("ms-funcionario-funcionario-inativar");
     }
 
     @Bean
-    public Binding funcionarioInativoCompensarEmailBinding(Queue funcionarioInativoCompensarEmailQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioInativoCompensarEmailQueue).to(exchange).with("ms-funcionario-inativo-compensar-email");
+    public Binding funcionarioUsuarioInativadoCompensarBinding(Queue funcionarioUsuarioInativadoCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioInativadoCompensarQueue).to(exchange).with("ms-funcionario-funcionario-inativado-compensar");
     }
 }

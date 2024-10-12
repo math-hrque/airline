@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
 import br.com.funcionario.funcionario.dtos.UsuarioIdRequestDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
-import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistente;
+import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
 import br.com.funcionario.funcionario.services.FuncionarioService;
 
 @Component
@@ -22,22 +22,22 @@ public class AtualizarFuncionarioConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-funcionario-atualizar")
+    @RabbitListener(queues = "ms-funcionario-funcionario-atualizar")
     public void atualizarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
             UsuarioIdRequestDto usuarioIdRequestDto = funcionarioService.atualizar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualizado", usuarioIdRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado", usuarioIdRequestDto);
         } catch (FuncionarioNaoExisteException e) {
 
-        } catch (OutroFuncionarioDadosJaExistente e) {
+        } catch (OutroFuncionarioDadosJaExistenteException e) {
         
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-erro", funcionarioRequestDto.getIdFuncionario());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado-erro", funcionarioRequestDto.getIdFuncionario());
         }
     }
 
-    @RabbitListener(queues = "ms-funcionario-atualiza-compensar-idFuncionario")
-    public void compensarAtualizaFuncionario(Long idFuncionario) {
+    @RabbitListener(queues = "ms-funcionario-funcionario-atualizado-compensar")
+    public void compensarFuncionarioAtualizado(Long idFuncionario) {
         try {
             funcionarioService.reverter(idFuncionario);
         } catch (FuncionarioNaoExisteException e) {

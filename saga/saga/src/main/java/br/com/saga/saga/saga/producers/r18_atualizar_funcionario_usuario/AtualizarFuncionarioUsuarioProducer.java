@@ -26,26 +26,26 @@ public class AtualizarFuncionarioUsuarioProducer {
 
     @PutMapping("/atualizar-funcionario")
     public void atualizarFuncionario(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualizar", funcionarioRequestDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-atualizar", funcionarioRequestDto);
     }
 
-    @RabbitListener(queues = "ms-funcionario-atualizado")
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-atualizado")
     public void funcionarioAtualizadoListener(UsuarioIdRequestDto usuarioIdRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualizar", usuarioIdRequestDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-atualizar", usuarioIdRequestDto);
     }
 
-    @RabbitListener(queues = "ms-funcionario-atualiza-erro")
+    @RabbitListener(queues = "saga-ms-funcionario-funcionario-atualizado-erro")
     public void funcionarioAtualizaErroListener(Long idFuncionario) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-atualiza-compensar-idFuncionario", idFuncionario);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-atualizado-compensar", idFuncionario);
     }
 
-    @RabbitListener(queues = "ms-auth-atualizado")
+    @RabbitListener(queues = "saga-ms-auth-funcionario-atualizado")
     public void usuarioAtualizadoListener(UsuarioResponseDto usuarioResponseDto) {
-        System.out.println("Funcionário e Usuário atualizados com sucesso!");
+        System.out.println("Funcionario e Usuario atualizados com sucesso!");
     }
 
-    @RabbitListener(queues = "ms-auth-atualiza-erro")
+    @RabbitListener(queues = "saga-ms-auth-funcionario-atualizado-erro")
     public void usuarioAtualizaErroListener(UsuarioIdRequestDto usuarioIdRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-atualiza-compensar-email", usuarioIdRequestDto.getEmail());
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-atualizado-compensar", usuarioIdRequestDto.getEmail());
     }
 }

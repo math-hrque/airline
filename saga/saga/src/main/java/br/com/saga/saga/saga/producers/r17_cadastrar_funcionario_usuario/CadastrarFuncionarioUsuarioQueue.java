@@ -13,42 +13,42 @@ import org.springframework.stereotype.Component;
 public class CadastrarFuncionarioUsuarioQueue {
 
     @Bean
-    public Queue funcionarioCadastradoQueue() {
-        return new Queue("ms-funcionario-cadastrado");
+    public Queue funcionarioUsuarioCadastradoQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-cadastrado");
     }
 
     @Bean
-    public Queue funcionarioCadastroErroQueue() {
-        return new Queue("ms-funcionario-cadastro-erro");
+    public Queue funcionarioUsuarioCadastradoErroQueue() {
+        return new Queue("saga-ms-funcionario-funcionario-cadastrado-erro");
     }
 
     @Bean
-    public Queue usuarioCadastradoQueue() {
-        return new Queue("ms-auth-cadastrado");
+    public Queue usuarioFuncionarioCadastradoQueue() {
+        return new Queue("saga-ms-auth-funcionario-cadastrado");
     }
 
     @Bean
-    public Queue usuarioCadastroErroQueue() {
-        return new Queue("ms-auth-cadastro-erro");
+    public Queue usuarioFuncionarioCadastradoErroQueue() {
+        return new Queue("saga-ms-auth-funcionario-cadastrado-erro");
     }
 
     @Bean
-    public Binding funcionarioCadastradoBinding(Queue funcionarioCadastradoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioCadastradoQueue).to(exchange).with("ms-funcionario-cadastrado");
+    public Binding funcionarioUsuarioCadastradoBinding(Queue funcionarioUsuarioCadastradoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioCadastradoQueue).to(exchange).with("saga-ms-funcionario-funcionario-cadastrado");
     }
 
     @Bean
-    public Binding funcionarioCadastroErroBinding(Queue funcionarioCadastroErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(funcionarioCadastroErroQueue).to(exchange).with("ms-funcionario-cadastro-erro");
+    public Binding funcionarioUsuarioCadastradoErroBinding(Queue funcionarioUsuarioCadastradoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(funcionarioUsuarioCadastradoErroQueue).to(exchange).with("saga-ms-funcionario-funcionario-cadastrado-erro");
     }
 
     @Bean
-    public Binding usuarioCadastradoBinding(Queue usuarioCadastradoQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioCadastradoQueue).to(exchange).with("ms-auth-cadastrado");
+    public Binding usuarioFuncionarioCadastradoBinding(Queue usuarioFuncionarioCadastradoQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioCadastradoQueue).to(exchange).with("saga-ms-auth-funcionario-cadastrado");
     }
 
     @Bean
-    public Binding usuarioCadastroErroBinding(Queue usuarioCadastroErroQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(usuarioCadastroErroQueue).to(exchange).with("ms-auth-cadastro-erro");
+    public Binding usuarioFuncionarioCadastradoErroBinding(Queue usuarioFuncionarioCadastradoErroQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(usuarioFuncionarioCadastradoErroQueue).to(exchange).with("saga-ms-auth-funcionario-cadastrado-erro");
     }
 }
