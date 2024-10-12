@@ -3,6 +3,8 @@ package br.com.saga.saga.saga.producers.r18_atualizar_funcionario_usuario;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +27,13 @@ public class AtualizarFuncionarioUsuarioProducer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @PutMapping("/atualizar-funcionario")
-    public void atualizarFuncionario(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-atualizar", funcionarioRequestDto);
+    public ResponseEntity<Object> atualizarFuncionario(@RequestBody @Valid FuncionarioRequestDto funcionarioRequestDto) {
+        try {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-atualizar", funcionarioRequestDto);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: atualização de funcionario iniciado. Acompanhe o status.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: atualização de funcionario com erro ao iniciar o processo: " + e.getMessage());
+        }
     }
 
     @RabbitListener(queues = "saga-ms-funcionario-funcionario-atualizado")

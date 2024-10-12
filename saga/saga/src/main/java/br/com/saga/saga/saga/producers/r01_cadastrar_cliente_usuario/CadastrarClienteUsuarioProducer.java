@@ -3,6 +3,8 @@ package br.com.saga.saga.saga.producers.r01_cadastrar_cliente_usuario;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +27,13 @@ public class CadastrarClienteUsuarioProducer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @PostMapping("/cadastrar-cliente")
-    public void cadastrarCliente(@RequestBody @Valid ClienteDto clienteDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrar", clienteDto);
+    public ResponseEntity<Object> cadastrarCliente(@RequestBody @Valid ClienteDto clienteDto) {
+        try {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrar", clienteDto);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: cadastro de cliente iniciado. Acompanhe o status.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de cliente com erro ao iniciar o processo: " + e.getMessage());
+        }
     }
 
     @RabbitListener(queues = "saga-ms-cliente-cliente-cadastrado")
