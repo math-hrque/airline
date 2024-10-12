@@ -7,4 +7,4 @@ INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VAL
 INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES ('80420130', 'Paraná', 'Curitiba', 'Batel', 'Rua Francisco Rocha', '495', 'Bloco B, Apto 577, Condomínio Parque Residencial Batel');
 INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES ('83501050', 'Paraná', 'Almirante Tamandaré', 'Vila Santa Terezinha', 'Rua Frei Mauro', '101', 'Casa');
 INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES ('01432000', 'São Paulo', 'São Paulo', 'Jardim Paulista', 'Rua Antônio Bento', '573', 'Casa');
-INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES ('74275160', 'Goiás', 'Curitiba', 'Jardim América', 'Rua C156', '226', 'Casa');
+INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES ('74275160', 'Goiás', 'Goiânia', 'Jardim América', 'Rua C156', '226', 'Casa');

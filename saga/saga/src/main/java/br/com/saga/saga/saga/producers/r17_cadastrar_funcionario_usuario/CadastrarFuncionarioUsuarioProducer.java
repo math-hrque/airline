@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.saga.saga.saga.dtos.FuncionarioRequestDto;
-import br.com.saga.saga.saga.dtos.UsuarioRequestDto;
+import br.com.saga.saga.saga.dtos.UsuarioRequestCadastrarDto;
 import br.com.saga.saga.saga.dtos.UsuarioResponseDto;
 import jakarta.validation.Valid;
 
@@ -30,8 +30,8 @@ public class CadastrarFuncionarioUsuarioProducer {
     }
 
     @RabbitListener(queues = "saga-ms-funcionario-funcionario-cadastrado")
-    public void funcionarioCadastradoListener(UsuarioRequestDto usuarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-cadastrar", usuarioRequestDto);
+    public void funcionarioCadastradoListener(UsuarioRequestCadastrarDto usuarioRequestCadastrarDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-funcionario-cadastrar", usuarioRequestCadastrarDto);
     }
 
     @RabbitListener(queues = "saga-ms-funcionario-funcionario-cadastrado-erro")

@@ -4,8 +4,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cliente.cliente.dtos.ClienteRequestDto;
-import br.com.cliente.cliente.dtos.UsuarioRequestDto;
+import br.com.cliente.cliente.dtos.ClienteDto;
+import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
 import br.com.cliente.cliente.models.Cliente;
@@ -27,16 +27,16 @@ public class ClienteService {
     @Autowired
     private MilhasRepository milhasRepository;
 
-    public UsuarioRequestDto cadastrar(ClienteRequestDto clienteRequestDto) throws OutroClienteDadosJaExistenteException {
-        Optional<List<Cliente>> existClienteBD = clienteRepository.findByCpfOrEmail(clienteRequestDto.getCpf(), clienteRequestDto.getEmail());
+    public UsuarioRequestCadastrarDto cadastrar(ClienteDto clienteDto) throws OutroClienteDadosJaExistenteException {
+        Optional<List<Cliente>> existClienteBD = clienteRepository.findByCpfOrEmail(clienteDto.getCpf(), clienteDto.getEmail());
         if (existClienteBD.isPresent() && !existClienteBD.get().isEmpty()) {
             boolean cpfExists = false;
             boolean emailExists = false;
             for (Cliente cliente : existClienteBD.get()) {
-                if (cliente.getCpf().equals(clienteRequestDto.getCpf())) {
+                if (cliente.getCpf().equals(clienteDto.getCpf())) {
                     cpfExists = true;
                 }
-                if (cliente.getEmail().equals(clienteRequestDto.getEmail())) {
+                if (cliente.getEmail().equals(clienteDto.getEmail())) {
                     emailExists = true;
                 } 
             }
@@ -49,13 +49,14 @@ public class ClienteService {
             }
         }
 
-        Cliente cliente = mapper.map(clienteRequestDto, Cliente.class);
+        Cliente cliente = mapper.map(clienteDto, Cliente.class);
+        cliente.setIdCliente(0L);
         Cliente clienteCriadoBD = clienteRepository.save(cliente);
-        UsuarioRequestDto usuarioRequestDto = mapper.map(clienteCriadoBD, UsuarioRequestDto.class);
-        return usuarioRequestDto;
+        UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = mapper.map(clienteCriadoBD, UsuarioRequestCadastrarDto.class);
+        return usuarioRequestCadastrarDto;
     }
 
-    public ClienteRequestDto remover(String email) throws ClienteNaoExisteException {
+    public ClienteDto remover(String email) throws ClienteNaoExisteException {
         Optional<Cliente> clienteBD = clienteRepository.findByEmail(email);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente nao existe!");
@@ -63,7 +64,7 @@ public class ClienteService {
 
         Cliente cliente = clienteBD.get();
         clienteRepository.deleteById(cliente.getIdCliente());
-        ClienteRequestDto clienteRemovidoDto = mapper.map(cliente, ClienteRequestDto.class);
+        ClienteDto clienteRemovidoDto = mapper.map(cliente, ClienteDto.class);
         return clienteRemovidoDto;
     }
 }

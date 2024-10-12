@@ -11,7 +11,7 @@ import br.com.auth.auth.models.Usuario;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
-public class MongoDBInitializer {
+public class MongoDBInitializerConfigurations {
 
     @Bean
     CommandLineRunner initDatabase(MongoTemplate mongoTemplate, BCryptPasswordEncoder passwordEncoder) {

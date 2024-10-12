@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.saga.saga.saga.dtos.ClienteRequestDto;
-import br.com.saga.saga.saga.dtos.UsuarioRequestDto;
+import br.com.saga.saga.saga.dtos.ClienteDto;
+import br.com.saga.saga.saga.dtos.UsuarioRequestCadastrarDto;
 import br.com.saga.saga.saga.dtos.UsuarioResponseDto;
 import jakarta.validation.Valid;
 
@@ -25,13 +25,13 @@ public class CadastrarClienteUsuarioProducer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @PostMapping("/cadastrar-cliente")
-    public void cadastrarCliente(@RequestBody @Valid ClienteRequestDto clienteRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrar", clienteRequestDto);
+    public void cadastrarCliente(@RequestBody @Valid ClienteDto clienteDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrar", clienteDto);
     }
 
     @RabbitListener(queues = "saga-ms-cliente-cliente-cadastrado")
-    public void clienteCadastradoListener(UsuarioRequestDto usuarioRequestDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cliente-cadastrar", usuarioRequestDto);
+    public void clienteCadastradoListener(UsuarioRequestCadastrarDto usuarioRequestCadastrarDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cliente-cadastrar", usuarioRequestCadastrarDto);
     }
 
     @RabbitListener(queues = "saga-ms-cliente-cliente-cadastrado-erro")

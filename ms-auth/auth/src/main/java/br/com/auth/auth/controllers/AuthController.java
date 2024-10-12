@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.auth.auth.dtos.Login;
+import br.com.auth.auth.dtos.LoginDto;
 import br.com.auth.auth.services.AuthService;
 import jakarta.validation.Valid;
 
@@ -21,9 +21,9 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid Login login) {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginDto loginDto) {
         try {
-            Object token = authService.login(login);
+            Object token = authService.login(loginDto);
             return ResponseEntity.status(HttpStatus.OK).body(token);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

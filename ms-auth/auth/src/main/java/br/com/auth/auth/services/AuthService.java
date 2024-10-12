@@ -14,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.auth.auth.dtos.Login;
+import br.com.auth.auth.dtos.LoginDto;
 import br.com.auth.auth.dtos.TokenDto;
-import br.com.auth.auth.dtos.UsuarioIdRequestDto;
-import br.com.auth.auth.dtos.UsuarioRequestDto;
+import br.com.auth.auth.dtos.UsuarioRequestAtualizarDto;
+import br.com.auth.auth.dtos.UsuarioRequestCadastrarDto;
 import br.com.auth.auth.dtos.UsuarioResponseDto;
 import br.com.auth.auth.exeptions.OutroUsuarioDadosJaExistenteException;
 import br.com.auth.auth.exeptions.UsuarioNaoExisteException;
@@ -53,17 +53,17 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public UsuarioResponseDto cadastrar(UsuarioRequestDto usuarioRequestDto) throws OutroUsuarioDadosJaExistenteException {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestDto.getEmail());
+    public UsuarioResponseDto cadastrar(UsuarioRequestCadastrarDto usuarioRequestCadastrarDto) throws OutroUsuarioDadosJaExistenteException {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestCadastrarDto.getEmail());
         if (usuarioExistente.isPresent() && usuarioExistente.get().isEnabled()) {
             throw new OutroUsuarioDadosJaExistenteException("Outro usuario ativo com email ja existente!");
         }
 
-        if (usuarioRequestDto.getSenha() == null) {
-            usuarioRequestDto.setSenha("");
+        if (usuarioRequestCadastrarDto.getSenha() == null) {
+            usuarioRequestCadastrarDto.setSenha("");
         }
         String senha = Generate.generatePassword();
-        Usuario usuario = mapper.map(usuarioRequestDto, Usuario.class);
+        Usuario usuario = mapper.map(usuarioRequestCadastrarDto, Usuario.class);
         usuario.setSenha(passwordEncoder.encode(senha));
         if (usuarioExistente.isPresent() && !usuarioExistente.get().isEnabled()) {
             usuario.setId(usuarioExistente.get().getId());
@@ -79,16 +79,16 @@ public class AuthService implements UserDetailsService {
         return usuarioCriadoDto;
     }
 
-    public UsuarioResponseDto atualizar(UsuarioIdRequestDto usuarioIdRequestDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistenteException {
-        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioIdRequestDto.getOldEmail());
+    public UsuarioResponseDto atualizar(UsuarioRequestAtualizarDto usuarioRequestAtualizarDto) throws UsuarioNaoExisteException, OutroUsuarioDadosJaExistenteException {
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(usuarioRequestAtualizarDto.getOldEmail());
         if (!usuarioBD.isPresent()) {
             throw new UsuarioNaoExisteException("Usuario nao existe!");
         }
         if (!usuarioBD.get().isEnabled()) {
             throw new OutroUsuarioDadosJaExistenteException("Usuario desse email esta inativo!");
         }
-        if (!usuarioIdRequestDto.getEmail().equals(usuarioIdRequestDto.getOldEmail())) {
-            Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioIdRequestDto.getEmail());
+        if (!usuarioRequestAtualizarDto.getEmail().equals(usuarioRequestAtualizarDto.getOldEmail())) {
+            Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioRequestAtualizarDto.getEmail());
             if (usuarioExistente.isPresent()) {
                 if (usuarioExistente.get().isEnabled()) {
                     throw new OutroUsuarioDadosJaExistenteException("Outro usuario ativo com email ja existente!");
@@ -98,16 +98,16 @@ public class AuthService implements UserDetailsService {
             }
         }
         
-        if (usuarioIdRequestDto.getSenha() == null) {
-            usuarioIdRequestDto.setSenha("");
+        if (usuarioRequestAtualizarDto.getSenha() == null) {
+            usuarioRequestAtualizarDto.setSenha("");
         }
-        Usuario usuario = mapper.map(usuarioIdRequestDto, Usuario.class);
+        Usuario usuario = mapper.map(usuarioRequestAtualizarDto, Usuario.class);
         usuario.setId(usuarioBD.get().getId());
 
-        if (usuarioIdRequestDto.getSenha().isEmpty()) {
+        if (usuarioRequestAtualizarDto.getSenha().isEmpty()) {
             usuario.setSenha(usuarioBD.get().getSenha());
         } else {
-            usuario.setSenha(passwordEncoder.encode(usuarioIdRequestDto.getSenha()));
+            usuario.setSenha(passwordEncoder.encode(usuarioRequestAtualizarDto.getSenha()));
         }
 
         Usuario usuarioCache = redisUsuarioCache.getCache(usuarioBD.get().getId());
@@ -152,8 +152,8 @@ public class AuthService implements UserDetailsService {
 
         Usuario usuario = usuarioBD.get();
         usuarioRepository.deleteById(usuario.getId());
-        UsuarioResponseDto usuarioRemoverDto = mapper.map(usuarioBD, UsuarioResponseDto.class);
-        return usuarioRemoverDto;
+        UsuarioResponseDto usuarioRemovidoDto = mapper.map(usuarioBD, UsuarioResponseDto.class);
+        return usuarioRemovidoDto;
     }
 
     public UsuarioResponseDto reverter(String email) throws UsuarioNaoExisteException {
@@ -173,9 +173,9 @@ public class AuthService implements UserDetailsService {
         return usuarioRevertidoDto;
     }
 
-    public TokenDto login(Login login) {
+    public TokenDto login(LoginDto loginDto) {
         manager = context.getBean(AuthenticationManager.class);
-        var authenticationToken = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
+        var authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getSenha());
         var authentication = this.manager.authenticate(authenticationToken);
         var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
         return new TokenDto(tokenJWT);

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
 import br.com.funcionario.funcionario.dtos.FuncionarioResponseDto;
-import br.com.funcionario.funcionario.dtos.UsuarioIdRequestDto;
-import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
+import br.com.funcionario.funcionario.dtos.UsuarioRequestAtualizarDto;
+import br.com.funcionario.funcionario.dtos.UsuarioRequestCadastrarDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.ListaFuncionarioVaziaException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
@@ -31,7 +31,7 @@ public class FuncionarioService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public UsuarioRequestDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistenteException {
+    public UsuarioRequestCadastrarDto cadastrar(FuncionarioRequestDto funcionarioRequestDto) throws OutroFuncionarioDadosJaExistenteException {
         Optional<List<Funcionario>> existFuncionarioBD = funcionarioRepository.findByCpfOrEmail(funcionarioRequestDto.getCpf(), funcionarioRequestDto.getEmail());
         if (existFuncionarioBD.isPresent() && !existFuncionarioBD.get().isEmpty()) {
             boolean cpfExists = false;
@@ -66,12 +66,12 @@ public class FuncionarioService {
         }
 
         Funcionario funcionarioCriadoBD = funcionarioRepository.save(funcionario);
-        UsuarioRequestDto usuarioRequestDto = mapper.map(funcionarioCriadoBD, UsuarioRequestDto.class);
-        usuarioRequestDto.setSenha(funcionarioRequestDto.getSenha());
-        return usuarioRequestDto;
+        UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = mapper.map(funcionarioCriadoBD, UsuarioRequestCadastrarDto.class);
+        usuarioRequestCadastrarDto.setSenha(funcionarioRequestDto.getSenha());
+        return usuarioRequestCadastrarDto;
     }
 
-    public UsuarioIdRequestDto atualizar(FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistenteException {
+    public UsuarioRequestAtualizarDto atualizar(FuncionarioRequestDto funcionarioRequestDto) throws FuncionarioNaoExisteException, OutroFuncionarioDadosJaExistenteException {
         Optional<Funcionario> funcionarioBD = funcionarioRepository.findByIdFuncionarioAndAtivo(funcionarioRequestDto.getIdFuncionario(), true);
         if (!funcionarioBD.isPresent()) {
             throw new FuncionarioNaoExisteException("Funcionario ativo nao existe!");
@@ -100,11 +100,11 @@ public class FuncionarioService {
         }
 
         Funcionario funcionarioAtualizadoBD = funcionarioRepository.save(funcionario);
-        UsuarioIdRequestDto usuarioIdRequestDto = mapper.map(funcionarioAtualizadoBD, UsuarioIdRequestDto.class);
-        usuarioIdRequestDto.setId(funcionarioBD.get().getIdFuncionario());
-        usuarioIdRequestDto.setOldEmail(funcionarioBD.get().getEmail());
-        usuarioIdRequestDto.setSenha(funcionarioRequestDto.getSenha());
-        return usuarioIdRequestDto;
+        UsuarioRequestAtualizarDto usuarioRequestAtualizarDto = mapper.map(funcionarioAtualizadoBD, UsuarioRequestAtualizarDto.class);
+        usuarioRequestAtualizarDto.setId(funcionarioBD.get().getIdFuncionario());
+        usuarioRequestAtualizarDto.setOldEmail(funcionarioBD.get().getEmail());
+        usuarioRequestAtualizarDto.setSenha(funcionarioRequestDto.getSenha());
+        return usuarioRequestAtualizarDto;
     }
 
     public FuncionarioResponseDto inativar(String email) throws FuncionarioNaoExisteException {

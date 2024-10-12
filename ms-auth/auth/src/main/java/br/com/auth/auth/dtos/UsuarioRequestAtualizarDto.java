@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioIdRequestDto {
+public class UsuarioRequestAtualizarDto {
     Long id;
 
     @Email(message = "Email invalido")

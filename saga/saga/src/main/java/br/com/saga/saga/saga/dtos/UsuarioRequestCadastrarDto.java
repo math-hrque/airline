@@ -1,5 +1,6 @@
-package br.com.cliente.cliente.dtos;
+package br.com.saga.saga.saga.dtos;
 
+import br.com.saga.saga.saga.enums.Tipo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,8 @@ import lombok.Setter;
 @Setter @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioRequestDto {
+public class UsuarioRequestCadastrarDto {
     String email;
     String senha = "";
-    String tipo = "CLIENTE";
+    Tipo tipo;
 }

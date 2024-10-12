@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
-import br.com.funcionario.funcionario.dtos.UsuarioRequestDto;
+import br.com.funcionario.funcionario.dtos.UsuarioRequestCadastrarDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
 import br.com.funcionario.funcionario.services.FuncionarioService;
@@ -25,8 +25,8 @@ public class CadastrarFuncionarioConsumer {
     @RabbitListener(queues = "ms-funcionario-funcionario-cadastrar")
     public void cadastrarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
-            UsuarioRequestDto usuarioRequestDto = funcionarioService.cadastrar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-cadastrado", usuarioRequestDto);
+            UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = funcionarioService.cadastrar(funcionarioRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-cadastrado", usuarioRequestCadastrarDto);
         } catch (OutroFuncionarioDadosJaExistenteException e) {
 
         } catch (Exception e) {

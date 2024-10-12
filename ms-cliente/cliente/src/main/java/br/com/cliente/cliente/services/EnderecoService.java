@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import br.com.cliente.cliente.dtos.EnderecoDto;
+import br.com.cliente.cliente.dtos.EnderecoViaCepDto;
 import br.com.cliente.cliente.exeptions.CepInvalidoException;
 import br.com.cliente.cliente.exeptions.CepNaoExisteException;
 
@@ -18,24 +18,24 @@ public class EnderecoService {
     private static final String BASE_URL = "https://viacep.com.br/ws/";
     private static final String JSON_URL = "/json/";
 
-    public EnderecoDto consultar(String cep) throws CepNaoExisteException, CepInvalidoException {
+    public EnderecoViaCepDto consultar(String cep) throws CepNaoExisteException, CepInvalidoException {
         if (!cep.matches(CEP_PATTERN)) {
             throw new CepInvalidoException("CEP invalido!");
         }
     
         String url = BASE_URL + cep + JSON_URL;
-        EnderecoDto enderecoApiDto = null;
+        EnderecoViaCepDto enderecoViaCepDto = null;
 
         try {
-            enderecoApiDto = restTemplate.getForObject(url, EnderecoDto.class);
+            enderecoViaCepDto = restTemplate.getForObject(url, EnderecoViaCepDto.class);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao consultar o serviço de CEP: " + e.getMessage(), e);
         }
 
-        if (enderecoApiDto == null || enderecoApiDto.getCep() == null) {
+        if (enderecoViaCepDto == null || enderecoViaCepDto.getCep() == null) {
             throw new CepNaoExisteException("CEP nao existe!");
         } 
 
-        return enderecoApiDto;
+        return enderecoViaCepDto;
     }
 }

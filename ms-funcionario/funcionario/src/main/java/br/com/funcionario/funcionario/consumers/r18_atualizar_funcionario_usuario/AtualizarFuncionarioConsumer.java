@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.funcionario.funcionario.dtos.FuncionarioRequestDto;
-import br.com.funcionario.funcionario.dtos.UsuarioIdRequestDto;
+import br.com.funcionario.funcionario.dtos.UsuarioRequestAtualizarDto;
 import br.com.funcionario.funcionario.exeptions.FuncionarioNaoExisteException;
 import br.com.funcionario.funcionario.exeptions.OutroFuncionarioDadosJaExistenteException;
 import br.com.funcionario.funcionario.services.FuncionarioService;
@@ -25,8 +25,8 @@ public class AtualizarFuncionarioConsumer {
     @RabbitListener(queues = "ms-funcionario-funcionario-atualizar")
     public void atualizarFuncionario(FuncionarioRequestDto funcionarioRequestDto) {
         try {
-            UsuarioIdRequestDto usuarioIdRequestDto = funcionarioService.atualizar(funcionarioRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado", usuarioIdRequestDto);
+            UsuarioRequestAtualizarDto usuarioRequestAtualizarDto = funcionarioService.atualizar(funcionarioRequestDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-funcionario-funcionario-atualizado", usuarioRequestAtualizarDto);
         } catch (FuncionarioNaoExisteException e) {
 
         } catch (OutroFuncionarioDadosJaExistenteException e) {

@@ -5,8 +5,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.cliente.cliente.dtos.ClienteRequestDto;
-import br.com.cliente.cliente.dtos.UsuarioRequestDto;
+import br.com.cliente.cliente.dtos.ClienteDto;
+import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
 import br.com.cliente.cliente.services.ClienteService;
@@ -23,14 +23,14 @@ public class CadastrarClienteConsumer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @RabbitListener(queues = "ms-cliente-cliente-cadastrar")
-    public void cadastrarCliente(ClienteRequestDto clienteRequestDto) {
+    public void cadastrarCliente(ClienteDto clienteDto) {
         try {
-            UsuarioRequestDto usuarioRequestDto = clienteService.cadastrar(clienteRequestDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado", usuarioRequestDto);
+            UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = clienteService.cadastrar(clienteDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado", usuarioRequestCadastrarDto);
         } catch (OutroClienteDadosJaExistenteException e) {
 
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", clienteRequestDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", clienteDto.getEmail());
         }
     }
 
