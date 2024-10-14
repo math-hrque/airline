@@ -11,6 +11,7 @@ import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
 import br.com.cliente.cliente.models.Cliente;
 import br.com.cliente.cliente.repositories.ClienteRepository;
 import br.com.cliente.cliente.repositories.MilhasRepository;
+import br.com.cliente.cliente.utils.RedisClienteCache;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +23,16 @@ public class ClienteService {
     private ModelMapper mapper;
 
     @Autowired
+    private RedisClienteCache redisClienteCache;
+
+    @Autowired
     private ClienteRepository clienteRepository;
 
     @Autowired
     private MilhasRepository milhasRepository;
+
+    @Autowired
+    private MilhasService milhasService;
 
     public UsuarioRequestCadastrarDto cadastrar(ClienteDto clienteDto) throws OutroClienteDadosJaExistenteException {
         Optional<List<Cliente>> existClienteBD = clienteRepository.findByCpfOrEmail(clienteDto.getCpf(), clienteDto.getEmail());

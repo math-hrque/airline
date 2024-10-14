@@ -13,7 +13,7 @@ import br.com.cliente.cliente.exeptions.CepNaoExisteException;
 import br.com.cliente.cliente.services.EnderecoService;
 
 @RestController
-@RequestMapping(value = "/api/cliente")
+@RequestMapping(value = "/ms-cliente")
 public class EnderecoController {
 
     @Autowired

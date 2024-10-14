@@ -14,7 +14,7 @@ import br.com.auth.auth.services.AuthService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/api/auth")
+@RequestMapping(value = "/ms-auth")
 public class AuthController {
 
     @Autowired

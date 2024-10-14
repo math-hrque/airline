@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponseDto {
-    String email;
-    Tipo tipo;
+    private String email;
+    private Tipo tipo;
 }

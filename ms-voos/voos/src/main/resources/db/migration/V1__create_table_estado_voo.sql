@@ -1,0 +1,4 @@
+CREATE TABLE estado_voo (
+	id_estado_voo INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	tipo_estado_voo VARCHAR(50) NOT NULL UNIQUE
+);

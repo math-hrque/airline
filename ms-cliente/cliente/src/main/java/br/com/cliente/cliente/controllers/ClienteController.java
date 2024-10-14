@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cliente.cliente.services.ClienteService;
 
 @RestController
-@RequestMapping(value = "/api/cliente")
+@RequestMapping(value = "/ms-cliente")
 public class ClienteController {
 
     @Autowired

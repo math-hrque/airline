@@ -16,13 +16,13 @@ import br.com.funcionario.funcionario.services.FuncionarioService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/funcionario")
+@RequestMapping(value = "/ms-funcionario")
 public class FuncionarioController {
 
     @Autowired
     FuncionarioService funcionarioService;
 
-    @GetMapping("/listar")
+    @GetMapping("/listar-funcionario")
     public ResponseEntity<?> listar() {
         try {
             List<FuncionarioResponseDto> listaFuncionario = funcionarioService.listar();

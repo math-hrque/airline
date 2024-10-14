@@ -10,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioRequestAtualizarDto {
-    Long id;
-    String oldEmail;
-    String email;
-    String senha = "";
-    String tipo = "FUNCIONARIO";
+    private Long id;
+    private String oldEmail;
+    private String email;
+    private String senha = "";
+    private String tipo = "FUNCIONARIO";
 }

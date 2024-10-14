@@ -33,5 +33,5 @@ public class FuncionarioRequestDto {
     @Pattern(regexp = "^\\d{11}$", message = "Telefone eh obrigatorio e deve conter exatamente 11 digitos numericos")
     private String telefone;
 
-    String senha;
+    private String senha;
 }
