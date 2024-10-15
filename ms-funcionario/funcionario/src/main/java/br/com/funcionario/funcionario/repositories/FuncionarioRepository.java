@@ -10,8 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
-    boolean existsByCpf(String cpf);
-    boolean existsByEmail(String email);
     Optional<Funcionario> findByEmail(String email);
     Optional<List<Funcionario>> findByAtivo(boolean ativo);
     Optional<Funcionario> findByIdFuncionarioAndAtivo(Long idFuncionario, boolean ativo);
