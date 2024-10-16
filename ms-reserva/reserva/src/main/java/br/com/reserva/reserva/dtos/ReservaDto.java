@@ -17,6 +17,7 @@ public class ReservaDto {
     private LocalDateTime dataReserva;
     private Double valorReserva;
     private Integer milhasUtilizadas;
+    private Integer quantidadePoltronas;
     private Long idCliente;
     private SiglaEstadoReserva siglaEstadoReserva;
     private TipoEstadoReserva tipoEstadoReserva;
