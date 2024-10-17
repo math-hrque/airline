@@ -1,4 +1,4 @@
-package br.com.reserva.reserva.utils;
+package br.com.reserva.reserva.utils.conta_cud;
 
 import java.util.concurrent.TimeUnit;
 
@@ -6,26 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import br.com.reserva.reserva.models.Reserva;
+import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 
 @Service
-public class RedisReservaCache {
+public class RedisReservaCUDCache {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    private static final String RESERVA_CACHE_KEY = "reserva_backup_";
+    private static final String RESERVA_CACHE_KEY = "reserva_cud_backup_";
 
     private static final long DEFAULT_CACHE_TTL = 5;
 
-    public void saveCache(Reserva reserva) {
+    public void saveCache(ReservaCUD reserva) {
         redisTemplate.opsForValue().set(RESERVA_CACHE_KEY + reserva.getCodigoReserva(), reserva, DEFAULT_CACHE_TTL, TimeUnit.MINUTES);
     }
 
-    public Reserva getCache(String codigoReserva) {
+    public ReservaCUD getCache(String codigoReserva) {
         Object reserva = redisTemplate.opsForValue().get(RESERVA_CACHE_KEY + codigoReserva);
-        if (reserva instanceof Reserva) {
-            return (Reserva) reserva;
+        if (reserva instanceof ReservaCUD) {
+            return (ReservaCUD) reserva;
         }
         return null;
     }

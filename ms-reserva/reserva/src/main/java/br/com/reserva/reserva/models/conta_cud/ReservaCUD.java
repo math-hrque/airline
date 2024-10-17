@@ -1,4 +1,4 @@
-package br.com.reserva.reserva.models;
+package br.com.reserva.reserva.models.conta_cud;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="reserva")
-public class Reserva implements Serializable {
+public class ReservaCUD implements Serializable {
     @Id
     @Column(name = "codigo_reserva", length = 6)
     private String codigoReserva;
@@ -31,10 +31,13 @@ public class Reserva implements Serializable {
     @Column(name="milhas_utilizadas", nullable = false)
     private Double milhasUtilizadas;
 
+    @Column(name="quantidade_poltronas", nullable = false)
+    private Double quantidadePoltronas;
+
     @Column(name = "id_cliente", nullable = false)
-    private Integer idCliente;
+    private Long idCliente;
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "id_estado_reserva", nullable = false)
-    private EstadoReserva estadoReserva;
+    private EstadoReservaCUD estadoReserva;
 }

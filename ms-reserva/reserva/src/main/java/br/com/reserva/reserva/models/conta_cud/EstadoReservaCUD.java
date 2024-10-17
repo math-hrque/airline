@@ -1,4 +1,4 @@
-package br.com.reserva.reserva.models;
+package br.com.reserva.reserva.models.conta_cud;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="estado_reserva")
-public class EstadoReserva implements Serializable {
+public class EstadoReservaCUD implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_estado_reserva")
