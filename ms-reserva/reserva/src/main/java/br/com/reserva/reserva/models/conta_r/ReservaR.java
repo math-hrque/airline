@@ -1,6 +1,7 @@
 package br.com.reserva.reserva.models.conta_r;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 import br.com.reserva.reserva.enums.SiglaEstadoReserva;
@@ -21,6 +22,7 @@ public class ReservaR implements Serializable {
     @Column(name = "codigo_voo", length = 8, nullable = false)
     private String codigoVoo;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "data_reserva", nullable = false)
     private OffsetDateTime dataReserva;
 
@@ -28,17 +30,19 @@ public class ReservaR implements Serializable {
     private Double valorReserva;
 
     @Column(name="milhas_utilizadas", nullable = false)
-    private Double milhasUtilizadas;
+    private Integer milhasUtilizadas;
 
     @Column(name="quantidade_poltronas", nullable = false)
-    private Double quantidadePoltronas;
+    private Integer quantidadePoltronas;
 
     @Column(name = "id_cliente", nullable = false)
     private Long idCliente;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "sigla_estado_reserva", nullable = false)
     private SiglaEstadoReserva siglaEstadoReserva = SiglaEstadoReserva.CONF;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_estado_reserva", nullable = false)
     private TipoEstadoReserva tipoEstadoReserva = TipoEstadoReserva.CONFIRMADO;
 }

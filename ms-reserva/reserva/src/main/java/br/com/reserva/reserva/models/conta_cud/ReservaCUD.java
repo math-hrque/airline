@@ -29,10 +29,10 @@ public class ReservaCUD implements Serializable {
     private Double valorReserva;
 
     @Column(name="milhas_utilizadas", nullable = false)
-    private Double milhasUtilizadas;
+    private Integer milhasUtilizadas;
 
     @Column(name="quantidade_poltronas", nullable = false)
-    private Double quantidadePoltronas;
+    private Integer quantidadePoltronas;
 
     @Column(name = "id_cliente", nullable = false)
     private Long idCliente;

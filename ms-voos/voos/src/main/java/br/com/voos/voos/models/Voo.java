@@ -16,6 +16,7 @@ public class Voo implements Serializable {
     @Column(name = "codigo_voo", length = 8)
     private String codigoVoo;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="data_voo", nullable = false)
     private OffsetDateTime dataVoo;
 
