@@ -19,8 +19,5 @@ public class ReservaRService {
     @Autowired
     private ReservaRRepository reservaRRepository;
 
-    @Autowired
-    private HistoricoAlteracaoEstadoReservaRService historicoAlteracaoEstadoReservaRService;
-
 
 }
