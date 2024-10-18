@@ -58,6 +58,7 @@ services:
   #   depends_on:
   #     - mongo-db
   #     - rabbitmq
+  #     - redis
   #   environment:
   #     - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/auth
   #   networks:
@@ -73,6 +74,7 @@ services:
   #   depends_on:
   #     - cliente-db
   #     - rabbitmq
+  #     - redis
   #   environment:
   #     - SPRING_DATASOURCE_URL=jdbc:postgresql://cliente-db:5432/cliente
   #     - SPRING_DATASOURCE_USERNAME=postgres
