@@ -148,7 +148,7 @@
 
 ### **STEP 9.** Instalar Postman para testar os end-points que serão criados:
 
-#### 9.1. Intale o Postman na última versão. [tutorial](https://www.mongodb.com/try/download/compass)
+#### 9.1. Instale a última versão do [Postman](https://www.youtube.com/watch?v=RbT_stw02C4&ab_channel=Prof.Rog%C3%A9rioNapole%C3%A3oJr.)
 
 <br>
 
