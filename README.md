@@ -1,6 +1,6 @@
 # COMPANY SERVERS
 
-## Guia para rodar o projeto:
+## Guia para rodar o projeto
 
 ### **STEP 1.** Instalar Java 21 e Configurar Variável de Ambiente
 
@@ -115,7 +115,7 @@
 #### 7.4. Canto esquerdo-acima do Visual Studio Code, aonde tem uma tab "APPS", clique no **Run** dos MS do projeto que deseja utilizar, exemplo: se vai trabalhar no MS Voos, basta executar apenas esse;
 
 #### 7.5. Resposta final esperada no terminal após execução:
-	Started LolApplication in 7.934 seconds (process running for 8.606)
+	Started Application in 7.934 seconds (process running for 8.606)
 
 #### 7.6. Lembrando que o projeto não irá funcionar se não tiver o Docker rodando, pois ele tentará se conectar ao banco de dados e lançará erro de sql conection.
 
@@ -129,14 +129,18 @@
 
 #### 8.2. Após instalados, abram uma nova conexão neles:
 - Para pgAdmin 4, a configuração é:
+    ```
     address: localhost
     port: 5433
     maintenance: postgres
     username: postgres
     password: postgres
+    ```
 
 - Para MongoDB, a configuração é:
+    ```
     URI: mongodb://mongo:mongo@localhost:27018/
+    ```
 
 #### 8.3. Lembrando que a conexão não irá funcionar se não tiver o Docker rodando, pois ele tentará se conectar ao banco de dados e o servidor não estará ativo.
 
@@ -173,7 +177,7 @@
 - Models que mapeiam o banco de dados pra buscar e alterar objetos, está na pasta **models**.
 
 #### 10.10. Noções básicas do projeto:
-- [Modelo lógico do Projeto](https://drive.google.com/drive/folders/1kzyMzZBEUFbUz0_jb-Jp4EHjCAIM0OWc?usp=sharing);
+- [Modelo lógico do Projeto](https://drive.google.com/drive/folders/1dPCeFZOM-aIzSE9JUP48XEaB17qoqNc4?usp=sharing);
 - \configs: Contém classes de configuração do Spring, como configuração de beans, segurança, etc;
 - \consumers: Contém os consumidores dos microsserviços;
 - \controllers: Contém os controladores REST que lidam com as requisições HTTP, no caso os end-points;
