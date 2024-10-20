@@ -1,4 +1,4 @@
-INSERT INTO estado_reserva (sigla_estado_reserva, descricao) VALUES 
+INSERT INTO estado_reserva (sigla_estado_reserva, tipo_estado_reserva) VALUES 
 ('CONF', 'CONFIRMADO'), 
 ('CANC', 'CANCELADO'), 
 ('CHECK', 'CHECK_IN'), 

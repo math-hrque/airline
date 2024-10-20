@@ -60,3 +60,48 @@ VALUES
 ('TADS0058', '2024-12-21 06:20:00-03', 600.00, 80, 'REC', 'GIG', 1),
 ('TADS0059', '2024-12-22 07:00:00-03', 1000.00, 100, 'POA', 'CNF', 2),
 ('TADS0060', '2024-12-23 11:00:00-03', 400.00, 60, 'GIG', 'MAO', 2);
+
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0001';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0002';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0003';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0004';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0005';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0006';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0007';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0008';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0009';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0010';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0012';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0014';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0016';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0018';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0021';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0023';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0025';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0027';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0029';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0030';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0031';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0032';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0033';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0034';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0035';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0036';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0037';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0038';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0041';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0042';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0043';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0044';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0045';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0046';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0047';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0048';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0051';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0052';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0053';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0054';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0055';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0056';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0057';
+UPDATE voo SET quantidade_poltronas_ocupadas = 1 WHERE codigo_voo = 'TADS0058';

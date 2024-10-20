@@ -19,18 +19,18 @@ public class RedisHistoricoAlteracaoEstadoReservaCUDCache {
     private static final long DEFAULT_CACHE_TTL = 5;
 
     public void saveCache(HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReserva) {
-        redisTemplate.opsForValue().set(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + historicoAlteracaoEstadoReserva.getIdHistoricoAlteracaoEstadoReserva(), historicoAlteracaoEstadoReserva, DEFAULT_CACHE_TTL, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + historicoAlteracaoEstadoReserva.getReserva().getCodigoReserva(), historicoAlteracaoEstadoReserva, DEFAULT_CACHE_TTL, TimeUnit.MINUTES);
     }
 
-    public HistoricoAlteracaoEstadoReservaCUD getCache(Long idHistoricoAlteracaoEstadoReserva) {
-        Object historicoAlteracaoEstadoReserva = redisTemplate.opsForValue().get(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + idHistoricoAlteracaoEstadoReserva);
+    public HistoricoAlteracaoEstadoReservaCUD getCache(String codigoReserva) {
+        Object historicoAlteracaoEstadoReserva = redisTemplate.opsForValue().get(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + codigoReserva);
         if (historicoAlteracaoEstadoReserva instanceof HistoricoAlteracaoEstadoReservaCUD) {
             return (HistoricoAlteracaoEstadoReservaCUD) historicoAlteracaoEstadoReserva;
         }
         return null;
     }
 
-    public void removeCache(Long idHistoricoAlteracaoEstadoReserva) {
-        redisTemplate.delete(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + idHistoricoAlteracaoEstadoReserva);
+    public void removeCache(String codigoReserva) {
+        redisTemplate.delete(HISTORICO_ALTERACAO_ESTADO_RESERVA_CACHE_KEY + codigoReserva);
     }
 }
