@@ -20,8 +20,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cliente
-    volumes:
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    # volumes:
+    #   - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     networks:
       - company-network
 
