@@ -16,12 +16,12 @@ import lombok.*;
 public class HistoricoAlteracaoEstadoReservaCUD implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="historico_alteracao_estado_reserva")
+    @Column(name="id_historico_alteracao_estado_reserva")
     private Long idHistoricoAlteracaoEstadoReserva = 0L;
 
     @CreationTimestamp
     @Column(name = "data_alteracao_estado_reserva", nullable = false)
-    private OffsetDateTime dataAlteracaoEstadoReserva;
+    private OffsetDateTime dataAlteracaoEstadoReserva = OffsetDateTime.now();
 
     @OneToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "codigo_reserva", updatable = false, unique = true)

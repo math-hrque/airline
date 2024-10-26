@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import br.com.voos.voos.enums.TipoEstadoVoo;
 import br.com.voos.voos.models.Voo;
 
 @Repository
@@ -29,4 +30,5 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
     "WHERE v.dataVoo BETWEEN :dataAtual AND :dataLimite " +
     "AND v.estadoVoo.tipoEstadoVoo = 'CONFIRMADO'")
     List<Voo> findVoosConfirmadosByProximas48Horas(OffsetDateTime dataAtual, OffsetDateTime dataLimite);
+    Optional<Voo> findByCodigoVooAndEstadoVooTipoEstadoVoo(String codigoVoo, TipoEstadoVoo tipoEstadoVoo);
 }
