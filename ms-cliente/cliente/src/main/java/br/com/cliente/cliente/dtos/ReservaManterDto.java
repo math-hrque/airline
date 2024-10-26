@@ -1,6 +1,6 @@
 package br.com.cliente.cliente.dtos;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import br.com.cliente.cliente.enums.SiglaEstadoReserva;
 import br.com.cliente.cliente.enums.TipoEstadoReserva;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReservaManterDto {
     private String codigoReserva;
-    private LocalDateTime dataReserva;
+    private OffsetDateTime dataReserva;
     private Double valorReserva;
     private Integer milhasUtilizadas;
     private Integer quantidadePoltronas;

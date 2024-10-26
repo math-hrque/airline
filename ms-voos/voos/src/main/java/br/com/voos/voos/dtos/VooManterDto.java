@@ -1,6 +1,6 @@
 package br.com.voos.voos.dtos;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import br.com.voos.voos.enums.TipoEstadoVoo;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class VooManterDto {
     private String codigoVoo;
-    private LocalDateTime dataVoo;
+    private OffsetDateTime dataVoo;
     private Double valorPassagem;
     private Integer quantidadePoltronasTotal;
     private Integer quantidadePoltronasOcupadas;

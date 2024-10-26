@@ -1,6 +1,6 @@
 package br.com.cliente.cliente.dtos;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import br.com.cliente.cliente.enums.TipoTransacao;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MilhasDto {
     private Long idMilhas;
-    private LocalDateTime dataTransacao;
+    private OffsetDateTime dataTransacao;
     private Double valorReais;
     private Integer quantidadesMilhas;
     private String descricao;
