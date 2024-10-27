@@ -18,7 +18,7 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
     "AND v.estadoVoo.tipoEstadoVoo = 'CONFIRMADO' " +
     "AND (:codigoAeroportoOrigem IS NULL OR v.aeroportoOrigem.codigoAeroporto = :codigoAeroportoOrigem) " +
     "AND (:codigoAeroportoeroportoDestino IS NULL OR v.aeroportoDestino.codigoAeroporto = :codigoAeroportoeroportoDestino)")
-    List<Voo> findVoosConfirmadosByDataVooAndAeroportos(OffsetDateTime dataAtual, String codigoAeroportoOrigem, String codigoAeroportoeroportoDestino);
+    Optional<List<Voo>> findVoosConfirmadosByDataVooAndAeroportos(OffsetDateTime dataAtual, String codigoAeroportoOrigem, String codigoAeroportoeroportoDestino);
 
     @Query("SELECT v FROM Voo v " +
     "WHERE v.dataVoo BETWEEN :dataAtual AND :dataLimite " +

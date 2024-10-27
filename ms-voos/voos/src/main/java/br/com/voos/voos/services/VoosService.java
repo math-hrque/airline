@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.voos.voos.dtos.VooDto;
 import br.com.voos.voos.dtos.VooManterDto;
@@ -90,4 +91,14 @@ public class VoosService {
         return listaVooDto;
     }
 
+    public List<VooDto> listarVoosAtuais(Optional<String> codigoAeroportoOrigem, Optional<String> codigoAeroportoDestino) throws ListaVoosVaziaException {
+        OffsetDateTime dataAtual = OffsetDateTime.now();
+        Optional<List<Voo>> listaVooBD = vooRepository.findVoosConfirmadosByDataVooAndAeroportos(dataAtual, codigoAeroportoOrigem.orElse(null), codigoAeroportoDestino.orElse(null));
+        if (!listaVooBD.isPresent() || listaVooBD.get().isEmpty()) {
+            throw new ListaVoosVaziaException("Lista de voos atuais vazia!");
+        }
+    
+        List<VooDto> listaVooDto = listaVooBD.get().stream().map(vooBD -> mapper.map(vooBD, VooDto.class)).collect(Collectors.toList());
+        return listaVooDto;
+    }
 }
