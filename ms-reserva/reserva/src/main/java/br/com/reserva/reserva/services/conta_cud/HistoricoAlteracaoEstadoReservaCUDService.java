@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.reserva.reserva.dtos.VooManterDto;
 import br.com.reserva.reserva.enums.TipoEstadoReserva;
 import br.com.reserva.reserva.models.conta_cud.EstadoReservaCUD;
 import br.com.reserva.reserva.models.conta_cud.HistoricoAlteracaoEstadoReservaCUD;
@@ -16,7 +15,6 @@ import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import br.com.reserva.reserva.repositories.conta_cud.EstadoReservaCUDRepository;
 import br.com.reserva.reserva.repositories.conta_cud.HistoricoAlteracaoEstadoReservaCUDRepository;
 import br.com.reserva.reserva.utils.conta_cud.RedisHistoricoAlteracaoEstadoReservaCUDCache;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class HistoricoAlteracaoEstadoReservaCUDService {

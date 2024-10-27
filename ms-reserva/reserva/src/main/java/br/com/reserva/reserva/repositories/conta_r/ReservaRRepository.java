@@ -12,6 +12,7 @@ import br.com.reserva.reserva.models.conta_r.ReservaR;
 @Repository
 public interface ReservaRRepository extends JpaRepository<ReservaR, String> {
     Optional<List<ReservaR>> findByCodigoVoo(String codigoVoo);
+    Optional<List<ReservaR>> findByCodigoVooInAndIdClienteAndTipoEstadoReserva(List<String> listaCodigoVoo, Long idCliente, TipoEstadoReserva tipoEstadoReserva);
     Optional<List<ReservaR>> findByCodigoVooAndTipoEstadoReservaNot(String codigoVoo, TipoEstadoReserva tipoEstadoReserva);
     Optional<List<ReservaR>> findByIdCliente(Long idCliente);
     Optional<List<ReservaR>> findByIdClienteAndTipoEstadoReserva(Long idCliente, TipoEstadoReserva tipoEstadoReserva);

@@ -1,4 +1,4 @@
-package br.com.reserva.reserva.consumers.r12_confirmar_embarque;
+package br.com.reserva.reserva.consumers.r10_fazer_checkin;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,7 +10,7 @@ import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
 
 @Component
-public class ConfirmarEmbarqueConsumer {
+public class FazerCheckinConsumer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -20,10 +20,10 @@ public class ConfirmarEmbarqueConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-reserva-confirmar-embarque-contaR")
-    public void realizarReserva(ReservaCUD reservaCUD) {
+    @RabbitListener(queues = "ms-reserva-fazer-checkin-contaR")
+    public void checkinReserva(ReservaCUD reservaCUD) {
         try {
-            reservaRService.confirmarEmbarqueR(reservaCUD);
+            reservaRService.checkinReservaR(reservaCUD);
         } catch (ReservaNaoExisteException e) {
 
         } catch (Exception e) {

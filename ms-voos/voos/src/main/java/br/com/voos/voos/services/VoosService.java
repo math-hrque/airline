@@ -1,13 +1,18 @@
 package br.com.voos.voos.services;
 
+import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.List;
+import java.time.OffsetDateTime;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.voos.voos.dtos.VooDto;
 import br.com.voos.voos.dtos.VooManterDto;
 import br.com.voos.voos.enums.TipoEstadoVoo;
+import br.com.voos.voos.exeptions.ListaVoosVaziaException;
 import br.com.voos.voos.exeptions.MudancaEstadoVooInvalidaException;
 import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.models.Voo;
@@ -71,4 +76,18 @@ public class VoosService {
         VooManterDto vooManterRevertidoDto = mapper.map(voo, VooManterDto.class);
         return vooManterRevertidoDto;
     }
+
+    public List<VooDto> listarVoos48h() throws ListaVoosVaziaException {
+        OffsetDateTime dataAtual = OffsetDateTime.now();
+        OffsetDateTime dataLimite = dataAtual.plusHours(48);
+    
+        Optional<List<Voo>> listaVooBD = vooRepository.findVoosConfirmadosByProximas48Horas(dataAtual, dataLimite);
+        if (!listaVooBD.isPresent() || listaVooBD.get().isEmpty()) {
+            throw new ListaVoosVaziaException("Lista de voos nas próximas 48h vazia!");
+        }
+    
+        List<VooDto> listaVooDto = listaVooBD.get().stream().map(vooBD -> mapper.map(vooBD, VooDto.class)).collect(Collectors.toList());
+        return listaVooDto;
+    }
+
 }

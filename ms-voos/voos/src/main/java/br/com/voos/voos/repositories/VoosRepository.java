@@ -29,6 +29,6 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
     @Query("SELECT v FROM Voo v " +
     "WHERE v.dataVoo BETWEEN :dataAtual AND :dataLimite " +
     "AND v.estadoVoo.tipoEstadoVoo = 'CONFIRMADO'")
-    List<Voo> findVoosConfirmadosByProximas48Horas(OffsetDateTime dataAtual, OffsetDateTime dataLimite);
+    Optional<List<Voo>> findVoosConfirmadosByProximas48Horas(OffsetDateTime dataAtual, OffsetDateTime dataLimite);
     Optional<Voo> findByCodigoVooAndEstadoVooTipoEstadoVoo(String codigoVoo, TipoEstadoVoo tipoEstadoVoo);
 }
