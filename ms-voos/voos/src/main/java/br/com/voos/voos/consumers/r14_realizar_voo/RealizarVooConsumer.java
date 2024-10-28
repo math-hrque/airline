@@ -24,8 +24,8 @@ public class RealizarVooConsumer {
     @RabbitListener(queues = "ms-voos-voo-realizar")
     public void realizarVoo(String codigoVoo) {
         try {
-            VooManterDto vooManterDto = voosService.realizar(codigoVoo);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-realizado", vooManterDto);
+            VooManterDto vooManterRealizadoDto = voosService.realizar(codigoVoo);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-realizado", vooManterRealizadoDto);
         } catch (VooNaoExisteException e) {
 
         } catch (MudancaEstadoVooInvalidaException e) {

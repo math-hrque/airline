@@ -39,7 +39,7 @@ public class RealizarReservasConsumer {
     }
 
     @RabbitListener(queues = "ms-reserva-reservas-realizadas-compensar")
-    public void compensarReservasRealizadasCUD(VooManterDto vooManterDto) {
+    public void compensarReservasCUDRealizadas(VooManterDto vooManterDto) {
         try {
             reservaCUDService.reverterReservasRealizadasCUD(vooManterDto);
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class RealizarReservasConsumer {
     }
 
     @RabbitListener(queues = "ms-reserva-reservas-realizadas-contaR")
-    public void realizarReservas(List<ReservaCUD> listaReservaCUD) {
+    public void realizarReservasR(List<ReservaCUD> listaReservaCUD) {
         try {
             reservaRService.realizarReservasR(listaReservaCUD);
         } catch (Exception e) {

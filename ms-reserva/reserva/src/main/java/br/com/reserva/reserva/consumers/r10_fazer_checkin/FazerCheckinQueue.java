@@ -14,11 +14,11 @@ public class FazerCheckinQueue {
 
     @Bean
     public Queue checkinFazerQueue() {
-        return new Queue("ms-reserva-fazer-checkin-contaR");
+        return new Queue("ms-reserva-reserva-fazer-checkin-contaR");
     }
 
     @Bean
     public Binding checkinFazerBinding(Queue checkinFazerQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(checkinFazerQueue).to(exchange).with("ms-reserva-fazer-checkin-contaR");
+        return BindingBuilder.bind(checkinFazerQueue).to(exchange).with("ms-reserva-reserva-fazer-checkin-contaR");
     }
 }

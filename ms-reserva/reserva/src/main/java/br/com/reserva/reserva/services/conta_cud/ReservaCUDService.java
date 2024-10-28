@@ -100,7 +100,7 @@ public class ReservaCUDService {
         // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.EMBARCADO);
         reservaCUDBD.get().setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.EMBARCADO));
         ReservaCUD reservaEmbarcadaCUD = reservaCUDRepository.save(reservaCUDBD.get());
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-confirmar-embarque-contaR", reservaEmbarcadaCUD);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-confirmar-embarque-contaR", reservaEmbarcadaCUD);
         ReservaManterDto reservaManterEmbarcadaCUD = mapper.map(reservaEmbarcadaCUD, ReservaManterDto.class);
         return reservaManterEmbarcadaCUD;
     }
@@ -117,7 +117,7 @@ public class ReservaCUDService {
         // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.CHECK_IN);
         reservaCUDBD.get().setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CHECK_IN));
         ReservaCUD reservaCheckinCUD = reservaCUDRepository.save(reservaCUDBD.get());
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-fazer-checkin-contaR", reservaCheckinCUD);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-fazer-checkin-contaR", reservaCheckinCUD);
         ReservaManterDto reservaManterCheckinCUD = mapper.map(reservaCheckinCUD, ReservaManterDto.class);
         return reservaManterCheckinCUD;
     }

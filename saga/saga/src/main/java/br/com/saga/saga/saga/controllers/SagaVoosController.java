@@ -29,4 +29,14 @@ public class SagaVoosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: realização de voo com erro ao iniciar o processo: " + e.getMessage());
         }
     }
+
+    @PutMapping("/cancelar-voo/{codigoVoo}")
+    public ResponseEntity<Object> cancelarVoo(@PathVariable("codigoVoo") String codigoVoo) {
+        try {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-voos-voo-cancelar", codigoVoo);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: cancelamento de voo iniciado. Acompanhe o status.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cancelamento de voo com erro ao iniciar o processo: " + e.getMessage());
+        }
+    }
 }

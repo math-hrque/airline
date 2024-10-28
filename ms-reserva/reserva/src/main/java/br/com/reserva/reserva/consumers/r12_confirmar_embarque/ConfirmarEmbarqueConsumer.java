@@ -20,8 +20,8 @@ public class ConfirmarEmbarqueConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-reserva-confirmar-embarque-contaR")
-    public void realizarReserva(ReservaCUD reservaCUD) {
+    @RabbitListener(queues = "ms-reserva-reserva-confirmar-embarque-contaR")
+    public void realizarReservaR(ReservaCUD reservaCUD) {
         try {
             reservaRService.confirmarEmbarqueR(reservaCUD);
         } catch (ReservaNaoExisteException e) {

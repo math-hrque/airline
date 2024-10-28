@@ -20,8 +20,8 @@ public class FazerCheckinConsumer {
 
     private static final String EXCHANGE_NAME = "saga-exchange";
 
-    @RabbitListener(queues = "ms-reserva-fazer-checkin-contaR")
-    public void checkinReserva(ReservaCUD reservaCUD) {
+    @RabbitListener(queues = "ms-reserva-reserva-fazer-checkin-contaR")
+    public void checkinReservaR(ReservaCUD reservaCUD) {
         try {
             reservaRService.checkinReservaR(reservaCUD);
         } catch (ReservaNaoExisteException e) {

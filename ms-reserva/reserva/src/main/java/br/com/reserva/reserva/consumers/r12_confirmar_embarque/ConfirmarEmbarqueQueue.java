@@ -14,11 +14,11 @@ public class ConfirmarEmbarqueQueue {
 
     @Bean
     public Queue embarqueConfirmarQueue() {
-        return new Queue("ms-reserva-confirmar-embarque-contaR");
+        return new Queue("ms-reserva-reserva-confirmar-embarque-contaR");
     }
 
     @Bean
     public Binding embarqueConfirmarBinding(Queue embarqueConfirmarQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(embarqueConfirmarQueue).to(exchange).with("ms-reserva-confirmar-embarque-contaR");
+        return BindingBuilder.bind(embarqueConfirmarQueue).to(exchange).with("ms-reserva-reserva-confirmar-embarque-contaR");
     }
 }
