@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.reserva.reserva.dtos.ReservaManterDto;
+import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import br.com.reserva.reserva.services.conta_cud.ReservaCUDService;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
@@ -26,29 +27,31 @@ public class EfetuarReservaConsumer {
 
     @RabbitListener(queues = "ms-reserva-reserva-cadastrar")
     public void cadastrarReservaCUD(ReservaManterDto reservaManterDto) {
-        // try {
-        //     ReservaManterDto reservaManterCriadaDto = reservaCUDService.cadastrarReservaCUD(reservaManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada", reservaManterCriadaDto);
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
-        // }
+        try {
+            ReservaManterDto reservaManterCriadaDto = reservaCUDService.cadastrarReservaCUD(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada", reservaManterCriadaDto);
+        } catch (ReservaNaoExisteException e) {
+        
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+        }
     }
 
     @RabbitListener(queues = "ms-reserva-reserva-cadastrada-compensar")
     public void compensarReservaCUDCadastrada(ReservaManterDto reservaManterDto) {
-        // try {
-        //     reservaCUDService.reverterReservaCUDcadastrada(reservaManterDto);
-        // } catch (Exception e) {
+        try {
+            reservaCUDService.reverterReservaCUDcadastrada(reservaManterDto);
+        } catch (Exception e) {
 
-        // }
+        }
     }
 
     @RabbitListener(queues = "ms-reserva-reserva-cadastrada-contaR")
     public void cadastrarReservaR(ReservaCUD reservaCUD) {
-        // try {
-        //     reservaRService.cadastrarReservaR(reservaCUD);
-        // } catch (Exception e) {
+        try {
+            reservaRService.cadastrarReservaR(reservaCUD);
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

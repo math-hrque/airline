@@ -35,9 +35,9 @@ public class HistoricoAlteracaoEstadoReservaCUDService {
         Optional<HistoricoAlteracaoEstadoReservaCUD> historicoAlteracaoEstadoReservaCUDBD = historicoAlteracaoEstadoReservaCUDRepository.findByReservaCodigoReserva(reservaCUD.getCodigoReserva());
         HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReservaCUD = new HistoricoAlteracaoEstadoReservaCUD();
         if (historicoAlteracaoEstadoReservaCUDBD.isPresent()) {
-            HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReservaCUDCache = redisHistoricoAlteracaoEstadoReservaCUDCache.getCache(historicoAlteracaoEstadoReservaCUD.getReserva().getCodigoReserva());
+            HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReservaCUDCache = redisHistoricoAlteracaoEstadoReservaCUDCache.getCache(historicoAlteracaoEstadoReservaCUDBD.get().getReserva().getCodigoReserva());
             if (historicoAlteracaoEstadoReservaCUDCache == null) {
-                redisHistoricoAlteracaoEstadoReservaCUDCache.saveCache(historicoAlteracaoEstadoReservaCUD);
+                redisHistoricoAlteracaoEstadoReservaCUDCache.saveCache(historicoAlteracaoEstadoReservaCUDBD.get());
             }
             historicoAlteracaoEstadoReservaCUD = historicoAlteracaoEstadoReservaCUDBD.get();
             EstadoReservaCUD estadoReservaOrigemCUD = estadoReservaCUDRepository.findByTipoEstadoReserva(historicoAlteracaoEstadoReservaCUDBD.get().getEstadoReservaDestino().getTipoEstadoReserva());
@@ -45,6 +45,7 @@ public class HistoricoAlteracaoEstadoReservaCUDService {
             EstadoReservaCUD estadoReservaDestinoCUD = estadoReservaCUDRepository.findByTipoEstadoReserva(novoTipoEstadoReserva);
             historicoAlteracaoEstadoReservaCUD.setEstadoReservaDestino(estadoReservaDestinoCUD);
             historicoAlteracaoEstadoReservaCUD.setDataAlteracaoEstadoReserva(OffsetDateTime.now());
+            historicoAlteracaoEstadoReservaCUDRepository.save(historicoAlteracaoEstadoReservaCUD);
         } else {
             historicoAlteracaoEstadoReservaCUD.setReserva(reservaCUD);
             EstadoReservaCUD estadoReservaOrigemCUD = estadoReservaCUDRepository.findByTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
@@ -52,12 +53,10 @@ public class HistoricoAlteracaoEstadoReservaCUDService {
             EstadoReservaCUD estadoReservaDestinoCUD = estadoReservaCUDRepository.findByTipoEstadoReserva(novoTipoEstadoReserva);
             historicoAlteracaoEstadoReservaCUD.setEstadoReservaDestino(estadoReservaDestinoCUD);
             historicoAlteracaoEstadoReservaCUD.setDataAlteracaoEstadoReserva(OffsetDateTime.now());
+            historicoAlteracaoEstadoReservaCUDRepository.saveHistorico(historicoAlteracaoEstadoReservaCUD);
         }
-
-        historicoAlteracaoEstadoReservaCUDRepository.save(historicoAlteracaoEstadoReservaCUD);
         return historicoAlteracaoEstadoReservaCUD;
     }
-
 
     public void reverterHistoricoEstadoReserva(List<ReservaCUD> listaReservaCUD) {
         for (ReservaCUD reservaCUD : listaReservaCUD) {

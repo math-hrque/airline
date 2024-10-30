@@ -16,8 +16,8 @@ import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import br.com.reserva.reserva.repositories.conta_cud.EstadoReservaCUDRepository;
 import br.com.reserva.reserva.repositories.conta_cud.ReservaCUDRepository;
+import br.com.reserva.reserva.utils.conta_cud.CodigoReservaGenerator;
 import br.com.reserva.reserva.utils.conta_cud.RedisReservaCUDCache;
-import net.bytebuddy.implementation.bytecode.Throw;
 
 @Service
 public class ReservaCUDService {
@@ -42,7 +42,34 @@ public class ReservaCUDService {
     @Autowired
     private HistoricoAlteracaoEstadoReservaCUDService historicoAlteracaoEstadoReservaCUDService;
 
-    public VooManterDto realizarReservasCUD(VooManterDto vooManterDto) throws Exception {
+    @Autowired
+    private CodigoReservaGenerator codigoReservaGenerator;
+
+    public ReservaManterDto cadastrarReservaCUD(ReservaManterDto reservaManterDto) throws ReservaNaoExisteException {
+        ReservaCUD reservaCUD = mapper.map(reservaManterDto, ReservaCUD.class);
+        reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CONFIRMADO));
+        reservaCUD.setCodigoReserva(codigoReservaGenerator.gerarCodigoReservaUnico());
+        reservaCUDRepository.saveReserva(reservaCUD);
+        Optional<ReservaCUD> reservaCUDCriada = reservaCUDRepository.findById(reservaCUD.getCodigoReserva());
+        if (!reservaCUDCriada.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva " + reservaCUD.getCodigoReserva() + "nao foi criada");
+        }
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR", reservaCUDCriada.get());
+        ReservaManterDto reservaManterCriadaDto = mapper.map(reservaCUDCriada.get(), ReservaManterDto.class);
+        return reservaManterCriadaDto;
+    }
+
+    public ReservaManterDto reverterReservaCUDcadastrada(ReservaManterDto reservaManterDto) {
+        if (reservaManterDto.getCodigoReserva() != null) {
+            Optional<ReservaCUD> reservaCUDBD = reservaCUDRepository.findById(reservaManterDto.getCodigoReserva());
+            if (reservaCUDBD.isPresent()) {
+                reservaCUDRepository.deleteById(reservaManterDto.getCodigoReserva());
+            }
+        }
+        return reservaManterDto;
+    }
+
+    public VooManterDto realizarReservasCUD(VooManterDto vooManterDto) {
         Optional<List<ReservaCUD>> listaReservaCUDBD = reservaCUDRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
 
         if (listaReservaCUDBD.isPresent()) {
@@ -53,12 +80,12 @@ public class ReservaCUDService {
                 }
                 switch (reservaCUD.getEstadoReserva().getTipoEstadoReserva()) {
                     case TipoEstadoReserva.EMBARCADO:
-                        // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.REALIZADO);
+                        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.REALIZADO);
                         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.REALIZADO));
                         break;
                     case TipoEstadoReserva.CONFIRMADO: 
                     case TipoEstadoReserva.CHECK_IN:
-                        // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.NAO_REALIZADO);
+                        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.NAO_REALIZADO);
                         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.NAO_REALIZADO));
                         break;
                     default:
@@ -68,7 +95,6 @@ public class ReservaCUDService {
             reservaCUDRepository.saveAll(listaReservaCUDBD.get());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizadas-contaR", listaReservaCUDBD.get());
         }
-        // throw new Exception("Erro ao realizar reserva");
         return vooManterDto;
     }
 
@@ -97,7 +123,7 @@ public class ReservaCUDService {
         if (reservaCUDBD.get().getEstadoReserva().getTipoEstadoReserva() != TipoEstadoReserva.CHECK_IN) {
             throw new MudancaEstadoReservaInvalidaException("Estado de Reserva nao eh valido para ser Embarcado!");
         }
-        // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.EMBARCADO);
+        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.EMBARCADO);
         reservaCUDBD.get().setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.EMBARCADO));
         ReservaCUD reservaEmbarcadaCUD = reservaCUDRepository.save(reservaCUDBD.get());
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-confirmar-embarque-contaR", reservaEmbarcadaCUD);
@@ -114,7 +140,7 @@ public class ReservaCUDService {
         if (reservaCUDBD.get().getEstadoReserva().getTipoEstadoReserva() != TipoEstadoReserva.CONFIRMADO) {
             throw new MudancaEstadoReservaInvalidaException("Estado de Reserva nao eh valido para ser Check-in!");
         }
-        // historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.CHECK_IN);
+        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.CHECK_IN);
         reservaCUDBD.get().setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CHECK_IN));
         ReservaCUD reservaCheckinCUD = reservaCUDRepository.save(reservaCUDBD.get());
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-fazer-checkin-contaR", reservaCheckinCUD);

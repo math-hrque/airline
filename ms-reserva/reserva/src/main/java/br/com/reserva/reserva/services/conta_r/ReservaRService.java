@@ -33,6 +33,15 @@ public class ReservaRService {
     @Autowired
     private ReservaRRepository reservaRRepository;
 
+    public ReservaManterDto cadastrarReservaR(ReservaCUD reservaCUD) {
+        ReservaR reservaR = mapper.map(reservaCUD, ReservaR.class);
+        reservaR.setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
+        reservaR.setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
+        ReservaR reservaEmbarcadaR = reservaRRepository.save(reservaR);
+        ReservaManterDto reservaManterEmbarcadaR = mapper.map(reservaEmbarcadaR, ReservaManterDto.class);
+        return reservaManterEmbarcadaR;
+    }
+
     public List<ReservaManterDto> realizarReservasR(List<ReservaCUD> listaReservaCUD) {
         List<ReservaR> listaReservaR = new ArrayList<>();
         List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();

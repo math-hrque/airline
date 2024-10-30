@@ -23,26 +23,30 @@ public class EfetuarReservaConsumer {
 
     @RabbitListener(queues = "ms-cliente-milhas-reserva-cadastrar")
     public void milhasReservaCadastrar(ReservaManterDto reservaManterDto) {
-        // try {
-        //     clienteService.milhasReservaCadastrar(reservaManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada", reservaManterDto);
-        // } catch (ClienteNaoExisteException e) {
-
-        // } catch (SemSaldoMilhasSuficientesClienteException e) {
-
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada-erro", reservaManterDto);
-        // }
+        try {
+            clienteService.milhasReservaCadastrar(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada", reservaManterDto);
+        } catch (ClienteNaoExisteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
+        } catch (SemSaldoMilhasSuficientesClienteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada-erro", reservaManterDto);
+        }
     }
 
     @RabbitListener(queues = "ms-cliente-milhas-reserva-cadastrada-compensar")
     public void compensarMilhasReservaCadastrada(ReservaManterDto reservaManterDto) {
-        // try {
-        //     clienteService.reverterMilhasReservaCadastrada(reservaManterDto);
-        // } catch (ClienteNaoExisteException e) {
+        try {
+            clienteService.reverterMilhasReservaCadastrada(reservaManterDto);
+        } catch (ClienteNaoExisteException e) {
 
-        // } catch (Exception e) {
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

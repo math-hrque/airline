@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.cliente.cliente.dtos.ClienteDto;
+import br.com.cliente.cliente.dtos.ReservaManterDto;
 import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
+import br.com.cliente.cliente.exeptions.SemSaldoMilhasSuficientesClienteException;
 import br.com.cliente.cliente.models.Cliente;
 import br.com.cliente.cliente.repositories.ClienteRepository;
 import br.com.cliente.cliente.repositories.MilhasRepository;
@@ -29,10 +31,10 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     @Autowired
-    private MilhasRepository milhasRepository;
+    private MilhasService milhasService;
 
     @Autowired
-    private MilhasService milhasService;
+    private MilhasRepository milhasRepository;
 
     public UsuarioRequestCadastrarDto cadastrar(ClienteDto clienteDto) throws OutroClienteDadosJaExistenteException {
         Optional<List<Cliente>> existClienteBD = clienteRepository.findByCpfOrEmail(clienteDto.getCpf(), clienteDto.getEmail());
@@ -73,5 +75,40 @@ public class ClienteService {
         clienteRepository.deleteById(cliente.getIdCliente());
         ClienteDto clienteRemovidoDto = mapper.map(cliente, ClienteDto.class);
         return clienteRemovidoDto;
+    }
+
+    public ReservaManterDto milhasReservaCadastrar(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException, SemSaldoMilhasSuficientesClienteException {
+        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+        if (clienteBD.get().getSaldoMilhas() < reservaManterDto.getMilhasUtilizadas()) {
+            throw new SemSaldoMilhasSuficientesClienteException("Sem saldo de milhas suficientes!");
+        }
+
+        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+        if (clienteCache == null) {
+            redisClienteCache.saveCache(clienteBD.get());
+        }
+
+        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() - reservaManterDto.getMilhasUtilizadas());
+        clienteRepository.save(clienteBD.get());
+        milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
+        return reservaManterDto;
+    }
+
+    public ReservaManterDto reverterMilhasReservaCadastrada(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
+        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+
+        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+        if (clienteCache != null) {
+            clienteRepository.save(clienteCache);
+            redisClienteCache.removeCache(clienteCache.getIdCliente());
+            milhasService.reverterMilhasReservaCadastrar(reservaManterDto, clienteBD.get());
+        }
+        return reservaManterDto;
     }
 }

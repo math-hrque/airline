@@ -23,26 +23,27 @@ public class EfetuarReservaConsumer {
 
     @RabbitListener(queues = "ms-voos-voo-poltrona-ocupar")
     public void ocuparPoltronaVoo(ReservaManterDto reservaManterDto) {
-        // try {
-        //     voosService.ocuparPoltronaVoo(reservaManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada", reservaManterDto);
-        // } catch (VooNaoExisteException e) {
-
-        // } catch (LimitePoltronasOcupadasVooException e) {
-
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
-        // }
+        try {
+            ReservaManterDto ReservaManterVooDto = voosService.ocuparPoltronaVoo(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada", ReservaManterVooDto);
+        } catch (VooNaoExisteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+        } catch (LimitePoltronasOcupadasVooException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
+        }
     }
 
     @RabbitListener(queues = "ms-voos-voo-poltrona-ocupada-compensar")
     public void compensarVooPoltronaOcupada(ReservaManterDto reservaManterDto) {
-        // try {
-        //     voosService.reverterVooPoltronaOcupada(reservaManterDto);
-        // } catch (VooNaoExisteException e) {
+        try {
+            voosService.reverterVooPoltronaOcupada(reservaManterDto);
+        } catch (VooNaoExisteException e) {
 
-        // } catch (Exception e) {
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

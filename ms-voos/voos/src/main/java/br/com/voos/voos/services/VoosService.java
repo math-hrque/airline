@@ -8,16 +8,16 @@ import java.time.OffsetDateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import br.com.voos.voos.dtos.ReservaManterDto;
 import br.com.voos.voos.dtos.VooDto;
 import br.com.voos.voos.dtos.VooManterDto;
 import br.com.voos.voos.enums.TipoEstadoVoo;
+import br.com.voos.voos.exeptions.LimitePoltronasOcupadasVooException;
 import br.com.voos.voos.exeptions.ListaVoosVaziaException;
 import br.com.voos.voos.exeptions.MudancaEstadoVooInvalidaException;
 import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.models.Voo;
-import br.com.voos.voos.repositories.AeroportoRepository;
 import br.com.voos.voos.repositories.EstadoVooRepository;
 import br.com.voos.voos.repositories.VoosRepository;
 import br.com.voos.voos.utils.RedisVoosCache;
@@ -35,10 +35,48 @@ public class VoosService {
     private VoosRepository vooRepository;
 
     @Autowired
-    private AeroportoRepository aeroportoRepository;
-
-    @Autowired
     private EstadoVooRepository estadoVooRepository;
+
+    public ReservaManterDto ocuparPoltronaVoo(ReservaManterDto reservaManterDto) throws VooNaoExisteException, LimitePoltronasOcupadasVooException {
+        Optional<Voo> vooBD = vooRepository.findById(reservaManterDto.getCodigoVoo());
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+        if ((vooBD.get().getQuantidadePoltronasOcupadas() + reservaManterDto.getQuantidadePoltronas()) > vooBD.get().getQuantidadePoltronasTotal()) {
+            throw new LimitePoltronasOcupadasVooException("Quantidade de poltronas da Reserva excede quantidade máxima de poltronas disponíveis!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(vooBD.get().getCodigoVoo());
+        if (vooCache == null) {
+            redisVoosCache.saveCache(vooBD.get());
+        }
+
+        Voo voo = vooBD.get();
+        voo.setQuantidadePoltronasOcupadas(voo.getQuantidadePoltronasOcupadas() + reservaManterDto.getQuantidadePoltronas());
+        vooRepository.atualizarPoltronasOcupadasVoo(voo);
+        Optional<Voo> vooAtualizado = vooRepository.findById(voo.getCodigoVoo());
+        reservaManterDto.setCodigoAeroportoOrigem(vooAtualizado.get().getAeroportoOrigem().getCodigoAeroporto());
+        reservaManterDto.setCodigoAeroportoDestino(vooAtualizado.get().getAeroportoDestino().getCodigoAeroporto());
+        return reservaManterDto;
+    }
+
+    public VooManterDto reverterVooPoltronaOcupada(ReservaManterDto reservaManterDto) throws VooNaoExisteException {
+        Optional<Voo> vooBD = vooRepository.findById(reservaManterDto.getCodigoVoo());
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(reservaManterDto.getCodigoVoo());
+        if (redisVoosCache == null) {
+            throw new VooNaoExisteException("Voo nao existe no cache!");
+        }
+
+        vooRepository.atualizarPoltronasOcupadasVoo(vooCache);
+        redisVoosCache.removeCache(vooCache.getCodigoVoo());
+        Optional<Voo> voo = vooRepository.findById(vooBD.get().getCodigoVoo());
+        VooManterDto vooManterRevertidoDto = mapper.map(voo.get(), VooManterDto.class);
+        return vooManterRevertidoDto;
+    }
 
     public VooManterDto realizar(String codigoVoo) throws VooNaoExisteException, MudancaEstadoVooInvalidaException {
         Optional<Voo> vooBD = vooRepository.findById(codigoVoo);
