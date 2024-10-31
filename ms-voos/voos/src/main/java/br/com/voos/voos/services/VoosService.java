@@ -116,13 +116,13 @@ public class VoosService {
         return vooManterRevertidoDto;
     }
 
-    public List<VooDto> listarVoos48h() throws ListaVoosVaziaException {
+    public List<VooDto> listarVoosConfirmados48h() throws ListaVoosVaziaException {
         OffsetDateTime dataAtual = OffsetDateTime.now();
         OffsetDateTime dataLimite = dataAtual.plusHours(48);
     
         Optional<List<Voo>> listaVooBD = vooRepository.findVoosConfirmadosByProximas48Horas(dataAtual, dataLimite);
         if (!listaVooBD.isPresent() || listaVooBD.get().isEmpty()) {
-            throw new ListaVoosVaziaException("Lista de voos nas próximas 48h vazia!");
+            throw new ListaVoosVaziaException("Lista de voos confirmados nas próximas 48h vazia!");
         }
     
         List<VooDto> listaVooDto = listaVooBD.get().stream().map(vooBD -> mapper.map(vooBD, VooDto.class)).collect(Collectors.toList());

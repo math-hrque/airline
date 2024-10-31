@@ -26,7 +26,7 @@ public class VoosController {
     @GetMapping("/listar-voos-48h")
     public ResponseEntity<?> listarVoos48h() {
         try {
-            List<VooDto> listaVoos = vooService.listarVoos48h();
+            List<VooDto> listaVoos = vooService.listarVoosConfirmados48h();
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaVoosVaziaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
