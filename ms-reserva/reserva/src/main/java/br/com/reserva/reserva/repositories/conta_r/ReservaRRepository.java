@@ -16,4 +16,5 @@ public interface ReservaRRepository extends JpaRepository<ReservaR, String> {
     Optional<List<ReservaR>> findByCodigoVooAndTipoEstadoReservaNot(String codigoVoo, TipoEstadoReserva tipoEstadoReserva);
     Optional<List<ReservaR>> findByIdCliente(Long idCliente);
     Optional<List<ReservaR>> findByIdClienteAndTipoEstadoReserva(Long idCliente, TipoEstadoReserva tipoEstadoReserva);
+    Optional<ReservaR> findByCodigoReservaAndIdCliente(String codigoReserva, Long idCliente);
 }

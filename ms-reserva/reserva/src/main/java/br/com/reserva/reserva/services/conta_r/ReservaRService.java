@@ -100,5 +100,15 @@ public class ReservaRService {
             return reservaDto;
         }).collect(Collectors.toList());
     }
+
+    public ReservaDto visualizarReservaCliente(Long idCliente, String codigoReserva) throws ReservaNaoExisteException {
+      Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReservaAndIdCliente(codigoReserva, idCliente);
+
+      if (!reservaOptional.isPresent()) {
+          throw new ReservaNaoExisteException("Reserva não encontrada para o cliente especificado.");
+      }
+
+      return mapper.map(reservaOptional.get(), ReservaDto.class);
+    }
     
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.reserva.reserva.dtos.ReservaDto;
 import br.com.reserva.reserva.dtos.VooDto;
 import br.com.reserva.reserva.exeptions.ListaReservaVaziaException;
+import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
 import jakarta.validation.Valid;
 
@@ -23,47 +24,6 @@ public class ReservaRController {
     @Autowired
     ReservaRService reservaRService;
 
-  // código em construção!!
-  // @GetMapping("/consultar-reserva/{id}")
-  //   public ResponseEntity<Object> consultarReservaById(@PathVariable("id") String id) {
-  //       try {
-  //           Object reservaConsultada = reservaService.consultarReservaById(id);
-  //           return ResponseEntity.status(HttpStatus.OK).body(reservaConsultada);
-  //       } catch (ReservaNaoExisteException e) {
-  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-  //       } catch (Exception e) {
-  //           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-  //       }
-  //   }
-  
-  // @GetMapping("/consultar-reserva/")
-  //   public ResponseEntity<Object> consultarTodasReservas() {
-  //       try {
-  //           // lista todas as reservas
-  //           Object reservaConsultada = reservaService.consultarReservas();
-  //           return ResponseEntity.status(HttpStatus.OK).body(reservaConsultada);
-  //       } catch (ReservaNaoExisteException e) {
-  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-  //       } catch (Exception e) {
-  //           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-  //       }
-  //   }
-
-  // // em construção
-  // @PostMapping("/criar-reserva/")
-  //   public ResponseEntity<Object> consultarTodasReservas(@) {
-  //       try {
-  //           // lista todas as reservas
-  //           Object reservaConsultada = reservaService.consultarReservas();
-  //           return ResponseEntity.status(HttpStatus.OK).body(reservaConsultada);
-  //       } catch (ReservaNaoExisteException e) {
-  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-  //       } catch (Exception e) {
-  //           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-  //       }
-  //   }
-
-
     @GetMapping("/listar-reservas-voos-48h/{idCliente}")
     public ResponseEntity<?> listarReservasVoos48h(@PathVariable("idCliente") Long idCliente, @RequestBody List<VooDto> listaVooDto) {
         try {
@@ -73,6 +33,18 @@ public class ReservaRController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/cliente/{idCliente}/reserva/{codigoReserva}")
+    public ResponseEntity<?> visualizarReservaCliente(@PathVariable Long idCliente, @PathVariable String codigoReserva) {
+        try {
+            ReservaDto reservaDto = reservaRService.visualizarReservaCliente(idCliente, codigoReserva);
+            return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
+        } catch (ReservaNaoExisteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar a reserva.");
         }
     }
 }
