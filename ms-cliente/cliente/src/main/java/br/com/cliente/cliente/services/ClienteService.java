@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.cliente.cliente.dtos.ClienteDto;
+import br.com.cliente.cliente.dtos.ClienteMilhasDto;
+import br.com.cliente.cliente.dtos.MilhasDto;
 import br.com.cliente.cliente.dtos.ReservaManterDto;
 import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
@@ -110,5 +112,29 @@ public class ClienteService {
             milhasService.reverterMilhasReservaCadastrar(reservaManterDto, clienteBD.get());
         }
         return reservaManterDto;
+    }
+
+    public void comprarMilhas(MilhasDto milhasDTO, Cliente cliente) throws ClienteNaoExisteException{
+        Optional<Cliente> clienteBD = clienteRepository.findById(cliente.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + milhasDTO.getQuantidadesMilhas());
+        clienteRepository.save(clienteBD.get());   
+        milhasService.comprarMilhas(milhasDTO, cliente);        
+    }
+
+    public ClienteMilhasDto consultarExtratoMilhas(Cliente cliente) throws ClienteNaoExisteException{
+        Optional<Cliente> clienteBD = clienteRepository.findById(cliente.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+        ClienteMilhasDto extratoDeMilhas = new ClienteMilhasDto();
+        extratoDeMilhas.setIdCliente(cliente.getIdCliente());
+        extratoDeMilhas.setSaldoMilhas(cliente.getSaldoMilhas());
+        extratoDeMilhas.setListaMilhas(milhasService.consultarExtratoMilhas(cliente));
+
+        return extratoDeMilhas;
+
     }
 }
