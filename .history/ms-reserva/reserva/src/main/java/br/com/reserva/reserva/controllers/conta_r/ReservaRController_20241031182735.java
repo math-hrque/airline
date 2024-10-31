@@ -25,8 +25,7 @@ public class ReservaRController {
     ReservaRService reservaRService;
 
     @GetMapping("/listar-reservas-voos-48h/{idCliente}")
-    public ResponseEntity<?> listarReservasVoos48h(@PathVariable("idCliente") Long idCliente,
-            @RequestBody List<VooDto> listaVooDto) {
+    public ResponseEntity<?> listarReservasVoos48h(@PathVariable("idCliente") Long idCliente, @RequestBody List<VooDto> listaVooDto) {
         try {
             List<ReservaDto> listaVoos = reservaRService.listarReservasVoos48h(idCliente, listaVooDto);
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
@@ -38,8 +37,7 @@ public class ReservaRController {
     }
 
     @GetMapping("/cliente/{idCliente}/reserva/{codigoReserva}")
-    public ResponseEntity<?> visualizarReservaCliente(@PathVariable Long idCliente,
-            @PathVariable String codigoReserva) {
+    public ResponseEntity<?> visualizarReservaCliente(@PathVariable Long idCliente, @PathVariable String codigoReserva) {
         try {
             ReservaDto reservaDto = reservaRService.visualizarReservaCliente(idCliente, codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
@@ -49,17 +47,4 @@ public class ReservaRController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar a reserva.");
         }
     }
-
-    // @GetMapping("/cliente/{idCliente}")
-    // public ResponseEntity<List<ReservaCUD>> getReservasByClienteId(@PathVariable
-    // Long idCliente) {
-    // Optional<List<ReservaCUD>> reservas =
-    // reservaCUDRepository.findByIdCliente(idCliente);
-
-    // if (reservas.isPresent() && !reservas.get().isEmpty()) {
-    // return ResponseEntity.ok(reservas.get());
-    // } else {
-    // return ResponseEntity.noContent().build();
-    // }
-    // }
 }

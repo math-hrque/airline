@@ -26,8 +26,7 @@ public class ReservaCUDController {
     ReservaCUDService reservaCUDService;
 
     @PutMapping("/confirmar-embarque")
-    public ResponseEntity<Object> confirmarEmbarque(@RequestParam("codigoVoo") String codigoVoo,
-            @RequestParam("codigoReserva") String codigoReserva) {
+    public ResponseEntity<Object> confirmarEmbarque(@RequestParam("codigoVoo") String codigoVoo, @RequestParam("codigoReserva") String codigoReserva) {
         try {
             Object reservaEmbarcada = reservaCUDService.confirmarEmbarqueCUD(codigoVoo, codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaEmbarcada);

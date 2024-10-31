@@ -50,16 +50,14 @@ public class ReservaRController {
         }
     }
 
-    // @GetMapping("/cliente/{idCliente}")
-    // public ResponseEntity<List<ReservaCUD>> getReservasByClienteId(@PathVariable
-    // Long idCliente) {
-    // Optional<List<ReservaCUD>> reservas =
-    // reservaCUDRepository.findByIdCliente(idCliente);
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<List<ReservaCUD>> getReservasByClienteId(@PathVariable Long idCliente) {
+        Optional<List<ReservaCUD>> reservas = reservaCUDRepository.findByIdCliente(idCliente);
 
-    // if (reservas.isPresent() && !reservas.get().isEmpty()) {
-    // return ResponseEntity.ok(reservas.get());
-    // } else {
-    // return ResponseEntity.noContent().build();
-    // }
-    // }
+        if (reservas.isPresent() && !reservas.get().isEmpty()) {
+            return ResponseEntity.ok(reservas.get());
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }
