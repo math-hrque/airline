@@ -1,6 +1,5 @@
 package br.com.cliente.cliente.consumers.r08_cancelar_reserva;
 
-import org.hibernate.mapping.List;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,24 +22,24 @@ public class CancelarReservaConsumer {
 
     @RabbitListener(queues = "ms-cliente-milhas-reserva-cancelar")
     public void milhasReservaCancelar(ReservaManterDto reservaManterDto) {
-        // try {
-        //     clienteService.milhasReservaCancelar(reservaManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada", reservaManterDto);
-        // } catch (ClienteNaoExisteException e) {
+        try {
+            clienteService.milhasReservaCancelar(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada", reservaManterDto);
+        } catch (ClienteNaoExisteException e) {
 
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada-erro", reservaManterDto);
-        // }
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada-erro", reservaManterDto);
+        }
     }
 
     @RabbitListener(queues = "ms-cliente-milhas-reserva-cancelada-compensar")
     public void compensarMilhasReservaCancelada(ReservaManterDto reservaManterDto) {
-        // try {
-        //     clienteService.reverterMilhasReservaCancelada(reservaManterDto);
-        // } catch (ClienteNaoExisteException e) {
+        try {
+            clienteService.reverterMilhasReservaCancelada(reservaManterDto);
+        } catch (ClienteNaoExisteException e) {
 
-        // } catch (Exception e) {
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

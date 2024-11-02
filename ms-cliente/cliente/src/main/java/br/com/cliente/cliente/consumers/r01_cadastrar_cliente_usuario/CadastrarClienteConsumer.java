@@ -25,7 +25,7 @@ public class CadastrarClienteConsumer {
     @RabbitListener(queues = "ms-cliente-cliente-cadastrar")
     public void cadastrarCliente(ClienteDto clienteDto) {
         try {
-            UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = clienteService.cadastrar(clienteDto);
+            UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = clienteService.cadastrarCliente(clienteDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado", usuarioRequestCadastrarDto);
         } catch (OutroClienteDadosJaExistenteException e) {
 
@@ -37,7 +37,7 @@ public class CadastrarClienteConsumer {
     @RabbitListener(queues = "ms-cliente-cliente-cadastrado-compensar")
     public void compensarClienteCadastrado(String email) {
         try {
-            clienteService.remover(email);
+            clienteService.removerCliente(email);
         } catch (ClienteNaoExisteException e) {
 
         } catch (Exception e) {

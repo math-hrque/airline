@@ -14,7 +14,6 @@ import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
 import br.com.cliente.cliente.exeptions.SemSaldoMilhasSuficientesClienteException;
 import br.com.cliente.cliente.models.Cliente;
 import br.com.cliente.cliente.repositories.ClienteRepository;
-import br.com.cliente.cliente.repositories.MilhasRepository;
 import br.com.cliente.cliente.utils.RedisClienteCache;
 
 import java.util.List;
@@ -35,10 +34,7 @@ public class ClienteService {
     @Autowired
     private MilhasService milhasService;
 
-    @Autowired
-    private MilhasRepository milhasRepository;
-
-    public UsuarioRequestCadastrarDto cadastrar(ClienteDto clienteDto) throws OutroClienteDadosJaExistenteException {
+    public UsuarioRequestCadastrarDto cadastrarCliente(ClienteDto clienteDto) throws OutroClienteDadosJaExistenteException {
         Optional<List<Cliente>> existClienteBD = clienteRepository.findByCpfOrEmail(clienteDto.getCpf(), clienteDto.getEmail());
         if (existClienteBD.isPresent() && !existClienteBD.get().isEmpty()) {
             boolean cpfExists = false;
@@ -67,7 +63,7 @@ public class ClienteService {
         return usuarioRequestCadastrarDto;
     }
 
-    public ClienteDto remover(String email) throws ClienteNaoExisteException {
+    public ClienteDto removerCliente(String email) throws ClienteNaoExisteException {
         Optional<Cliente> clienteBD = clienteRepository.findByEmail(email);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente nao existe!");
@@ -109,9 +105,70 @@ public class ClienteService {
         if (clienteCache != null) {
             clienteRepository.save(clienteCache);
             redisClienteCache.removeCache(clienteCache.getIdCliente());
-            milhasService.reverterMilhasReservaCadastrar(reservaManterDto, clienteBD.get());
+            milhasService.milhasReservaCancelar(reservaManterDto, clienteBD.get());
         }
         return reservaManterDto;
+    }
+
+    public ReservaManterDto milhasReservaCancelar(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
+        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+
+        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+        if (clienteCache == null) {
+            redisClienteCache.saveCache(clienteBD.get());
+        }
+
+        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
+        clienteRepository.save(clienteBD.get());
+        milhasService.milhasReservaCancelar(reservaManterDto, clienteBD.get());
+        return reservaManterDto;
+    }
+
+    public ReservaManterDto reverterMilhasReservaCancelada(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
+        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
+
+        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+        if (clienteCache != null) {
+            clienteRepository.save(clienteCache);
+            redisClienteCache.removeCache(clienteCache.getIdCliente());
+            milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
+        }
+        return reservaManterDto;
+    }
+
+    public void milhasReservasCancelarVoo(List<ReservaManterDto> listaReservaManterDto) throws ClienteNaoExisteException {
+        for (ReservaManterDto reservaManterDto : listaReservaManterDto) {
+            Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (cliente.isPresent()) {
+                Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
+                if (clienteCache == null) {
+                    redisClienteCache.saveCache(cliente.get());
+                }
+                cliente.get().setSaldoMilhas(cliente.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
+                clienteRepository.save(cliente.get());
+                milhasService.milhasReservaCancelarVoo(reservaManterDto, cliente.get());
+            }
+        }
+    }
+
+    public void reverterMilhasReservasCanceladasVoo(List<ReservaManterDto> listaReservaManterDto) throws ClienteNaoExisteException {
+        for (ReservaManterDto reservaManterDto : listaReservaManterDto) {
+            Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (cliente.isPresent()) {
+                Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
+                if (clienteCache != null) {
+                    clienteRepository.save(clienteCache);
+                    redisClienteCache.removeCache(clienteCache.getIdCliente());
+                    milhasService.milhasReservaCadastrar(reservaManterDto, cliente.get());
+                }
+            }
+        }
     }
 
     public void comprarMilhas(MilhasDto milhasDTO, Cliente cliente) throws ClienteNaoExisteException{

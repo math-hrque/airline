@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.cliente.cliente.dtos.MilhasDto;
 import br.com.cliente.cliente.dtos.ReservaManterDto;
 import br.com.cliente.cliente.enums.TipoTransacao;
-import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.models.Cliente;
 import br.com.cliente.cliente.models.Milhas;
 import br.com.cliente.cliente.repositories.MilhasRepository;
@@ -20,9 +18,6 @@ import br.com.cliente.cliente.repositories.TransacaoRepository;
 
 @Service
 public class MilhasService {
-
-    @Autowired
-    private ModelMapper mapper;
 
     @Autowired
     private MilhasRepository milhasRepository;
@@ -38,11 +33,11 @@ public class MilhasService {
         milhasCadastrar.setCodigoReserva(reservaManterDto.getCodigoReserva());
         milhasCadastrar.setCliente(cliente);
         milhasCadastrar.setTransacao(transacaoRepository.findByTipoTransacao(TipoTransacao.SAIDA));
-        milhasRepository.save(milhasCadastrar);
+        milhasRepository.saveMilhas(milhasCadastrar);
         return reservaManterDto;
     }
 
-    public ReservaManterDto reverterMilhasReservaCadastrar(ReservaManterDto reservaManterDto, Cliente cliente) {
+    public ReservaManterDto milhasReservaCancelar(ReservaManterDto reservaManterDto, Cliente cliente) {
         Milhas milhasCadastrar = new Milhas();
         milhasCadastrar.setValorReais(reservaManterDto.getMilhasUtilizadas() * 5.00);
         milhasCadastrar.setQuantidadeMilhas(reservaManterDto.getMilhasUtilizadas());
@@ -50,7 +45,19 @@ public class MilhasService {
         milhasCadastrar.setCodigoReserva(reservaManterDto.getCodigoReserva());
         milhasCadastrar.setCliente(cliente);
         milhasCadastrar.setTransacao(transacaoRepository.findByTipoTransacao(TipoTransacao.ENTRADA));
-        milhasRepository.save(milhasCadastrar);
+        milhasRepository.saveMilhas(milhasCadastrar);
+        return reservaManterDto;
+    }
+
+    public ReservaManterDto milhasReservaCancelarVoo(ReservaManterDto reservaManterDto, Cliente cliente) {
+        Milhas milhasCadastrar = new Milhas();
+        milhasCadastrar.setValorReais(reservaManterDto.getMilhasUtilizadas() * 5.00);
+        milhasCadastrar.setQuantidadeMilhas(reservaManterDto.getMilhasUtilizadas());
+        milhasCadastrar.setDescricao("CANCELADO VOO " + reservaManterDto.getCodigoAeroportoOrigem() + "->" + reservaManterDto.getCodigoAeroportoDestino());
+        milhasCadastrar.setCodigoReserva(reservaManterDto.getCodigoReserva());
+        milhasCadastrar.setCliente(cliente);
+        milhasCadastrar.setTransacao(transacaoRepository.findByTipoTransacao(TipoTransacao.ENTRADA));
+        milhasRepository.saveMilhas(milhasCadastrar);
         return reservaManterDto;
     }
 
