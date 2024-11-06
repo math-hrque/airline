@@ -171,21 +171,23 @@ public class ClienteService {
         }
     }
 
-    public void comprarMilhas(MilhasDto milhasDTO, Cliente cliente) throws ClienteNaoExisteException{
-        Optional<Cliente> clienteBD = clienteRepository.findById(cliente.getIdCliente());
+    public void comprarMilhas(MilhasDto milhasDTO, Long idCliente) throws ClienteNaoExisteException{
+        Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente nao existe!");
         }
+        Cliente cliente = redisClienteCache.getCache(clienteBD.get().getIdCliente());
         clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + milhasDTO.getQuantidadesMilhas());
         clienteRepository.save(clienteBD.get());   
         milhasService.comprarMilhas(milhasDTO, cliente);        
     }
 
-    public ClienteMilhasDto consultarExtratoMilhas(Cliente cliente) throws ClienteNaoExisteException{
-        Optional<Cliente> clienteBD = clienteRepository.findById(cliente.getIdCliente());
+    public ClienteMilhasDto consultarExtratoMilhas(Long idCliente) throws ClienteNaoExisteException{
+        Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente nao existe!");
         }
+        Cliente cliente = redisClienteCache.getCache(clienteBD.get().getIdCliente());
         ClienteMilhasDto extratoDeMilhas = new ClienteMilhasDto();
         extratoDeMilhas.setIdCliente(cliente.getIdCliente());
         extratoDeMilhas.setSaldoMilhas(cliente.getSaldoMilhas());
