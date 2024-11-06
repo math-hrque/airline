@@ -20,6 +20,29 @@ app.use((req, res, next) => {
     next();
 });
 
+// Adiciona uma rota específica para listar funcionários
+app.get('/api/funcionarios', createProxyMiddleware({
+    target: services['funcionario'],
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api/funcionarios': '/listar-funcionario' // mapeia a rota local para a rota do serviço
+    }
+}));
+
+// Adiciona uma rota específica para consultar funcionários por email
+app.get('/api/funcionarios/email/:email', createProxyMiddleware({
+    target: services['funcionario'],
+    changeOrigin: true,
+    pathRewrite: (path, req) => path.replace('/api/funcionarios/email', '/consultar-email')
+}));
+
+// Adiciona uma rota específica para consultar funcionários por ID
+app.get('/api/funcionarios/id/:idFuncionario', createProxyMiddleware({
+    target: services['funcionario'],
+    changeOrigin: true,
+    pathRewrite: (path, req) => path.replace('/api/funcionarios/id', '/consultar-idfuncionario')
+}));
+
 // Set up proxy for each microservice
 app.use('/auth', createProxyMiddleware({ target: services['auth'], changeOrigin: true }));
 app.use('/cliente', createProxyMiddleware({ target: services['cliente'], changeOrigin: true }));
