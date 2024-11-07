@@ -1,8 +1,10 @@
 package br.com.voos.voos.controllers;
 
 import br.com.voos.voos.dtos.CadastrarVooDto;
+import br.com.voos.voos.dtos.ReservaDto;
 import br.com.voos.voos.exeptions.AeroportoNaoExisteException;
 import br.com.voos.voos.exeptions.VooJaExisteException;
+import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.exeptions.VooValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +59,18 @@ public class VoosController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/visualizar-voo/{codigoVoo}")
+    public ResponseEntity<?> visualizarVoo(@PathVariable String codigoVoo) {
+        try {
+            VooDto vooDto = vooService.visualizarVoo(codigoVoo);
+            return ResponseEntity.status(HttpStatus.OK).body(vooDto);
+        } catch (VooNaoExisteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar o voo.");
         }
     }
 }

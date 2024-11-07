@@ -37,7 +37,7 @@ public class ReservaRController {
         }
     }
 
-    @GetMapping("/cliente/{idCliente}/reserva/{codigoReserva}")
+    @GetMapping("/cliente/{idCliente}/consultar-reserva/{codigoReserva}")
     public ResponseEntity<?> visualizarReservaCliente(@PathVariable Long idCliente,
             @PathVariable String codigoReserva) {
         try {

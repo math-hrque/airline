@@ -9,6 +9,7 @@ import java.util.List;
 import java.time.OffsetDateTime;
 
 import br.com.voos.voos.dtos.CadastrarVooDto;
+import br.com.voos.voos.dtos.ReservaDto;
 import br.com.voos.voos.exeptions.*;
 import br.com.voos.voos.models.Aeroporto;
 import br.com.voos.voos.repositories.AeroportoRepository;
@@ -198,5 +199,15 @@ public class VoosService {
         if (cadastrarVooDto.getAeroportoDestino() == null || cadastrarVooDto.getAeroportoDestino().isEmpty()) {
             throw new VooValidationException("O código do aeroporto de destino é obrigatório.");
         }
+    }
+
+    public VooDto visualizarVoo(String codigoVoo) throws VooNaoExisteException {
+      Optional<Voo> vooOptional = vooRepository.findVooByCodigo(codigoVoo);
+  
+      if (!vooOptional.isPresent()) {
+          throw new VooNaoExisteException("Voo não encontrado para o código especificado.");
+      }
+  
+      return mapper.map(vooOptional.get(), VooDto.class);
     }
 }
