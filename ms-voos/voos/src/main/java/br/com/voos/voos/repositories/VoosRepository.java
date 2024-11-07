@@ -30,6 +30,10 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
     Optional<Voo> findVooConfirmadoByCodigoVooNasProximas48Horas(OffsetDateTime dataAtual, OffsetDateTime dataLimite, String codigoVoo);
 
     @Query("SELECT v FROM Voo v " +
+            "WHERE v.codigoVoo = :codigoVoo ")
+    Optional<Voo> findVooByCodigo(String codigoVoo);
+
+    @Query("SELECT v FROM Voo v " +
     "WHERE v.dataVoo BETWEEN :dataAtual AND :dataLimite " +
     "AND v.estadoVoo.tipoEstadoVoo = 'CONFIRMADO'")
     Optional<List<Voo>> findVoosConfirmadosByProximas48Horas(OffsetDateTime dataAtual, OffsetDateTime dataLimite);
@@ -41,5 +45,4 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
            "v.quantidadePoltronasOcupadas = :#{#voo.quantidadePoltronasOcupadas} " +
            "WHERE v.codigoVoo = :#{#voo.codigoVoo}")
     void atualizarPoltronasOcupadasVoo(@Param("voo") Voo voo);
-    
 }

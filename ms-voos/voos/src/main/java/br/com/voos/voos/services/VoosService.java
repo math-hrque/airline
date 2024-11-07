@@ -1,10 +1,17 @@
 package br.com.voos.voos.services;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.List;
 import java.time.OffsetDateTime;
 
+import br.com.voos.voos.dtos.CadastrarVooDto;
+import br.com.voos.voos.exeptions.*;
+import br.com.voos.voos.models.Aeroporto;
+import br.com.voos.voos.repositories.AeroportoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +20,6 @@ import br.com.voos.voos.dtos.ReservaManterDto;
 import br.com.voos.voos.dtos.VooDto;
 import br.com.voos.voos.dtos.VooManterDto;
 import br.com.voos.voos.enums.TipoEstadoVoo;
-import br.com.voos.voos.exeptions.LimitePoltronasOcupadasVooException;
-import br.com.voos.voos.exeptions.ListaVoosVaziaException;
-import br.com.voos.voos.exeptions.MudancaEstadoVooInvalidaException;
-import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.models.Voo;
 import br.com.voos.voos.repositories.EstadoVooRepository;
 import br.com.voos.voos.repositories.VoosRepository;
@@ -36,6 +39,9 @@ public class VoosService {
 
     @Autowired
     private EstadoVooRepository estadoVooRepository;
+
+    @Autowired
+    private AeroportoRepository aeroportoRepository;
 
     public ReservaManterDto ocuparPoltronaVoo(ReservaManterDto reservaManterDto) throws VooNaoExisteException, LimitePoltronasOcupadasVooException {
         Optional<Voo> vooBD = vooRepository.findById(reservaManterDto.getCodigoVoo());
@@ -116,6 +122,39 @@ public class VoosService {
         return vooManterRevertidoDto;
     }
 
+    public VooDto cadastrarVoo(CadastrarVooDto cadastrarVooDto) throws VooJaExisteException, AeroportoNaoExisteException, DateTimeParseException, VooValidationException {
+        validateCadastrarVooDto(cadastrarVooDto);
+
+        Optional<Voo> vooBD = vooRepository.findVooByCodigo(cadastrarVooDto.getCodigoVoo());
+        if (vooBD.isPresent()) {
+            throw new VooJaExisteException("Voo já existe com o código " + cadastrarVooDto.getCodigoVoo() + "!");
+        }
+
+        Optional<Aeroporto> aeroportoOrigemBD = aeroportoRepository.findAeroportoByCodigo(cadastrarVooDto.getAeroportoOrigem());
+        if (aeroportoOrigemBD.isEmpty()) {
+            throw new AeroportoNaoExisteException("Aeroporto não existe com o código " + cadastrarVooDto.getAeroportoOrigem() + "!");
+        }
+
+        Optional<Aeroporto> aeroportoDestinoBD = aeroportoRepository.findAeroportoByCodigo(cadastrarVooDto.getAeroportoDestino());
+        if (aeroportoDestinoBD.isEmpty()) {
+            throw new AeroportoNaoExisteException("Aeroporto não existe com o código " + cadastrarVooDto.getAeroportoDestino() + "!");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        Voo voo = new Voo();
+        voo.setCodigoVoo(cadastrarVooDto.getCodigoVoo());
+        voo.setDataVoo(OffsetDateTime.parse(cadastrarVooDto.getDataHora(), formatter).withOffsetSameInstant(ZoneOffset.UTC));
+        voo.setValorPassagem(cadastrarVooDto.getValorPassagemReais());
+        voo.setQuantidadePoltronasTotal(cadastrarVooDto.getQuantidadePoltronasTotal());
+        voo.setQuantidadePoltronasOcupadas(0);
+        voo.setAeroportoOrigem(aeroportoOrigemBD.get());
+        voo.setAeroportoDestino(aeroportoDestinoBD.get());
+        voo.setEstadoVoo(estadoVooRepository.findByTipoEstadoVoo(TipoEstadoVoo.CONFIRMADO));
+        vooRepository.save(voo);
+
+        return mapper.map(voo, VooDto.class);
+    }
+
     public List<VooDto> listarVoosConfirmados48h() throws ListaVoosVaziaException {
         OffsetDateTime dataAtual = OffsetDateTime.now();
         OffsetDateTime dataLimite = dataAtual.plusHours(48);
@@ -138,5 +177,26 @@ public class VoosService {
     
         List<VooDto> listaVooDto = listaVooBD.get().stream().map(vooBD -> mapper.map(vooBD, VooDto.class)).collect(Collectors.toList());
         return listaVooDto;
+    }
+
+    private void validateCadastrarVooDto(CadastrarVooDto cadastrarVooDto) throws VooValidationException {
+        if (cadastrarVooDto.getCodigoVoo() == null || cadastrarVooDto.getCodigoVoo().isEmpty()) {
+            throw new VooValidationException("O código do voo é obrigatório.");
+        }
+        if (cadastrarVooDto.getDataHora() == null || cadastrarVooDto.getDataHora().isEmpty()) {
+            throw new VooValidationException("A data e hora do voo são obrigatórias.");
+        }
+        if (cadastrarVooDto.getValorPassagemReais() == null || cadastrarVooDto.getValorPassagemReais() <= 0) {
+            throw new VooValidationException("O valor da passagem deve ser positivo e não pode ser nulo.");
+        }
+        if (cadastrarVooDto.getQuantidadePoltronasTotal() == null || cadastrarVooDto.getQuantidadePoltronasTotal() <= 0) {
+            throw new VooValidationException("A quantidade de poltronas deve ser maior que zero e não pode ser nula.");
+        }
+        if (cadastrarVooDto.getAeroportoOrigem() == null || cadastrarVooDto.getAeroportoOrigem().isEmpty()) {
+            throw new VooValidationException("O código do aeroporto de origem é obrigatório.");
+        }
+        if (cadastrarVooDto.getAeroportoDestino() == null || cadastrarVooDto.getAeroportoDestino().isEmpty()) {
+            throw new VooValidationException("O código do aeroporto de destino é obrigatório.");
+        }
     }
 }
