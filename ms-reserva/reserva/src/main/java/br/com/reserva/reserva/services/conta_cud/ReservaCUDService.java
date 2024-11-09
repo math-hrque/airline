@@ -1,6 +1,7 @@
 package br.com.reserva.reserva.services.conta_cud;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -45,7 +46,7 @@ public class ReservaCUDService {
     @Autowired
     private CodigoReservaGenerator codigoReservaGenerator;
 
-    public ReservaManterDto cadastrarReservaCUD(ReservaManterDto reservaManterDto) throws ReservaNaoExisteException {
+    public ReservaManterDto reservaCUDCadastrar(ReservaManterDto reservaManterDto) throws ReservaNaoExisteException {
         ReservaCUD reservaCUD = mapper.map(reservaManterDto, ReservaCUD.class);
         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CONFIRMADO));
         reservaCUD.setCodigoReserva(codigoReservaGenerator.gerarCodigoReservaUnico());
@@ -69,7 +70,96 @@ public class ReservaCUDService {
         return reservaManterDto;
     }
 
-    public VooManterDto realizarReservasCUD(VooManterDto vooManterDto) {
+    public ReservaManterDto reservaCUDCancelar(String codigoReserva) throws ReservaNaoExisteException, MudancaEstadoReservaInvalidaException {
+        Optional<ReservaCUD> reservaCUDBD = reservaCUDRepository.findById(codigoReserva);
+        if (!reservaCUDBD.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva nao existe");
+        }
+
+        if (reservaCUDBD.get().getEstadoReserva().getTipoEstadoReserva() != TipoEstadoReserva.CONFIRMADO) {
+            throw new MudancaEstadoReservaInvalidaException("Estado de Reserva nao eh valido para ser Cancelada!");
+        }
+
+        ReservaCUD reservaCUDCache = redisReservaCUDCache.getCache(reservaCUDBD.get().getCodigoVoo());
+        if (reservaCUDCache == null) {
+            redisReservaCUDCache.saveCache(reservaCUDBD.get());
+        }
+
+        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUDBD.get(), TipoEstadoReserva.CANCELADO);
+        reservaCUDBD.get().setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CANCELADO));
+        ReservaCUD reservaCanceladaCUD = reservaCUDRepository.save(reservaCUDBD.get());
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR", reservaCanceladaCUD);
+        ReservaManterDto reservaManterCanceladaCUD = mapper.map(reservaCanceladaCUD, ReservaManterDto.class);
+        return reservaManterCanceladaCUD;
+    }
+
+    public ReservaManterDto reverterReservaCUDCancelada(String codigoReserva) throws ReservaNaoExisteException {
+        Optional<ReservaCUD> reservaCUDBD = reservaCUDRepository.findById(codigoReserva);
+        if (!reservaCUDBD.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva nao existe");
+        }
+
+        ReservaCUD reservaCUDCache = redisReservaCUDCache.getCache(reservaCUDBD.get().getCodigoVoo());
+        if (reservaCUDCache == null) {
+            redisReservaCUDCache.saveCache(reservaCUDBD.get());
+            throw new ReservaNaoExisteException("Reserva nao existe no cache!");
+        }
+
+        reservaCUDRepository.save(reservaCUDCache);
+        redisReservaCUDCache.removeCache(reservaCUDCache.getCodigoVoo());
+        Optional<ReservaCUD> ReservaCUDRevertida = reservaCUDRepository.findById(reservaCUDBD.get().getCodigoVoo());
+        ReservaManterDto reservaManterRevertidaDto = mapper.map(ReservaCUDRevertida.get(), ReservaManterDto.class);
+        return reservaManterRevertidaDto;
+    }
+
+    public List<ReservaManterDto> cancelarReservasCUDVoo(VooManterDto vooManterDto) {
+        Optional<List<ReservaCUD>> listaReservaCUDBD = reservaCUDRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
+        List<ReservaCUD> listaReservaCUDAlterada = new ArrayList<>();
+        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
+
+        if (listaReservaCUDBD.isPresent()) {
+            for (ReservaCUD reservaCUD : listaReservaCUDBD.get()) {
+                ReservaCUD reservaCUDCache = redisReservaCUDCache.getCache(reservaCUD.getCodigoReserva());
+                if (reservaCUDCache == null) {
+                    redisReservaCUDCache.saveCache(reservaCUD);
+                }
+                switch (reservaCUD.getEstadoReserva().getTipoEstadoReserva()) {
+                    case TipoEstadoReserva.CONFIRMADO: 
+                    case TipoEstadoReserva.CHECK_IN:
+                    case TipoEstadoReserva.EMBARCADO:
+                        historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.CANCELADO_VOO);
+                        reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CANCELADO_VOO));
+                        break;
+                    default:
+                        break;
+                }
+                ReservaManterDto reservaManterDto = mapper.map(reservaCUD, ReservaManterDto.class);
+                reservaManterDto.setCodigoAeroportoOrigem(vooManterDto.getCodigoAeroportoOrigem());
+                reservaManterDto.setCodigoAeroportoDestino(vooManterDto.getCodigoAeroportoDestino());
+                listaReservaManterDto.add(reservaManterDto);
+            }
+            listaReservaCUDAlterada = reservaCUDRepository.saveAll(listaReservaCUDBD.get());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizadas-contaR", listaReservaCUDBD.get());
+        }
+        return listaReservaManterDto; 
+    }
+
+    public void reverterReservasCUDCanceladasVoo(String codigoVoo) {
+        Optional<List<ReservaCUD>> listaReservaCUDBD = reservaCUDRepository.findByCodigoVoo(codigoVoo);
+
+        if (listaReservaCUDBD.isPresent()) {
+            for (ReservaCUD reservaCUD : listaReservaCUDBD.get()) {
+                ReservaCUD reservaCUDCache = redisReservaCUDCache.getCache(reservaCUD.getCodigoReserva());
+                if (reservaCUDCache != null) {
+                    reservaCUDRepository.save(reservaCUDCache);
+                    redisReservaCUDCache.removeCache(reservaCUDCache.getCodigoReserva());
+                }
+            }
+            // historicoAlteracaoEstadoReservaCUDService.reverterHistoricoEstadoReserva(listaReservaCUDBD.get());
+        }
+    }
+
+    public VooManterDto reservasCUDRealizar(VooManterDto vooManterDto) {
         Optional<List<ReservaCUD>> listaReservaCUDBD = reservaCUDRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
 
         if (listaReservaCUDBD.isPresent()) {
@@ -98,7 +188,7 @@ public class ReservaCUDService {
         return vooManterDto;
     }
 
-    public VooManterDto reverterReservasRealizadasCUD(VooManterDto vooManterDto) {
+    public VooManterDto reverterReservasCUDRealizadas(VooManterDto vooManterDto) {
         Optional<List<ReservaCUD>> listaReservaCUDBD = reservaCUDRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
 
         if (listaReservaCUDBD.isPresent()) {
@@ -114,7 +204,7 @@ public class ReservaCUDService {
         return vooManterDto;
     }
 
-    public ReservaManterDto confirmarEmbarqueCUD(String codigoVoo, String codigoReserva) throws ReservaNaoExisteException, MudancaEstadoReservaInvalidaException {
+    public ReservaManterDto confirmarEmbarqueReservaCUD(String codigoVoo, String codigoReserva) throws ReservaNaoExisteException, MudancaEstadoReservaInvalidaException {
         Optional<ReservaCUD> reservaCUDBD = reservaCUDRepository.findByCodigoReservaAndCodigoVoo(codigoReserva, codigoVoo);
         if (!reservaCUDBD.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");
@@ -131,7 +221,7 @@ public class ReservaCUDService {
         return reservaManterEmbarcadaCUD;
     }
 
-    public ReservaManterDto fazerCheckin(String codigoReserva) throws ReservaNaoExisteException, MudancaEstadoReservaInvalidaException {
+    public ReservaManterDto fazerCheckinReservaCUD(String codigoReserva) throws ReservaNaoExisteException, MudancaEstadoReservaInvalidaException {
         Optional<ReservaCUD> reservaCUDBD = reservaCUDRepository.findById(codigoReserva);
         if (!reservaCUDBD.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");

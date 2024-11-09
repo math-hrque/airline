@@ -28,30 +28,30 @@ public class CancelarVooConsumer {
 
     @RabbitListener(queues = "ms-reserva-reservas-cancelar-voo")
     public void cancelarReservasCUDVoo(VooManterDto vooManterDto) {
-        // try {
-        //     List<ReservaManterDto> listaReservaManterCanceladasDto = reservaCUDService.cancelarReservasCUDVoo(vooManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-canceladas-voo", listaReservaManterCanceladasDto);
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-canceladas-voo-erro", vooManterDto.getCodigoVoo());
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado-erro", vooManterDto.getCodigoVoo());
-        // }
+        try {
+            List<ReservaManterDto> listaReservaManterCanceladasDto = reservaCUDService.cancelarReservasCUDVoo(vooManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-canceladas-voo", listaReservaManterCanceladasDto);
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-canceladas-voo-erro", vooManterDto.getCodigoVoo());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado-erro", vooManterDto.getCodigoVoo());
+        }
     }
 
     @RabbitListener(queues = "ms-reserva-reservas-canceladas-voo-compensar")
     public void compensarReservasCUDCanceladasVoo(String codigoVoo) {
-        // try {
-        //     reservaCUDService.reverterReservasCUDCanceladasVoo(codigoVoo);
-        // } catch (Exception e) {
+        try {
+            reservaCUDService.reverterReservasCUDCanceladasVoo(codigoVoo);
+        } catch (Exception e) {
 
-        // }
+        }
     }
 
     @RabbitListener(queues = "ms-reserva-reservas-canceladas-voo-contaR")
-    public void cancelarReservasRVoo(List<ReservaCUD> listaReservaCUD) {
-        // try {
-        //     reservaRService.cancelarReservasRVoo(listaReservaCUD);
-        // } catch (Exception e) {
+    public void reservasRVooCancelar(List<ReservaCUD> listaReservaCUD) {
+        try {
+            reservaRService.reservasRVooCancelar(listaReservaCUD);
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

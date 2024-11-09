@@ -33,7 +33,7 @@ public class ReservaRService {
     @Autowired
     private ReservaRRepository reservaRRepository;
 
-    public ReservaManterDto cadastrarReservaR(ReservaCUD reservaCUD) {
+    public ReservaManterDto reservaRCadastrar(ReservaCUD reservaCUD) {
         ReservaR reservaR = mapper.map(reservaCUD, ReservaR.class);
         reservaR.setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
         reservaR.setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
@@ -42,7 +42,19 @@ public class ReservaRService {
         return reservaManterEmbarcadaR;
     }
 
-    public List<ReservaManterDto> realizarReservasR(List<ReservaCUD> listaReservaCUD) {
+    public ReservaManterDto reservaRCancelar(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
+        Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaCUD.getCodigoReserva());
+        if (!reservaRBD.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva nao existe");
+        }
+        reservaRBD.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
+        reservaRBD.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
+        ReservaR reservaCanceladaR = reservaRRepository.save(reservaRBD.get());
+        ReservaManterDto reservaManterCanceladaR = mapper.map(reservaCanceladaR, ReservaManterDto.class);
+        return reservaManterCanceladaR;
+    }
+
+    public List<ReservaManterDto> reservasRVooCancelar(List<ReservaCUD> listaReservaCUD) {
         List<ReservaR> listaReservaR = new ArrayList<>();
         List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
         for (ReservaCUD reservaCUD : listaReservaCUD) {
@@ -59,7 +71,24 @@ public class ReservaRService {
         return listaReservaManterDto;
     }
 
-    public ReservaManterDto confirmarEmbarqueR(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
+    public List<ReservaManterDto> reservasRVooRealizar(List<ReservaCUD> listaReservaCUD) {
+        List<ReservaR> listaReservaR = new ArrayList<>();
+        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
+        for (ReservaCUD reservaCUD : listaReservaCUD) {
+            Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
+            if (reservaR.isPresent()) {
+                reservaR.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
+                reservaR.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
+                listaReservaR.add(reservaR.get());
+                ReservaManterDto reservaManterRealizadaR = mapper.map(reservaR.get(), ReservaManterDto.class);
+                listaReservaManterDto.add(reservaManterRealizadaR);
+            }
+        }
+        reservaRRepository.saveAll(listaReservaR);
+        return listaReservaManterDto;
+    }
+
+    public ReservaManterDto reservaRConfirmarEmbarque(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
         Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
         if (!reservaR.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");
@@ -72,7 +101,7 @@ public class ReservaRService {
         return reservaManterEmbarcadaR;
     }
 
-    public ReservaManterDto checkinReservaR(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
+    public ReservaManterDto reservaRCheckin(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
         Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
         if (!reservaR.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");

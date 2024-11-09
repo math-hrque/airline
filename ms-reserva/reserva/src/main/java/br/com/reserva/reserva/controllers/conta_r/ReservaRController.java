@@ -15,7 +15,6 @@ import br.com.reserva.reserva.dtos.VooDto;
 import br.com.reserva.reserva.exeptions.ListaReservaVaziaException;
 import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/ms-reserva")

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.reserva.reserva.dtos.VooManterDto;
-import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import br.com.reserva.reserva.services.conta_cud.ReservaCUDService;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
@@ -28,9 +27,9 @@ public class RealizarReservasConsumer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @RabbitListener(queues = "ms-reserva-reservas-realizar")
-    public void realizarReservasCUD(VooManterDto vooManterDto) {
+    public void reservasCUDRealizar(VooManterDto vooManterDto) {
         try {
-            reservaCUDService.realizarReservasCUD(vooManterDto);
+            reservaCUDService.reservasCUDRealizar(vooManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-realizadas", vooManterDto);
         } catch (Exception e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reservas-realizadas-erro", vooManterDto);
@@ -41,16 +40,16 @@ public class RealizarReservasConsumer {
     @RabbitListener(queues = "ms-reserva-reservas-realizadas-compensar")
     public void compensarReservasCUDRealizadas(VooManterDto vooManterDto) {
         try {
-            reservaCUDService.reverterReservasRealizadasCUD(vooManterDto);
+            reservaCUDService.reverterReservasCUDRealizadas(vooManterDto);
         } catch (Exception e) {
 
         }
     }
 
     @RabbitListener(queues = "ms-reserva-reservas-realizadas-contaR")
-    public void realizarReservasR(List<ReservaCUD> listaReservaCUD) {
+    public void reservasRVooRealizar(List<ReservaCUD> listaReservaCUD) {
         try {
-            reservaRService.realizarReservasR(listaReservaCUD);
+            reservaRService.reservasRVooRealizar(listaReservaCUD);
         } catch (Exception e) {
 
         }

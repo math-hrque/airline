@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.time.OffsetDateTime;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +17,6 @@ import br.com.reserva.reserva.utils.conta_cud.RedisHistoricoAlteracaoEstadoReser
 
 @Service
 public class HistoricoAlteracaoEstadoReservaCUDService {
-
-    @Autowired
-    private ModelMapper mapper;
 
     @Autowired
     private RedisHistoricoAlteracaoEstadoReservaCUDCache redisHistoricoAlteracaoEstadoReservaCUDCache;

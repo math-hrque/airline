@@ -26,9 +26,9 @@ public class EfetuarReservaConsumer {
     private static final String EXCHANGE_NAME = "saga-exchange";
 
     @RabbitListener(queues = "ms-reserva-reserva-cadastrar")
-    public void cadastrarReservaCUD(ReservaManterDto reservaManterDto) {
+    public void reservaCUDCadastrar(ReservaManterDto reservaManterDto) {
         try {
-            ReservaManterDto reservaManterCriadaDto = reservaCUDService.cadastrarReservaCUD(reservaManterDto);
+            ReservaManterDto reservaManterCriadaDto = reservaCUDService.reservaCUDCadastrar(reservaManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada", reservaManterCriadaDto);
         } catch (ReservaNaoExisteException e) {
         
@@ -47,9 +47,9 @@ public class EfetuarReservaConsumer {
     }
 
     @RabbitListener(queues = "ms-reserva-reserva-cadastrada-contaR")
-    public void cadastrarReservaR(ReservaCUD reservaCUD) {
+    public void reservaRCadastrar(ReservaCUD reservaCUD) {
         try {
-            reservaRService.cadastrarReservaR(reservaCUD);
+            reservaRService.reservaRCadastrar(reservaCUD);
         } catch (Exception e) {
 
         }
