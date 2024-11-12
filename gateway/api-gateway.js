@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Adiciona uma rota específica para listar funcionários
+// rota  para listar funcionários
 app.get('/api/funcionarios', createProxyMiddleware({
     target: services['funcionario'],
     changeOrigin: true,
@@ -29,14 +29,14 @@ app.get('/api/funcionarios', createProxyMiddleware({
     }
 }));
 
-// Adiciona uma rota específica para consultar funcionários por email
+// rota  para consultar funcionários por email
 app.get('/api/funcionarios/email/:email', createProxyMiddleware({
     target: services['funcionario'],
     changeOrigin: true,
     pathRewrite: (path, req) => path.replace('/api/funcionarios/email', '/consultar-email')
 }));
 
-// Adiciona uma rota específica para consultar funcionários por ID
+// rota  para consultar funcionários por ID
 app.get('/api/funcionarios/id/:idFuncionario', createProxyMiddleware({
     target: services['funcionario'],
     changeOrigin: true,
@@ -49,6 +49,34 @@ app.use('/cliente', createProxyMiddleware({ target: services['cliente'], changeO
 app.use('/funcionario', createProxyMiddleware({ target: services['funcionario'], changeOrigin: true }));
 app.use('/reserva', createProxyMiddleware({ target: services['reserva'], changeOrigin: true }));
 app.use('/voos', createProxyMiddleware({ target: services['voos'], changeOrigin: true }));
+
+
+// endpoint para login
+app.post('/api/auth/login', createProxyMiddleware({
+    target: services['auth'],
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api/auth/login': '/login' // mapeia a rota local para a rota do serviço de login
+    }
+}));
+
+// endpoint para logout
+app.post('/api/auth/logout', createProxyMiddleware({
+    target: services['auth'],
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api/auth/logout': '/logout' // mapeia a rota local para a rota do serviço de logout
+    }
+}));
+
+// endpoint para verificar token
+app.get('/api/auth/verify-token', createProxyMiddleware({
+    target: services['auth'],
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api/auth/verify-token': '/verify-token' // mapeia a rota local para a rota de verificação de token
+    }
+}));
 
 // Start the API Gateway
 app.listen(port, () => {
