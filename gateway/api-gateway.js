@@ -43,6 +43,13 @@ app.get('/api/funcionarios/id/:idFuncionario', createProxyMiddleware({
     pathRewrite: (path, req) => path.replace('/api/funcionarios/id', '/consultar-idfuncionario')
 }));
 
+// rota  para cadastrar voos
+app.post('/api/voos/cadastrar-voo', createProxyMiddleware({
+    target: services['voos'],
+    changeOrigin: true,
+    pathRewrite: (path, req) => path.replace('/api/voos/cadastrar-voo', '/cadastrar-voo')
+}));
+
 // Set up proxy for each microservice
 app.use('/auth', createProxyMiddleware({ target: services['auth'], changeOrigin: true }));
 app.use('/cliente', createProxyMiddleware({ target: services['cliente'], changeOrigin: true }));
