@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.cliente.cliente.dtos.ClienteDto;
 import br.com.cliente.cliente.dtos.ClienteMilhasDto;
-import br.com.cliente.cliente.dtos.MilhasDto;
 import br.com.cliente.cliente.dtos.ReservaManterDto;
+import br.com.cliente.cliente.dtos.SaldoMilhasDto;
 import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
@@ -171,15 +171,19 @@ public class ClienteService {
         }
     }
 
-    public void comprarMilhas(MilhasDto milhasDTO, Long idCliente) throws ClienteNaoExisteException{
+    public SaldoMilhasDto comprarMilhas(int quantidadeMilhas, Long idCliente) throws ClienteNaoExisteException{
         Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
-        }
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
         Cliente cliente = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + milhasDTO.getQuantidadesMilhas());
+        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + quantidadeMilhas);
         clienteRepository.save(clienteBD.get());   
-        milhasService.comprarMilhas(milhasDTO, cliente);        
+        milhasService.comprarMilhas(quantidadeMilhas, cliente); 
+        SaldoMilhasDto novoSaldo = new SaldoMilhasDto();
+        novoSaldo.setIdCliente(idCliente);
+        novoSaldo.setSaldoMilhas(clienteBD.get().getSaldoMilhas());
+        return novoSaldo;
     }
 
     public ClienteMilhasDto consultarExtratoMilhas(Long idCliente) throws ClienteNaoExisteException{

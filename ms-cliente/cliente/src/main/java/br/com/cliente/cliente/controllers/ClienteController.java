@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cliente.cliente.dtos.ClienteMilhasDto;
 import br.com.cliente.cliente.dtos.MilhasDto;
+import br.com.cliente.cliente.dtos.SaldoMilhasDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
 import br.com.cliente.cliente.services.ClienteService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,18 +32,21 @@ public class ClienteController {
             return ResponseEntity.ok(extrato);
         } catch (ClienteNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/comprar-milhas")
-    public ResponseEntity<MilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente,
-            @RequestParam("quantidadeMilhas") int quantidadeMilhas, @RequestBody MilhasDto milhas) {
-        milhas.setQuantidadesMilhas(quantidadeMilhas);
+    public ResponseEntity<SaldoMilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente,
+            @RequestParam("quantidadeMilhas") int quantidadeMilhas) {
         try {
-            clienteService.comprarMilhas(milhas, idCliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(milhas);
+            SaldoMilhasDto novoSaldo = clienteService.comprarMilhas(quantidadeMilhas, idCliente);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoSaldo);
         } catch (ClienteNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
