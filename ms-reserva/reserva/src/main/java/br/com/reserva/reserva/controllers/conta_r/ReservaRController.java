@@ -48,6 +48,21 @@ public class ReservaRController {
         }
     }
 
+    // @GetMapping("/consultar-reserva/{codigoReserva}")
+    // public ResponseEntity<?> visualizarReservaCliente(@PathVariable String
+    // codigoReserva) {
+    // try {
+    // ReservaDto reservaDto =
+    // reservaRService.visualizarReservaCliente(codigoReserva);
+    // return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
+    // } catch (ReservaNaoExisteException e) {
+    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao
+    // buscar a reserva.");
+    // }
+    // }
+
     // @GetMapping("/cliente/{idCliente}")
     // public ResponseEntity<List<ReservaCUD>> getReservasByClienteId(@PathVariable
     // Long idCliente) {
