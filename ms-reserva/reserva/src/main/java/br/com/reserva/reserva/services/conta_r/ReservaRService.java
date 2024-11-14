@@ -130,8 +130,8 @@ public class ReservaRService {
         }).collect(Collectors.toList());
     }
 
-    public ReservaDto visualizarReservaCliente(Long idCliente, String codigoReserva) throws ReservaNaoExisteException {
-      Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReservaAndIdCliente(codigoReserva, idCliente);
+    public ReservaDto visualizarReservaCliente(String codigoReserva) throws ReservaNaoExisteException {
+      Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReserva(codigoReserva);
 
       if (!reservaOptional.isPresent()) {
           throw new ReservaNaoExisteException("Reserva não encontrada para o cliente especificado.");

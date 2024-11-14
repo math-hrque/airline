@@ -36,11 +36,10 @@ public class ReservaRController {
         }
     }
 
-    @GetMapping("/cliente/{idCliente}/consultar-reserva/{codigoReserva}")
-    public ResponseEntity<?> visualizarReservaCliente(@PathVariable Long idCliente,
-            @PathVariable String codigoReserva) {
+    @GetMapping("/consultar-reserva/{codigoReserva}")
+    public ResponseEntity<?> visualizarReservaCliente(@PathVariable String codigoReserva) {
         try {
-            ReservaDto reservaDto = reservaRService.visualizarReservaCliente(idCliente, codigoReserva);
+            ReservaDto reservaDto = reservaRService.visualizarReservaCliente(codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
         } catch (ReservaNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

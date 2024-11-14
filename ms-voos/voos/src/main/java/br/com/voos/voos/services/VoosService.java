@@ -205,9 +205,8 @@ public class VoosService {
       Optional<Voo> vooOptional = vooRepository.findVooByCodigo(codigoVoo);
   
       if (!vooOptional.isPresent()) {
-          throw new VooNaoExisteException("Voo não encontrado para o código especificado.");
+          throw new VooNaoExisteException("Nenhum voo encontrado para o código especificado.");
       }
-  
       return mapper.map(vooOptional.get(), VooDto.class);
     }
 }
