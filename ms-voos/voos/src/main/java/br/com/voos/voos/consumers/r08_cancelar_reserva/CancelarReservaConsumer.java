@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.voos.voos.dtos.ReservaManterDto;
-import br.com.voos.voos.dtos.VooManterDto;
-import br.com.voos.voos.exeptions.LimitePoltronasOcupadasVooException;
-import br.com.voos.voos.exeptions.MudancaEstadoVooInvalidaException;
 import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.services.VoosService;
 
@@ -25,24 +22,27 @@ public class CancelarReservaConsumer {
 
     @RabbitListener(queues = "ms-voos-voo-poltrona-desocupar")
     public void desocuparPoltronaVoo(ReservaManterDto reservaManterDto) {
-        // try {
-        //     voosService.desocuparPoltronaVoo(reservaManterDto);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada", reservaManterDto);
-        // } catch (VooNaoExisteException e) {
-
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada-erro", reservaManterDto);
-        // }
+        try {
+            ReservaManterDto ReservaManterVooDto = voosService.desocuparPoltronaVoo(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada", ReservaManterVooDto);
+        } catch (VooNaoExisteException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", reservaManterDto.getCodigoReserva());
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada-erro", reservaManterDto);
+        }
     }
 
     @RabbitListener(queues = "ms-voos-voo-poltrona-desocupada-compensar")
     public void compensarVooPoltronaDesocupado(ReservaManterDto reservaManterDto) {
-        // try {
-        //     voosService.reverterVooPoltronaDesocupado(reservaManterDto);
-        // } catch (VooNaoExisteException e) {
+        try {
+            voosService.reverterVooPoltronaDesocupado(reservaManterDto);
+        } catch (VooNaoExisteException e) {
 
-        // } catch (Exception e) {
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

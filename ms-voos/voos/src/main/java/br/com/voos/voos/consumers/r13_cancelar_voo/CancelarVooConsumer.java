@@ -23,26 +23,26 @@ public class CancelarVooConsumer {
 
     @RabbitListener(queues = "ms-voos-voo-cancelar")
     public void cancelarVoo(String codigoVoo) {
-        // try {
-        //     VooManterDto vooManterCanceladoDto = voosService.cancelar(codigoVoo);
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado", vooManterCanceladoDto);
-        // } catch (VooNaoExisteException e) {
+        try {
+            VooManterDto vooManterCanceladoDto = voosService.cancelar(codigoVoo);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado", vooManterCanceladoDto);
+        } catch (VooNaoExisteException e) {
 
-        // } catch (MudancaEstadoVooInvalidaException e) {
+        } catch (MudancaEstadoVooInvalidaException e) {
 
-        // } catch (Exception e) {
-        //     rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado-erro", codigoVoo);
-        // }
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-cancelado-erro", codigoVoo);
+        }
     }
 
     @RabbitListener(queues = "ms-voos-voo-cancelado-compensar")
     public void compensarVooCancelado(String codigoVoo) {
-        // try {
-        //     voosService.reverterCancelado(codigoVoo);
-        // } catch (VooNaoExisteException e) {
+        try {
+            voosService.reverterCancelado(codigoVoo);
+        } catch (VooNaoExisteException e) {
 
-        // } catch (Exception e) {
+        } catch (Exception e) {
 
-        // }
+        }
     }
 }

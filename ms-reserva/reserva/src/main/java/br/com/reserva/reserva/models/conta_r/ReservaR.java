@@ -1,7 +1,6 @@
 package br.com.reserva.reserva.models.conta_r;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 import br.com.reserva.reserva.enums.SiglaEstadoReserva;

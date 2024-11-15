@@ -9,7 +9,6 @@ import java.util.List;
 import java.time.OffsetDateTime;
 
 import br.com.voos.voos.dtos.CadastrarVooDto;
-import br.com.voos.voos.dtos.ReservaDto;
 import br.com.voos.voos.exeptions.*;
 import br.com.voos.voos.models.Aeroporto;
 import br.com.voos.voos.repositories.AeroportoRepository;
@@ -85,6 +84,82 @@ public class VoosService {
         return vooManterRevertidoDto;
     }
 
+    public ReservaManterDto desocuparPoltronaVoo(ReservaManterDto reservaManterDto) throws VooNaoExisteException {
+        Optional<Voo> vooBD = vooRepository.findById(reservaManterDto.getCodigoVoo());
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(vooBD.get().getCodigoVoo());
+        if (vooCache == null) {
+            redisVoosCache.saveCache(vooBD.get());
+        }
+
+        Voo voo = vooBD.get();
+        voo.setQuantidadePoltronasOcupadas(voo.getQuantidadePoltronasOcupadas() - reservaManterDto.getQuantidadePoltronas());
+        vooRepository.atualizarPoltronasOcupadasVoo(voo);
+        Optional<Voo> vooAtualizado = vooRepository.findById(voo.getCodigoVoo());
+        reservaManterDto.setCodigoAeroportoOrigem(vooAtualizado.get().getAeroportoOrigem().getCodigoAeroporto());
+        reservaManterDto.setCodigoAeroportoDestino(vooAtualizado.get().getAeroportoDestino().getCodigoAeroporto());
+        return reservaManterDto;
+    }
+
+    public VooManterDto reverterVooPoltronaDesocupado(ReservaManterDto reservaManterDto) throws VooNaoExisteException {
+        Optional<Voo> vooBD = vooRepository.findById(reservaManterDto.getCodigoVoo());
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(reservaManterDto.getCodigoVoo());
+        if (redisVoosCache == null) {
+            throw new VooNaoExisteException("Voo nao existe no cache!");
+        }
+
+        vooRepository.atualizarPoltronasOcupadasVoo(vooCache);
+        redisVoosCache.removeCache(vooCache.getCodigoVoo());
+        Optional<Voo> voo = vooRepository.findById(vooBD.get().getCodigoVoo());
+        VooManterDto vooManterRevertidoDto = mapper.map(voo.get(), VooManterDto.class);
+        return vooManterRevertidoDto;
+    }
+
+    public VooManterDto cancelar(String codigoVoo) throws VooNaoExisteException, MudancaEstadoVooInvalidaException {
+        Optional<Voo> vooBD = vooRepository.findById(codigoVoo);
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+        if (vooBD.get().getEstadoVoo().getTipoEstadoVoo() != TipoEstadoVoo.CONFIRMADO) {
+            throw new MudancaEstadoVooInvalidaException("Estado de Voo nao eh valido para ser cancelado!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(vooBD.get().getCodigoVoo());
+        if (vooCache == null) {
+            redisVoosCache.saveCache(vooBD.get());
+        }
+
+        Voo voo = vooBD.get();
+        voo.setEstadoVoo(estadoVooRepository.findByTipoEstadoVoo(TipoEstadoVoo.CANCELADO));
+        Voo vooRealizadoBD = vooRepository.save(voo);
+        VooManterDto vooManterRealizadoDto = mapper.map(vooRealizadoBD, VooManterDto.class);
+        return vooManterRealizadoDto;
+    }
+
+    public VooManterDto reverterCancelado(String codigoVoo) throws VooNaoExisteException {
+        Optional<Voo> vooBD = vooRepository.findById(codigoVoo);
+        if (!vooBD.isPresent()) {
+            throw new VooNaoExisteException("Voo nao existe!");
+        }
+
+        Voo vooCache = redisVoosCache.getCache(codigoVoo);
+        if (redisVoosCache == null) {
+            throw new VooNaoExisteException("Voo nao existe no cache!");
+        }
+
+        vooRepository.updateVoo(vooCache);
+        redisVoosCache.removeCache(vooCache.getCodigoVoo());
+        VooManterDto vooManterRevertidoDto = mapper.map(vooCache, VooManterDto.class);
+        return vooManterRevertidoDto;
+    }
+
     public VooManterDto realizar(String codigoVoo) throws VooNaoExisteException, MudancaEstadoVooInvalidaException {
         Optional<Voo> vooBD = vooRepository.findById(codigoVoo);
         if (!vooBD.isPresent()) {
@@ -117,9 +192,9 @@ public class VoosService {
             throw new VooNaoExisteException("Voo nao existe no cache!");
         }
 
-        Voo voo = vooRepository.save(vooCache);
+        vooRepository.updateVoo(vooCache);
         redisVoosCache.removeCache(vooCache.getCodigoVoo());
-        VooManterDto vooManterRevertidoDto = mapper.map(voo, VooManterDto.class);
+        VooManterDto vooManterRevertidoDto = mapper.map(vooCache, VooManterDto.class);
         return vooManterRevertidoDto;
     }
 

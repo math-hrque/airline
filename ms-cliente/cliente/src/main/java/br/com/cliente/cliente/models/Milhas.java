@@ -35,7 +35,7 @@ public class Milhas implements Serializable {
     @Column(name="codigo_reserva")
     private String codigoReserva;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 

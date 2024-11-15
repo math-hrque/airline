@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 import br.com.reserva.reserva.models.conta_cud.HistoricoAlteracaoEstadoReservaCUD;
-import br.com.reserva.reserva.models.conta_cud.ReservaCUD;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -22,4 +21,17 @@ public interface HistoricoAlteracaoEstadoReservaCUDRepository extends JpaReposit
                    "VALUES (:#{#historico.dataAlteracaoEstadoReserva}, :#{#historico.reserva.codigoReserva}, :#{#historico.estadoReservaOrigem.idEstadoReserva}, :#{#historico.estadoReservaDestino.idEstadoReserva})", 
                    nativeQuery = true)
     void saveHistorico(@Param("historico") HistoricoAlteracaoEstadoReservaCUD historico);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE historico_alteracao_estado_reserva " +
+                "SET data_alteracao_estado_reserva = :#{#historico.dataAlteracaoEstadoReserva}, " +
+                "id_estado_reserva_origem = :#{#historico.estadoReservaOrigem.idEstadoReserva}, " +
+                "id_estado_reserva_destino = :#{#historico.estadoReservaDestino.idEstadoReserva} " +
+                "WHERE codigo_reserva = :#{#historico.reserva.codigoReserva}", 
+                nativeQuery = true)
+    void updateHistorico(@Param("historico") HistoricoAlteracaoEstadoReservaCUD historico);
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM historico_alteracao_estado_reserva WHERE codigo_reserva = :codigoReserva", nativeQuery = true)
+    void deleteByCodigoReserva(@Param("codigoReserva") String codigoReserva);
 }

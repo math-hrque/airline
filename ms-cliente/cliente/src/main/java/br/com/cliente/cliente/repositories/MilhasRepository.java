@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface MilhasRepository extends JpaRepository<Milhas, Long> {
     Optional<List<Milhas>> findByClienteIdCliente(Long idCliente);
+    Optional<Milhas> findByCodigoReserva(String codigoReserva);
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO milhas (data_transacao, valor_reais, quantidade_milhas, descricao, codigo_reserva, id_cliente, id_transacao) " +

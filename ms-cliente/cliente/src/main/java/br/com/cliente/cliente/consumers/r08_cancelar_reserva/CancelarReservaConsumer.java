@@ -26,8 +26,13 @@ public class CancelarReservaConsumer {
             clienteService.milhasReservaCancelar(reservaManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada", reservaManterDto);
         } catch (ClienteNaoExisteException e) {
-
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada-erro", reservaManterDto);
         } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", reservaManterDto.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-desocupada-erro", reservaManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cancelada-erro", reservaManterDto);
         }
     }

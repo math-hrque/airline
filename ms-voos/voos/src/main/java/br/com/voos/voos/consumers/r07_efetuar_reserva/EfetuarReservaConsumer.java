@@ -24,14 +24,17 @@ public class EfetuarReservaConsumer {
     @RabbitListener(queues = "ms-voos-voo-poltrona-ocupar")
     public void ocuparPoltronaVoo(ReservaManterDto reservaManterDto) {
         try {
-            ReservaManterDto ReservaManterVooDto = voosService.ocuparPoltronaVoo(reservaManterDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada", ReservaManterVooDto);
+            ReservaManterDto reservaManterVooDto = voosService.ocuparPoltronaVoo(reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada", reservaManterVooDto);
         } catch (VooNaoExisteException e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
         } catch (LimitePoltronasOcupadasVooException e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
         } catch (Exception e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
         }
     }

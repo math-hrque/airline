@@ -13,12 +13,32 @@ import org.springframework.stereotype.Component;
 public class ConfirmarEmbarqueQueue {
 
     @Bean
-    public Queue embarqueConfirmarQueue() {
+    public Queue embarqueConfirmarContaRQueue() {
         return new Queue("ms-reserva-reserva-confirmar-embarque-contaR");
     }
 
     @Bean
-    public Binding embarqueConfirmarBinding(Queue embarqueConfirmarQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(embarqueConfirmarQueue).to(exchange).with("ms-reserva-reserva-confirmar-embarque-contaR");
+    public Queue embarqueConfirmadoContaRCompensarQueue() {
+        return new Queue("ms-reserva-reserva-confirmado-embarque-contaR-compensar");
+    }
+
+    @Bean
+    public Queue embarqueConfirmadoContaCUDCompensarQueue() {
+        return new Queue("ms-reserva-reserva-confirmado-embarque-contaCUD-compensar");
+    }
+
+    @Bean
+    public Binding embarqueConfirmarContaRBinding(Queue embarqueConfirmarContaRQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(embarqueConfirmarContaRQueue).to(exchange).with("ms-reserva-reserva-confirmar-embarque-contaR");
+    }
+
+    @Bean
+    public Binding embarqueConfirmadoContaRCompensarBinding(Queue embarqueConfirmadoContaRCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(embarqueConfirmadoContaRCompensarQueue).to(exchange).with("ms-reserva-reserva-confirmado-embarque-contaR-compensar");
+    }
+
+    @Bean
+    public Binding embarqueConfirmadoContaCUDCompensarBinding(Queue embarqueConfirmadoContaCUDCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(embarqueConfirmadoContaCUDCompensarQueue).to(exchange).with("ms-reserva-reserva-confirmado-embarque-contaCUD-compensar");
     }
 }

@@ -16,7 +16,6 @@ import br.com.cliente.cliente.models.Milhas;
 import br.com.cliente.cliente.repositories.MilhasRepository;
 import br.com.cliente.cliente.repositories.TransacaoRepository;
 
-
 @Service
 public class MilhasService {
 
@@ -59,6 +58,16 @@ public class MilhasService {
         milhasCadastrar.setCliente(cliente);
         milhasCadastrar.setTransacao(transacaoRepository.findByTipoTransacao(TipoTransacao.ENTRADA));
         milhasRepository.saveMilhas(milhasCadastrar);
+        return reservaManterDto;
+    }
+
+    public ReservaManterDto milhasReservaRemover(ReservaManterDto reservaManterDto) {
+        if (reservaManterDto.getCodigoReserva() != null) {
+            Optional<Milhas> milhas = milhasRepository.findByCodigoReserva(reservaManterDto.getCodigoReserva());
+            if (milhas.isPresent()) {
+                milhasRepository.delete(milhas.get());
+            }
+        }
         return reservaManterDto;
     }
 

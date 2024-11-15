@@ -56,12 +56,12 @@ public class HistoricoAlteracaoEstadoReservaCUDService {
 
     public void reverterHistoricoEstadoReserva(List<ReservaCUD> listaReservaCUD) {
         for (ReservaCUD reservaCUD : listaReservaCUD) {
-            HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReservaCUDCache = redisHistoricoAlteracaoEstadoReservaCUDCache.getCache(reservaCUD.getCodigoVoo());
+            HistoricoAlteracaoEstadoReservaCUD historicoAlteracaoEstadoReservaCUDCache = redisHistoricoAlteracaoEstadoReservaCUDCache.getCache(reservaCUD.getCodigoReserva());
             if (historicoAlteracaoEstadoReservaCUDCache != null) {
-                historicoAlteracaoEstadoReservaCUDRepository.save(historicoAlteracaoEstadoReservaCUDCache);
-                redisHistoricoAlteracaoEstadoReservaCUDCache.removeCache(historicoAlteracaoEstadoReservaCUDCache.getReserva().getCodigoVoo());
+                historicoAlteracaoEstadoReservaCUDRepository.updateHistorico(historicoAlteracaoEstadoReservaCUDCache);
+                redisHistoricoAlteracaoEstadoReservaCUDCache.removeCache(historicoAlteracaoEstadoReservaCUDCache.getReserva().getCodigoReserva());
             } else {
-                historicoAlteracaoEstadoReservaCUDRepository.deleteByReservaCodigoReserva(reservaCUD.getCodigoReserva());
+                historicoAlteracaoEstadoReservaCUDRepository.deleteByCodigoReserva(reservaCUD.getCodigoReserva());
             }
         }
     }

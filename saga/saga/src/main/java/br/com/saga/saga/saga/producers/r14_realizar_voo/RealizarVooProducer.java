@@ -17,7 +17,7 @@ public class RealizarVooProducer {
 
     @RabbitListener(queues = "saga-ms-voos-voo-realizado")
     public void vooRealizadoListener(VooManterDto vooManterDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizar", vooManterDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizar-voo", vooManterDto);
     }
 
     @RabbitListener(queues = "saga-ms-voos-voo-realizado-erro")
@@ -32,6 +32,6 @@ public class RealizarVooProducer {
 
     @RabbitListener(queues = "saga-ms-reserva-reservas-realizadas-erro")
     public void reservasRealizadasErroListener(VooManterDto vooManterDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizadas-compensar", vooManterDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reservas-realizadas-voo-compensar", vooManterDto);
     }
 }

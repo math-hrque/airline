@@ -21,7 +21,7 @@ public class AeroportoService {
     @Autowired
     private AeroportoRepository aeroportoRepository;
 
-    public List<CodigoAeroportoDto> listar() throws ListaAeroportoVaziaException {
+    public List<CodigoAeroportoDto> listarAeroportos() throws ListaAeroportoVaziaException {
         List<Aeroporto> listaAeroportoBD = aeroportoRepository.findAll();
         if (listaAeroportoBD.isEmpty()) {
             throw new ListaAeroportoVaziaException("Lista de aeroportos vazia!");

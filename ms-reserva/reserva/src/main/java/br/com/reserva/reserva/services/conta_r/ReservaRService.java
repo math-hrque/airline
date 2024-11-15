@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import br.com.reserva.reserva.dtos.ReservaDto;
 import br.com.reserva.reserva.dtos.ReservaManterDto;
 import br.com.reserva.reserva.dtos.VooDto;
+import br.com.reserva.reserva.dtos.VooManterDto;
 import br.com.reserva.reserva.enums.TipoEstadoReserva;
 import br.com.reserva.reserva.exeptions.ListaReservaVaziaException;
 import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
@@ -42,11 +43,28 @@ public class ReservaRService {
         return reservaManterEmbarcadaR;
     }
 
+    public ReservaManterDto reservaRDeletar(String codigoReserva) throws ReservaNaoExisteException {
+        Optional<ReservaR> reservaRBD = reservaRRepository.findById(codigoReserva);
+        if (!reservaRBD.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva nao existe");
+        }
+
+        reservaRRepository.delete(reservaRBD.get());
+        ReservaManterDto reservaManterDeletadaR = mapper.map(reservaRBD.get(), ReservaManterDto.class);
+        return reservaManterDeletadaR;
+    }
+
     public ReservaManterDto reservaRCancelar(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
         Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaCUD.getCodigoReserva());
         if (!reservaRBD.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");
         }
+
+        ReservaR reservaRCache = redisReservaRCache.getCache(reservaRBD.get().getCodigoReserva());
+        if (reservaRCache == null) {
+            redisReservaRCache.saveCache(reservaRBD.get());
+        }
+
         reservaRBD.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
         reservaRBD.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
         ReservaR reservaCanceladaR = reservaRRepository.save(reservaRBD.get());
@@ -54,64 +72,117 @@ public class ReservaRService {
         return reservaManterCanceladaR;
     }
 
-    public List<ReservaManterDto> reservasRVooCancelar(List<ReservaCUD> listaReservaCUD) {
-        List<ReservaR> listaReservaR = new ArrayList<>();
-        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
-        for (ReservaCUD reservaCUD : listaReservaCUD) {
-            Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
-            if (reservaR.isPresent()) {
-                reservaR.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
-                reservaR.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
-                listaReservaR.add(reservaR.get());
-                ReservaManterDto reservaManterRealizadaR = mapper.map(reservaR.get(), ReservaManterDto.class);
-                listaReservaManterDto.add(reservaManterRealizadaR);
-            }
-        }
-        reservaRRepository.saveAll(listaReservaR);
-        return listaReservaManterDto;
-    }
-
-    public List<ReservaManterDto> reservasRVooRealizar(List<ReservaCUD> listaReservaCUD) {
-        List<ReservaR> listaReservaR = new ArrayList<>();
-        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
-        for (ReservaCUD reservaCUD : listaReservaCUD) {
-            Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
-            if (reservaR.isPresent()) {
-                reservaR.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
-                reservaR.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
-                listaReservaR.add(reservaR.get());
-                ReservaManterDto reservaManterRealizadaR = mapper.map(reservaR.get(), ReservaManterDto.class);
-                listaReservaManterDto.add(reservaManterRealizadaR);
-            }
-        }
-        reservaRRepository.saveAll(listaReservaR);
-        return listaReservaManterDto;
-    }
-
-    public ReservaManterDto reservaRConfirmarEmbarque(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
-        Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
-        if (!reservaR.isPresent()) {
+    public ReservaManterDto reservaRFazerCheckin(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
+        Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaCUD.getCodigoReserva());
+        if (!reservaRBD.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");
         }
 
-        reservaR.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
-        reservaR.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
-        ReservaR reservaEmbarcadaR = reservaRRepository.save(reservaR.get());
+        ReservaR reservaRCache = redisReservaRCache.getCache(reservaRBD.get().getCodigoReserva());
+        if (reservaRCache == null) {
+            redisReservaRCache.saveCache(reservaRBD.get());
+        }
+
+        reservaRBD.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
+        reservaRBD.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
+        ReservaR reservaCheckinR = reservaRRepository.save(reservaRBD.get());
+        ReservaManterDto reservaManterCheckinR = mapper.map(reservaCheckinR, ReservaManterDto.class);
+        return reservaManterCheckinR;
+    }
+
+    public ReservaManterDto reservaRConfirmarEmbarque(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
+        Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaCUD.getCodigoReserva());
+        if (!reservaRBD.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva nao existe");
+        }
+
+        ReservaR reservaRCache = redisReservaRCache.getCache(reservaRBD.get().getCodigoReserva());
+        if (reservaRCache == null) {
+            redisReservaRCache.saveCache(reservaRBD.get());
+        }
+
+        reservaRBD.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
+        reservaRBD.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
+        ReservaR reservaEmbarcadaR = reservaRRepository.save(reservaRBD.get());
         ReservaManterDto reservaManterEmbarcadaR = mapper.map(reservaEmbarcadaR, ReservaManterDto.class);
         return reservaManterEmbarcadaR;
     }
 
-    public ReservaManterDto reservaRCheckin(ReservaCUD reservaCUD) throws ReservaNaoExisteException {
-        Optional<ReservaR> reservaR = reservaRRepository.findById(reservaCUD.getCodigoReserva());
-        if (!reservaR.isPresent()) {
+    public ReservaManterDto reservaRCompensar(String codigoReserva) throws ReservaNaoExisteException {
+        Optional<ReservaR> reservaRBD = reservaRRepository.findById(codigoReserva);
+        if (!reservaRBD.isPresent()) {
             throw new ReservaNaoExisteException("Reserva nao existe");
         }
 
-        reservaR.get().setSiglaEstadoReserva(reservaCUD.getEstadoReserva().getSiglaEstadoReserva());
-        reservaR.get().setTipoEstadoReserva(reservaCUD.getEstadoReserva().getTipoEstadoReserva());
-        ReservaR reservaCheckinR = reservaRRepository.save(reservaR.get());
-        ReservaManterDto reservaManterCheckinR = mapper.map(reservaCheckinR, ReservaManterDto.class);
-        return reservaManterCheckinR;
+        ReservaR reservaRCache = redisReservaRCache.getCache(reservaRBD.get().getCodigoReserva());
+        if (reservaRCache == null) {
+            throw new ReservaNaoExisteException("Reserva nao existe no cache!");
+        }
+
+        reservaRRepository.save(reservaRCache);
+        redisReservaRCache.removeCache(reservaRCache.getCodigoReserva());
+        Optional<ReservaR> ReservarRRevertida = reservaRRepository.findById(reservaRBD.get().getCodigoReserva());
+        ReservaManterDto reservaManterRevertidaDto = mapper.map(ReservarRRevertida.get(), ReservaManterDto.class);
+        return reservaManterRevertidaDto;
+    }
+
+    public List<ReservaManterDto> reservasRVooCancelar(VooManterDto vooManterDto) {
+        List<ReservaR> listaReservaR = new ArrayList<>();
+        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
+        List<ReservaR> listaReservaRCache = redisReservaRCache.getListCache(vooManterDto.getCodigoVoo());
+        if (listaReservaRCache != null) {
+            Optional<List<ReservaR>> listaReservaRBD = reservaRRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
+            if (listaReservaRBD.isPresent()) {
+                redisReservaRCache.saveListCache(listaReservaRBD.get(), vooManterDto.getCodigoVoo());
+                for (ReservaR reservaR : listaReservaRCache) {
+                    Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaR.getCodigoReserva());
+                    if (reservaRBD.isPresent()) {    
+                        reservaRBD.get().setSiglaEstadoReserva(reservaR.getSiglaEstadoReserva());
+                        reservaRBD.get().setTipoEstadoReserva(reservaR.getTipoEstadoReserva());
+                        listaReservaR.add(reservaR);
+                        ReservaManterDto reservaManterCanceladaR = mapper.map(reservaR, ReservaManterDto.class);
+                        listaReservaManterDto.add(reservaManterCanceladaR);
+                    }
+                }
+                reservaRRepository.saveAll(listaReservaR);
+            }
+        }
+        return listaReservaManterDto;
+    }
+
+    public List<ReservaManterDto> reservasRVooRealizar(VooManterDto vooManterDto) {
+        List<ReservaR> listaReservaR = new ArrayList<>();
+        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
+        List<ReservaR> listaReservaRCache = redisReservaRCache.getListCache(vooManterDto.getCodigoVoo());
+        if (listaReservaRCache != null) {
+            Optional<List<ReservaR>> listaReservaRBD = reservaRRepository.findByCodigoVoo(vooManterDto.getCodigoVoo());
+            if (listaReservaRBD.isPresent()) {
+                redisReservaRCache.saveListCache(listaReservaRBD.get(), vooManterDto.getCodigoVoo());
+                for (ReservaR reservaR : listaReservaRCache) {
+                    Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaR.getCodigoReserva());
+                    if (reservaRBD.isPresent()) {    
+                        reservaRBD.get().setSiglaEstadoReserva(reservaR.getSiglaEstadoReserva());
+                        reservaRBD.get().setTipoEstadoReserva(reservaR.getTipoEstadoReserva());
+                        listaReservaR.add(reservaR);
+                        ReservaManterDto reservaManterRealizadaR = mapper.map(reservaR, ReservaManterDto.class);
+                        listaReservaManterDto.add(reservaManterRealizadaR);
+                    }
+                }
+                reservaRRepository.saveAll(listaReservaR);
+            }
+        }
+        return listaReservaManterDto;
+    }
+
+    public List<ReservaManterDto> reservasRVooCompensar(VooManterDto vooManterDto) {
+        List<ReservaManterDto> listaReservaManterDto = new ArrayList<>();
+        List<ReservaR> listaReservaRCache = redisReservaRCache.getListCache(vooManterDto.getCodigoVoo());
+        if (listaReservaRCache != null) {
+            reservaRRepository.saveAll(listaReservaRCache);
+            redisReservaRCache.removeListCache(vooManterDto.getCodigoVoo());
+            listaReservaManterDto = listaReservaRCache.stream().map(reservaR -> mapper.map(reservaR, ReservaManterDto.class)).collect(Collectors.toList());
+        }
+        return listaReservaManterDto;
     }
 
     public List<ReservaDto> listarReservasVoos48h(Long idCliente, List<VooDto> listaVooDto) throws ListaReservaVaziaException {

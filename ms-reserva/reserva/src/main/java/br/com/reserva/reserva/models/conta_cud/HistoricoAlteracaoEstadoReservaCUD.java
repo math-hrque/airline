@@ -24,7 +24,7 @@ public class HistoricoAlteracaoEstadoReservaCUD implements Serializable {
     private OffsetDateTime dataAlteracaoEstadoReserva = OffsetDateTime.now();
 
     @OneToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name = "codigo_reserva", updatable = false, unique = true)
+    @JoinColumn(name = "codigo_reserva", unique = true)
     private ReservaCUD reserva;
 
     @ManyToOne(fetch=FetchType.EAGER)

@@ -23,7 +23,7 @@ public class AeroportoController {
     @GetMapping("/listar-aeroporto")
     public ResponseEntity<?> listar() {
         try {
-            List<CodigoAeroportoDto> listaAeroporto = aeroportoService.listar();
+            List<CodigoAeroportoDto> listaAeroporto = aeroportoService.listarAeroportos();
             return ResponseEntity.status(HttpStatus.OK).body(listaAeroporto);
         } catch (ListaAeroportoVaziaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

@@ -36,6 +36,7 @@ public class CancelarReservaConsumer {
         } catch (MudancaEstadoReservaInvalidaException e) {
         
         } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", codigoReserva);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", codigoReserva);
         }
     }
@@ -55,6 +56,18 @@ public class CancelarReservaConsumer {
     public void reservaRCancelar(ReservaCUD reservaCUD) {
         try {
             reservaRService.reservaRCancelar(reservaCUD);
+        } catch (ReservaNaoExisteException e) {
+
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelada-contaR-compensar", reservaCUD.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cancelada-erro", reservaCUD.getCodigoReserva());
+        }
+    }
+
+    @RabbitListener(queues = "ms-reserva-reserva-cancelada-contaR-compensar")
+    public void reservaRCanceladaCompensar(String codigoReserva) {
+        try {
+            reservaRService.reservaRCompensar(codigoReserva);
         } catch (ReservaNaoExisteException e) {
 
         } catch (Exception e) {

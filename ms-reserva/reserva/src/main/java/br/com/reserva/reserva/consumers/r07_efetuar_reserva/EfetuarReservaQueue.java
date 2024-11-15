@@ -28,6 +28,11 @@ public class EfetuarReservaQueue {
     }
 
     @Bean
+    public Queue reservaCadastradaContaRCompensarQueue() {
+        return new Queue("ms-reserva-reserva-cadastrada-contaR-compensar");
+    }
+
+    @Bean
     public Binding reservaCadastrarBinding(Queue reservaCadastrarQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservaCadastrarQueue).to(exchange).with("ms-reserva-reserva-cadastrar");
     }
@@ -40,5 +45,10 @@ public class EfetuarReservaQueue {
     @Bean
     public Binding reservaCadastradaContaRBinding(Queue reservaCadastradaContaRQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservaCadastradaContaRQueue).to(exchange).with("ms-reserva-reserva-cadastrada-contaR");
+    }
+
+    @Bean
+    public Binding reservaCadastradaContaRCompensarBinding(Queue reservaCadastradaContaRCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(reservaCadastradaContaRCompensarQueue).to(exchange).with("ms-reserva-reserva-cadastrada-contaR-compensar");
     }
 }

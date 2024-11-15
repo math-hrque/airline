@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-public class CancelarVooQueue {
+public class CancelarReservasVooQueue {
 
     @Bean
     public Queue reservasCancelarVooQueue() {
@@ -28,6 +28,11 @@ public class CancelarVooQueue {
     }
 
     @Bean
+    public Queue reservasCanceladasVooContaRCompensarQueue() {
+        return new Queue("ms-reserva-reservas-canceladas-voo-contaR-compensar");
+    }
+
+    @Bean
     public Binding reservasCancelarVooBinding(Queue reservasCancelarVooQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservasCancelarVooQueue).to(exchange).with("ms-reserva-reservas-cancelar-voo");
     }
@@ -40,5 +45,10 @@ public class CancelarVooQueue {
     @Bean
     public Binding reservasCanceladasVooContaRBinding(Queue reservasCanceladasVooContaRQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservasCanceladasVooContaRQueue).to(exchange).with("ms-reserva-reservas-canceladas-voo-contaR");
+    }
+
+    @Bean
+    public Binding reservasCanceladasVooContaRCompensarBinding(Queue reservasCanceladasVooContaRCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(reservasCanceladasVooContaRCompensarQueue).to(exchange).with("ms-reserva-reservas-canceladas-voo-contaR-compensar");
     }
 }

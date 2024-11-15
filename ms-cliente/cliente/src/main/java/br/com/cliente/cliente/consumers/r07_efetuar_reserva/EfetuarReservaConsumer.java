@@ -28,12 +28,15 @@ public class EfetuarReservaConsumer {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada", reservaManterDto);
         } catch (ClienteNaoExisteException e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
         } catch (SemSaldoMilhasSuficientesClienteException e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
         } catch (Exception e) {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-milhas-reserva-cadastrada-erro", reservaManterDto);
         }

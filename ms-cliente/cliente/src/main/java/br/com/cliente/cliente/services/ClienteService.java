@@ -76,96 +76,108 @@ public class ClienteService {
     }
 
     public ReservaManterDto milhasReservaCadastrar(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException, SemSaldoMilhasSuficientesClienteException {
-        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
+        if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+            Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
+            if (clienteBD.get().getSaldoMilhas() < reservaManterDto.getMilhasUtilizadas()) {
+                throw new SemSaldoMilhasSuficientesClienteException("Sem saldo de milhas suficientes!");
+            }
+    
+            Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+            if (clienteCache == null) {
+                redisClienteCache.saveCache(clienteBD.get());
+            }
+    
+            clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() - reservaManterDto.getMilhasUtilizadas());
+            clienteRepository.save(clienteBD.get());
+            milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
         }
-        if (clienteBD.get().getSaldoMilhas() < reservaManterDto.getMilhasUtilizadas()) {
-            throw new SemSaldoMilhasSuficientesClienteException("Sem saldo de milhas suficientes!");
-        }
-
-        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        if (clienteCache == null) {
-            redisClienteCache.saveCache(clienteBD.get());
-        }
-
-        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() - reservaManterDto.getMilhasUtilizadas());
-        clienteRepository.save(clienteBD.get());
-        milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
         return reservaManterDto;
     }
 
     public ReservaManterDto reverterMilhasReservaCadastrada(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
-        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
-        }
-
-        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        if (clienteCache != null) {
-            clienteRepository.save(clienteCache);
-            redisClienteCache.removeCache(clienteCache.getIdCliente());
-            milhasService.milhasReservaCancelar(reservaManterDto, clienteBD.get());
+        if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+            Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
+    
+            Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+            if (clienteCache != null) {
+                clienteRepository.save(clienteCache);
+                redisClienteCache.removeCache(clienteCache.getIdCliente());
+                milhasService.milhasReservaRemover(reservaManterDto);
+            }
         }
         return reservaManterDto;
     }
 
     public ReservaManterDto milhasReservaCancelar(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
-        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
+        if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+            Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
+    
+            Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+            if (clienteCache == null) {
+                redisClienteCache.saveCache(clienteBD.get());
+            }
+    
+            clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
+            clienteRepository.save(clienteBD.get());
+            milhasService.milhasReservaCancelar(reservaManterDto, clienteBD.get());
         }
-
-        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        if (clienteCache == null) {
-            redisClienteCache.saveCache(clienteBD.get());
-        }
-
-        clienteBD.get().setSaldoMilhas(clienteBD.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
-        clienteRepository.save(clienteBD.get());
-        milhasService.milhasReservaCancelar(reservaManterDto, clienteBD.get());
         return reservaManterDto;
     }
 
     public ReservaManterDto reverterMilhasReservaCancelada(ReservaManterDto reservaManterDto) throws ClienteNaoExisteException {
-        Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
-        }
-
-        Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        if (clienteCache != null) {
-            clienteRepository.save(clienteCache);
-            redisClienteCache.removeCache(clienteCache.getIdCliente());
-            milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
+        if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+            Optional<Cliente> clienteBD = clienteRepository.findById(reservaManterDto.getIdCliente());
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
+    
+            Cliente clienteCache = redisClienteCache.getCache(clienteBD.get().getIdCliente());
+            if (clienteCache != null) {
+                clienteRepository.save(clienteCache);
+                redisClienteCache.removeCache(clienteCache.getIdCliente());
+                milhasService.milhasReservaCadastrar(reservaManterDto, clienteBD.get());
+            }
         }
         return reservaManterDto;
     }
 
     public void milhasReservasCancelarVoo(List<ReservaManterDto> listaReservaManterDto) throws ClienteNaoExisteException {
         for (ReservaManterDto reservaManterDto : listaReservaManterDto) {
-            Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
-            if (cliente.isPresent()) {
-                Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
-                if (clienteCache == null) {
-                    redisClienteCache.saveCache(cliente.get());
+            if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+                Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
+                if (cliente.isPresent()) {
+                    Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
+                    if (clienteCache == null) {
+                        redisClienteCache.saveCache(cliente.get());
+                    }
+                    cliente.get().setSaldoMilhas(cliente.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
+                    clienteRepository.save(cliente.get());
+                    milhasService.milhasReservaCancelarVoo(reservaManterDto, cliente.get());
                 }
-                cliente.get().setSaldoMilhas(cliente.get().getSaldoMilhas() + reservaManterDto.getMilhasUtilizadas());
-                clienteRepository.save(cliente.get());
-                milhasService.milhasReservaCancelarVoo(reservaManterDto, cliente.get());
             }
         }
     }
 
     public void reverterMilhasReservasCanceladasVoo(List<ReservaManterDto> listaReservaManterDto) throws ClienteNaoExisteException {
         for (ReservaManterDto reservaManterDto : listaReservaManterDto) {
-            Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
-            if (cliente.isPresent()) {
-                Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
-                if (clienteCache != null) {
-                    clienteRepository.save(clienteCache);
-                    redisClienteCache.removeCache(clienteCache.getIdCliente());
-                    milhasService.milhasReservaCadastrar(reservaManterDto, cliente.get());
+            if (reservaManterDto.getMilhasUtilizadas() != null && reservaManterDto.getMilhasUtilizadas() > 0) {
+                Optional<Cliente> cliente = clienteRepository.findById(reservaManterDto.getIdCliente());
+                if (cliente.isPresent()) {
+                    Cliente clienteCache = redisClienteCache.getCache(cliente.get().getIdCliente());
+                    if (clienteCache != null) {
+                        clienteRepository.save(clienteCache);
+                        redisClienteCache.removeCache(clienteCache.getIdCliente());
+                        milhasService.milhasReservaCadastrar(reservaManterDto, cliente.get());
+                    }
                 }
             }
         }

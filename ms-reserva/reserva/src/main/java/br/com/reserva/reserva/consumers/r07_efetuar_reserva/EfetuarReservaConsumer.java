@@ -1,5 +1,6 @@
 package br.com.reserva.reserva.consumers.r07_efetuar_reserva;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import br.com.reserva.reserva.services.conta_r.ReservaRService;
 @Component
 public class EfetuarReservaConsumer {
 
+    @Autowired
+    private ModelMapper mapper;
+    
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -33,7 +37,7 @@ public class EfetuarReservaConsumer {
         } catch (ReservaNaoExisteException e) {
         
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+
         }
     }
 
@@ -41,6 +45,8 @@ public class EfetuarReservaConsumer {
     public void compensarReservaCUDCadastrada(ReservaManterDto reservaManterDto) {
         try {
             reservaCUDService.reverterReservaCUDcadastrada(reservaManterDto);
+        } catch (ReservaNaoExisteException e) {
+        
         } catch (Exception e) {
 
         }
@@ -50,6 +56,18 @@ public class EfetuarReservaConsumer {
     public void reservaRCadastrar(ReservaCUD reservaCUD) {
         try {
             reservaRService.reservaRCadastrar(reservaCUD);
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaCUD.getCodigoReserva());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", mapper.map(reservaCUD, ReservaManterDto.class));
+        }
+    }
+
+    @RabbitListener(queues = "ms-reserva-reserva-cadastrada-contaR-compensar")
+    public void reservaRCadastradaCompensar(String codigoReserva) {
+        try {
+            reservaRService.reservaRDeletar(codigoReserva);
+        } catch (ReservaNaoExisteException e) {
+        
         } catch (Exception e) {
 
         }

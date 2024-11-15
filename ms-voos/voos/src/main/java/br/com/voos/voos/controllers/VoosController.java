@@ -1,7 +1,6 @@
 package br.com.voos.voos.controllers;
 
 import br.com.voos.voos.dtos.CadastrarVooDto;
-import br.com.voos.voos.dtos.ReservaDto;
 import br.com.voos.voos.exeptions.AeroportoNaoExisteException;
 import br.com.voos.voos.exeptions.VooJaExisteException;
 import br.com.voos.voos.exeptions.VooNaoExisteException;
@@ -39,7 +38,7 @@ public class VoosController {
     }
 
     @GetMapping("/listar-voos-48h")
-    public ResponseEntity<?> listarVoos48h() {
+    public ResponseEntity<?> listarVoosConfirmados48h() {
         try {
             List<VooDto> listaVoos = vooService.listarVoosConfirmados48h();
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);

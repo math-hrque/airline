@@ -45,4 +45,18 @@ public interface VoosRepository extends JpaRepository<Voo, String> {
            "v.quantidadePoltronasOcupadas = :#{#voo.quantidadePoltronasOcupadas} " +
            "WHERE v.codigoVoo = :#{#voo.codigoVoo}")
     void atualizarPoltronasOcupadasVoo(@Param("voo") Voo voo);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE voo SET " +
+                "data_voo = :#{#voo.dataVoo}, " +
+                "valor_passagem = :#{#voo.valorPassagem}, " +
+                "quantidade_poltronas_total = :#{#voo.quantidadePoltronasTotal}, " +
+                "quantidade_poltronas_ocupadas = :#{#voo.quantidadePoltronasOcupadas}, " +
+                "codigo_aeroporto_origem = :#{#voo.aeroportoOrigem.codigoAeroporto}, " +
+                "codigo_aeroporto_destino = :#{#voo.aeroportoDestino.codigoAeroporto}, " +
+                "id_estado_voo = :#{#voo.estadoVoo.idEstadoVoo} " +
+                "WHERE codigo_voo = :#{#voo.codigoVoo}", 
+        nativeQuery = true)
+    void updateVoo(@Param("voo") Voo voo);
 }

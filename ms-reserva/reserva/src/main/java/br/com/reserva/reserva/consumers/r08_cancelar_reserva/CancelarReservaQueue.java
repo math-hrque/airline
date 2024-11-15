@@ -28,6 +28,11 @@ public class CancelarReservaQueue {
     }
 
     @Bean
+    public Queue reservaCanceladaContaRCompensarQueue() {
+        return new Queue("ms-reserva-reserva-cancelada-contaR-compensar");
+    }
+
+    @Bean
     public Binding reservaCancelarBinding(Queue reservaCancelarQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservaCancelarQueue).to(exchange).with("ms-reserva-reserva-cancelar");
     }
@@ -40,5 +45,10 @@ public class CancelarReservaQueue {
     @Bean
     public Binding reservaCanceladaContaRBinding(Queue reservaCanceladaContaRQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservaCanceladaContaRQueue).to(exchange).with("ms-reserva-reserva-cancelada-contaR");
+    }
+
+    @Bean
+    public Binding reservaCanceladaContaRCompensarBinding(Queue reservaCanceladaContaRCompensarQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(reservaCanceladaContaRCompensarQueue).to(exchange).with("ms-reserva-reserva-cancelada-contaR-compensar");
     }
 }
