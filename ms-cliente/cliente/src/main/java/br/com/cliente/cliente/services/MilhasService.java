@@ -85,9 +85,9 @@ public class MilhasService {
     public List<MilhasDto> consultarExtratoMilhas(Cliente cliente){
         Optional<List<Milhas>> transacoesMilhas = milhasRepository.findByClienteIdCliente(cliente.getIdCliente());
         
-        if(!transacoesMilhas.isPresent()){
-            return null;
-        }
+            if(!transacoesMilhas.isPresent()){
+                return null;
+            }
 
         return transacoesMilhas.get().stream() 
             .map(milhas -> {
@@ -103,4 +103,27 @@ public class MilhasService {
             })
             .collect(Collectors.toList());
     }
+
+
+    /*public List<MilhasDto> consultarExtratoMilhas(Cliente cliente){
+        Optional<List<Milhas>> transacoesMilhas = milhasRepository.findByClienteIdCliente(cliente.getIdCliente());
+        
+            if(!transacoesMilhas.isPresent()){
+                return null;
+            }
+
+        return transacoesMilhas.get().stream() 
+            .map(milhas -> {
+                MilhasDto milhasDTO = new MilhasDto();
+                milhasDTO.setIdMilhas(milhas.getIdMilhas());
+                milhasDTO.setDataTransacao(milhas.getDataTransacao());
+                milhasDTO.setValorReais(milhas.getValorReais());
+                milhasDTO.setQuantidadesMilhas(milhas.getQuantidadeMilhas());
+                milhasDTO.setDescricao(milhas.getDescricao());
+                milhasDTO.setCodigoReserva(milhas.getCodigoReserva());
+                milhasDTO.setTipoTransacao(milhas.getTransacao().getTipoTransacao()); 
+                return milhasDTO; 
+            })
+            .collect(Collectors.toList());
+    } */
 }

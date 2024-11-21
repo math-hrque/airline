@@ -49,13 +49,13 @@ public class ClienteController {
 
     // @GetMapping("/listar-milhas/{idCliente}")
     // public ResponseEntity<ClienteMilhasDto>
-    // consultarExtratoMilhas(@PathVariable("idCliente") Long idCliente) {
-    // try {
-    // ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
-    // return ResponseEntity.ok(extrato);
-    // } catch (ClienteNaoExisteException e) {
-    // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    // }
+    //      consultarExtratoMilhas(@PathVariable("idCliente") Long idCliente) {
+    //      try {
+    //          ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
+    //          return ResponseEntity.ok(extrato);
+    //      } catch (ClienteNaoExisteException e) {
+    //      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //      }
     // }
 
 }

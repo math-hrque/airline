@@ -200,9 +200,9 @@ public class ClienteService {
 
     public ClienteMilhasDto consultarExtratoMilhas(Long idCliente) throws ClienteNaoExisteException{
         Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
-        if (!clienteBD.isPresent()) {
-            throw new ClienteNaoExisteException("Cliente nao existe!");
-        }
+            if (!clienteBD.isPresent()) {
+                throw new ClienteNaoExisteException("Cliente nao existe!");
+            }
         Cliente cliente = redisClienteCache.getCache(clienteBD.get().getIdCliente());
         ClienteMilhasDto extratoDeMilhas = new ClienteMilhasDto();
         extratoDeMilhas.setIdCliente(cliente.getIdCliente());
