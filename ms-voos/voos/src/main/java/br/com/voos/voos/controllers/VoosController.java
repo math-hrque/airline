@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/ms-voos")
+@CrossOrigin(origins = "http://localhost:4200")
 public class VoosController {
 
     @Autowired

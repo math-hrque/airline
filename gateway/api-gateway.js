@@ -1,91 +1,52 @@
 require('dotenv').config();
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const cors = require('cors'); // Importar o middleware CORS
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Microservice URLs from environment variables
-const services = {
-    'auth': process.env.MS_AUTH_URL,
-    'cliente': process.env.MS_CLIENTE_URL,
-    'funcionario': process.env.MS_FUNCIONARIO_URL,
-    'reserva': process.env.MS_RESERVA_URL,
-    'voos': process.env.MS_VOOS_URL
-};
+// URL do microserviço de funcionários do arquivo .env
+const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
 
-// Middleware to log requests
+// Middleware para configurar CORS globalmente
+app.use(cors({
+  origin: ['http://localhost:4200'], // Permitir apenas o frontend Angular
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+  credentials: true
+}));
+
+// Middleware para registrar as requisições
 app.use((req, res, next) => {
-    console.log(`Received request for ${req.url}`);
-    next();
+  console.log(`Recebido pedido para ${req.url}`);
+  next();
 });
 
-// rota  para listar funcionários
+// Rota para listar funcionários
 app.get('/api/funcionarios', createProxyMiddleware({
-    target: services['funcionario'],
-    changeOrigin: true,
-    pathRewrite: {
-        '^/api/funcionarios': '/listar-funcionario' // mapeia a rota local para a rota do serviço
-    }
+  target: funcionarioServiceUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/funcionarios': '/ms-funcionario/listar-funcionario' // mapeia a rota local para a rota do serviço
+  }
 }));
 
-// rota  para consultar funcionários por email
+// Rota para consultar funcionários por email
 app.get('/api/funcionarios/email/:email', createProxyMiddleware({
-    target: services['funcionario'],
-    changeOrigin: true,
-    pathRewrite: (path, req) => path.replace('/api/funcionarios/email', '/consultar-email')
+  target: funcionarioServiceUrl,
+  changeOrigin: true,
+  pathRewrite: (path, req) => path.replace('/api/funcionarios/email', '/ms-funcionario/consultar-email')
 }));
 
-// rota  para consultar funcionários por ID
+// Rota para consultar funcionários por ID
 app.get('/api/funcionarios/id/:idFuncionario', createProxyMiddleware({
-    target: services['funcionario'],
-    changeOrigin: true,
-    pathRewrite: (path, req) => path.replace('/api/funcionarios/id', '/consultar-idfuncionario')
+  target: funcionarioServiceUrl,
+  changeOrigin: true,
+  pathRewrite: (path, req) => path.replace('/api/funcionarios/id', '/ms-funcionario/consultar-idfuncionario')
 }));
 
-// rota  para cadastrar voos
-app.post('/api/voos/cadastrar-voo', createProxyMiddleware({
-    target: services['voos'],
-    changeOrigin: true,
-    pathRewrite: (path, req) => path.replace('/api/voos/cadastrar-voo', '/cadastrar-voo')
-}));
-
-// Set up proxy for each microservice
-app.use('/auth', createProxyMiddleware({ target: services['auth'], changeOrigin: true }));
-app.use('/cliente', createProxyMiddleware({ target: services['cliente'], changeOrigin: true }));
-app.use('/funcionario', createProxyMiddleware({ target: services['funcionario'], changeOrigin: true }));
-app.use('/reserva', createProxyMiddleware({ target: services['reserva'], changeOrigin: true }));
-app.use('/voos', createProxyMiddleware({ target: services['voos'], changeOrigin: true }));
-
-
-// endpoint para login
-app.post('/api/auth/login', createProxyMiddleware({
-    target: services['auth'],
-    changeOrigin: true,
-    pathRewrite: {
-        '^/api/auth/login': '/login' // mapeia a rota local para a rota do serviço de login
-    }
-}));
-
-// endpoint para logout
-app.post('/api/auth/logout', createProxyMiddleware({
-    target: services['auth'],
-    changeOrigin: true,
-    pathRewrite: {
-        '^/api/auth/logout': '/logout' // mapeia a rota local para a rota do serviço de logout
-    }
-}));
-
-// endpoint para verificar token
-app.get('/api/auth/verify-token', createProxyMiddleware({
-    target: services['auth'],
-    changeOrigin: true,
-    pathRewrite: {
-        '^/api/auth/verify-token': '/verify-token' // mapeia a rota local para a rota de verificação de token
-    }
-}));
-
-// Start the API Gateway
+// Iniciar o API Gateway
 app.listen(port, () => {
-    console.log(`API Gateway running at http://localhost:${port}`);
+  console.log(`API Gateway rodando em http://localhost:${port}`);
 });
