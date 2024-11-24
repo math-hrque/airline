@@ -6,8 +6,9 @@ const cors = require('cors'); // Importar o middleware CORS
 const app = express();
 const port = process.env.PORT || 3000;
 
-// URL do microserviço de funcionários do arquivo .env
+// URLs dos microserviços do arquivo .env
 const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
+const voosServiceUrl = process.env.MS_VOOS_URL;
 
 // Middleware para configurar CORS globalmente
 app.use(cors({
@@ -28,7 +29,7 @@ app.get('/api/funcionarios', createProxyMiddleware({
   target: funcionarioServiceUrl,
   changeOrigin: true,
   pathRewrite: {
-    '^/api/funcionarios': '/ms-funcionario/listar-funcionario' // mapeia a rota local para a rota do serviço
+    '^/api/funcionarios': '/ms-funcionario/listar-funcionario' // Mapeia a rota local para a rota do serviço
   }
 }));
 
@@ -44,6 +45,15 @@ app.get('/api/funcionarios/id/:idFuncionario', createProxyMiddleware({
   target: funcionarioServiceUrl,
   changeOrigin: true,
   pathRewrite: (path, req) => path.replace('/api/funcionarios/id', '/ms-funcionario/consultar-idfuncionario')
+}));
+
+// Rota para listar voos nas próximas 48 horas
+app.get('/api/voos', createProxyMiddleware({
+  target: voosServiceUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/voos': '/ms-voos/listar-voos-48h' // Mapeia a rota local para a rota do serviço
+  }
 }));
 
 // Iniciar o API Gateway
