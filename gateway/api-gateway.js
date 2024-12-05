@@ -56,6 +56,23 @@ app.get('/api/voos', createProxyMiddleware({
   }
 }));
 
+
+// MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
+app.post('/api/voos/cadastrar', createProxyMiddleware({
+  target: voosServiceUrl,
+  changeOrigin: true,
+  pathRewrite: (path, req) => path.replace('/api/voos', '/ms-voos/cadastrar-voo')
+}));
+
+app.get('/api/voos/listar', createProxyMiddleware({
+  target: voosServiceUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/voos': '/ms-voos/listar'
+  }
+}));
+// MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
+
 // Iniciar o API Gateway
 app.listen(port, () => {
   console.log(`API Gateway rodando em http://localhost:${port}`);
