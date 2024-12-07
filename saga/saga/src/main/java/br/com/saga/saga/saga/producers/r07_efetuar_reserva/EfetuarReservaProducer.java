@@ -1,5 +1,6 @@
 package br.com.saga.saga.saga.producers.r07_efetuar_reserva;
 
+import br.com.saga.saga.saga.dtos.ReservaManterErroDto;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,9 @@ public class EfetuarReservaProducer {
     }
 
     @RabbitListener(queues = "saga-ms-reserva-reserva-cadastrada-erro")
-    public void reservaCadastradaErroListener(ReservaManterDto reservaManterDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-compensar", reservaManterDto);
+    public void reservaCadastradaErroListener(ReservaManterErroDto reservaManterErroDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-endpoint", reservaManterErroDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-compensar", reservaManterErroDto.getReservaManterDto());
     }
 
     @RabbitListener(queues = "saga-ms-voos-voo-poltrona-ocupada")
@@ -37,11 +39,13 @@ public class EfetuarReservaProducer {
 
     @RabbitListener(queues = "saga-ms-cliente-milhas-reserva-cadastrada")
     public void milhasReservaCadastradaListener(ReservaManterDto reservaManterDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-endpoint", reservaManterDto);
         System.out.println("Reserva criada com sucesso!");
     }
 
     @RabbitListener(queues = "saga-ms-cliente-milhas-reserva-cadastrada-erro")
-    public void milhasReservaCadastradaErroListener(ReservaManterDto reservaManterDto) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-milhas-reserva-cadastrada-compensar", reservaManterDto);
+    public void milhasReservaCadastradaErroListener(ReservaManterErroDto reservaManterErroDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-endpoint", reservaManterErroDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-milhas-reserva-cadastrada-compensar", reservaManterErroDto.getReservaManterDto());
     }
 }

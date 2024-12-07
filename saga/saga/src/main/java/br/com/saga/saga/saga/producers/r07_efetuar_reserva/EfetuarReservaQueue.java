@@ -18,6 +18,11 @@ public class EfetuarReservaQueue {
     }
 
     @Bean
+    public Queue reservaCadastradaEndpointQueue() {
+        return new Queue("saga-ms-reserva-reserva-cadastrada-endpoint");
+    }
+
+    @Bean
     public Queue reservaCadastradaErroQueue() {
         return new Queue("saga-ms-reserva-reserva-cadastrada-erro");
     }
@@ -45,6 +50,11 @@ public class EfetuarReservaQueue {
     @Bean
     public Binding reservaCadastradaBinding(Queue reservaCadastradaQueue, TopicExchange exchange) {
         return BindingBuilder.bind(reservaCadastradaQueue).to(exchange).with("saga-ms-reserva-reserva-cadastrada");
+    }
+
+    @Bean
+    public Binding reservaCadastradaEndpointBinding(Queue reservaCadastradaEndpointQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(reservaCadastradaEndpointQueue).to(exchange).with("saga-ms-reserva-reserva-cadastrada-endpoint");
     }
 
     @Bean

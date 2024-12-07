@@ -1,5 +1,6 @@
 package br.com.voos.voos.consumers.r07_efetuar_reserva;
 
+import br.com.voos.voos.dtos.ReservaManterErroDto;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +27,11 @@ public class EfetuarReservaConsumer {
         try {
             ReservaManterDto reservaManterVooDto = voosService.ocuparPoltronaVoo(reservaManterDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada", reservaManterVooDto);
-        } catch (VooNaoExisteException e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
-        } catch (LimitePoltronasOcupadasVooException e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+        } catch (VooNaoExisteException | LimitePoltronasOcupadasVooException e) {
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", new ReservaManterErroDto(reservaManterDto, e.getMessage()));
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", reservaManterDto);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-reserva-reserva-cadastrada-erro", new ReservaManterErroDto(reservaManterDto, e.getMessage()));
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrada-contaR-compensar", reservaManterDto.getCodigoReserva());
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-voos-voo-poltrona-ocupada-erro", reservaManterDto);
         }

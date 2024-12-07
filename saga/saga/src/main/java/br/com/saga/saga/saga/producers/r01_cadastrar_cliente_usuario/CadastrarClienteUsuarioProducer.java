@@ -1,5 +1,6 @@
 package br.com.saga.saga.saga.producers.r01_cadastrar_cliente_usuario;
 
+import br.com.saga.saga.saga.dtos.UsuarioRequestResponseDto;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ public class CadastrarClienteUsuarioProducer {
 
     @RabbitListener(queues = "saga-ms-cliente-cliente-cadastrado")
     public void clienteCadastradoListener(UsuarioRequestCadastrarDto usuarioRequestCadastrarDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-endpoint", usuarioRequestCadastrarDto);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-auth-cliente-cadastrar", usuarioRequestCadastrarDto);
     }
 
     @RabbitListener(queues = "saga-ms-cliente-cliente-cadastrado-erro")
-    public void clienteCadastradoErroListener(String email) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrado-compensar", email);
+    public void clienteCadastradoErroListener(UsuarioRequestResponseDto usuarioRequestResponseDto) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-endpoint", usuarioRequestResponseDto);
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-cliente-cliente-cadastrado-compensar", usuarioRequestResponseDto.getEmail());
     }
 
     @RabbitListener(queues = "saga-ms-auth-cliente-cadastrado")

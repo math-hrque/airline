@@ -1,5 +1,6 @@
 package br.com.cliente.cliente.consumers.r01_cadastrar_cliente_usuario;
 
+import br.com.cliente.cliente.dtos.UsuarioRequestResponseDto;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,8 @@ public class CadastrarClienteConsumer {
         try {
             UsuarioRequestCadastrarDto usuarioRequestCadastrarDto = clienteService.cadastrarCliente(clienteDto);
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado", usuarioRequestCadastrarDto);
-        } catch (OutroClienteDadosJaExistenteException e) {
-
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", clienteDto.getEmail());
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, "saga-ms-cliente-cliente-cadastrado-erro", new UsuarioRequestResponseDto(clienteDto.getEmail(), e.getMessage()));
         }
     }
 

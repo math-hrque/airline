@@ -18,6 +18,11 @@ public class CadastrarClienteUsuarioQueue {
     }
 
     @Bean
+    public Queue clienteUsuarioCadastradoEndpointQueue() {
+        return new Queue("saga-ms-cliente-cliente-cadastrado-endpoint");
+    }
+
+    @Bean
     public Queue clienteUsuarioCadastradoErroQueue() {
         return new Queue("saga-ms-cliente-cliente-cadastrado-erro");
     }
@@ -35,6 +40,11 @@ public class CadastrarClienteUsuarioQueue {
     @Bean
     public Binding clienteUsuarioCadastradoBinding(Queue clienteUsuarioCadastradoQueue, TopicExchange exchange) {
         return BindingBuilder.bind(clienteUsuarioCadastradoQueue).to(exchange).with("saga-ms-cliente-cliente-cadastrado");
+    }
+
+    @Bean
+    public Binding clienteUsuarioCadastradoEndpointBinding(Queue clienteUsuarioCadastradoEndpointQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(clienteUsuarioCadastradoEndpointQueue).to(exchange).with("saga-ms-cliente-cliente-cadastrado-endpoint");
     }
 
     @Bean

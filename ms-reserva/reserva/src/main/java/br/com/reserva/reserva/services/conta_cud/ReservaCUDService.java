@@ -198,9 +198,9 @@ public class ReservaCUDService {
             }
             for (ReservaCUD reservaCUD : listaReservaCUDBD.get()) {
                 switch (reservaCUD.getEstadoReserva().getTipoEstadoReserva()) {
-                    case TipoEstadoReserva.CONFIRMADO: 
-                    case TipoEstadoReserva.CHECK_IN:
-                    case TipoEstadoReserva.EMBARCADO:
+                    case CONFIRMADO:
+                    case CHECK_IN:
+                    case EMBARCADO:
                         historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.CANCELADO_VOO);
                         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.CANCELADO_VOO));
                         break;
@@ -241,12 +241,12 @@ public class ReservaCUDService {
             }
             for (ReservaCUD reservaCUD : listaReservaCUDBD.get()) {
                 switch (reservaCUD.getEstadoReserva().getTipoEstadoReserva()) {
-                    case TipoEstadoReserva.EMBARCADO:
+                    case EMBARCADO:
                         historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.REALIZADO);
                         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.REALIZADO));
                         break;
-                    case TipoEstadoReserva.CONFIRMADO: 
-                    case TipoEstadoReserva.CHECK_IN:
+                    case CONFIRMADO:
+                    case CHECK_IN:
                         historicoAlteracaoEstadoReservaCUDService.alteraHistoricoEstadoReserva(reservaCUD, TipoEstadoReserva.NAO_REALIZADO);
                         reservaCUD.setEstadoReserva(estadoReservaCUDRepository.findByTipoEstadoReserva(TipoEstadoReserva.NAO_REALIZADO));
                         break;
