@@ -1,4 +1,5 @@
 services:
+  # DATABASES
   mongo-db:
     image: mongo
     container_name: mongo-db
@@ -11,18 +12,18 @@ services:
       - company-network
 
   postgres-db:
-    image: postgres
-    container_name: postgres-db
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: cliente
-    # volumes:
-    #   - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-    networks:
-      - company-network
+      image: postgres
+      container_name: postgres-db
+      ports:
+        - "5433:5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        # POSTGRES_DB: cliente
+      volumes:
+        - ./init-db:/docker-entrypoint-initdb.d
+      networks:
+        - company-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -44,6 +45,90 @@ services:
     environment:
       - REDIS_PASSWORD=redis
     command: ["redis-server", "--requirepass", "redis"]
+    networks:
+      - company-network
+
+  # MICROSERVICES
+  ms-cliente:
+    container_name: ms-cliente
+    build:
+      context: ./ms-cliente/cliente
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+  
+  ms-auth:
+    container_name: ms-auth
+    build:
+      context: ./ms-auth/auth
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+  
+  ms-funcionario:
+    container_name: ms-funcionario
+    build:
+      context: ./ms-funcionario/funcionario
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+
+  ms-reserva:
+    container_name: ms-reserva
+    build:
+      context: ./ms-reserva/reserva
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+
+  ms-voos:
+    container_name: ms-voos
+    build:
+      context: ./ms-voos/voos
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+
+  saga:
+    container_name: saga
+    build:
+      context: ./saga/saga
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres-db
+      - rabbitmq
     networks:
       - company-network
 
@@ -70,10 +155,6 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8081:8080"
-  #   depends_on:
-  #     - cliente-db
-  #     - rabbitmq
-  #     - redis
   #   environment:
   #     - SPRING_DATASOURCE_URL=jdbc:postgresql://cliente-db:5432/cliente
   #     - SPRING_DATASOURCE_USERNAME=postgres

@@ -205,7 +205,7 @@ public class ReservaRService {
       Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReserva(codigoReserva);
 
       if (!reservaOptional.isPresent()) {
-          throw new ReservaNaoExisteException("Reserva não encontrada para o cliente especificado.");
+          throw new ReservaNaoExisteException("Reserva não encontrada!");
       }
 
       return mapper.map(reservaOptional.get(), ReservaDto.class);

@@ -1,0 +1,5 @@
+CREATE DATABASE cliente;
+CREATE DATABASE funcionario;
+CREATE DATABASE conta_r;
+CREATE DATABASE conta_cud;
+CREATE DATABASE voos;
