@@ -33,6 +33,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// ==============================================[VOO]==============================================
+
+// Adiciona a rota para cadastrar um voo
+app.post(
+  "/api/voos/cadastrar-voo", // Rota da API Gateway
+  createProxyMiddleware({
+    target: voosServiceUrl, // URL do serviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos/cadastrar-voo", "/ms-voos/cadastrar-voo"), // URL do serviço real
+  })
+);
+
+// ==============================================[VOO]==============================================
+
 // ==============================================[CLIENTE]==============================================
 
 // Rota para consultar endereço por CEP
