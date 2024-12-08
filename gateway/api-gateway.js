@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000;
 
 // URLs dos microserviços do arquivo .env
 const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
+const reservaServiceUrl = process.env.MS_RESERVA_URL; // URL do microserviço de reserva
 const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
 const voosServiceUrl = process.env.MS_VOOS_URL;
 
@@ -26,6 +27,8 @@ app.use((req, res, next) => {
   console.log(`Recebido pedido para ${req.url}`);
   next();
 });
+
+// ==============================================[FUNCIONARIOS]==============================================
 
 // Rota para listar funcionários
 app.get(
@@ -109,6 +112,10 @@ app.post(
   })
 );
 
+// ==============================================[FUNCIONARIOS]==============================================
+
+// ==============================================[VOOS]==============================================
+
 // Rota para listar voos nas próximas 48 horas
 app.get(
   "/api/voos",
@@ -143,6 +150,37 @@ app.get(
   })
 );
 // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
+
+// ==============================================[VOOS]==============================================
+
+// ==============================================[RESERVA]==============================================
+
+// Rota para confirmar embarque
+app.put(
+  "/api/reservas/confirmar-embarque",
+  createProxyMiddleware({
+    target: reservaServiceUrl, // URL do microserviço de reserva
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/reservas/confirmar-embarque",
+        "/ms-reserva/confirmar-embarque"
+      ), // Reescreve a URL
+  })
+);
+
+// Rota para consultar reserva
+app.get(
+  "/api/reservas/consultar-reserva/:codigoReserva",
+  createProxyMiddleware({
+    target: reservaServiceUrl, // URL do microserviço de reserva
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/reservas/consultar-reserva", "/ms-reserva/consultar-reserva"),
+  })
+);
+
+// ==============================================[RESERVA]==============================================
 
 // Iniciar o API Gateway
 app.listen(port, () => {
