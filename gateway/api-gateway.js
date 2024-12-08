@@ -142,6 +142,16 @@ app.put(
   })
 );
 
+app.put(
+  "/api/voos/realizar-voo/:codigoVoo", // Recebe o código do voo como parâmetro na URL
+  createProxyMiddleware({
+    target: voosServiceSagaUrl, // URL do microserviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos/realizar-voo", "/saga/ms-voos/realizar-voo"), // Reescreve para o novo endpoint
+  })
+);
+
 //localhost:8085/saga/ms-voos/cancelar-voo/TADS0081
 
 // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
