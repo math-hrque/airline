@@ -214,7 +214,7 @@ public class ClienteService {
     }
 
     public ClienteDto consultarEmail(String email) throws ClienteNaoExisteException {
-        Optional<Cliente> clienteBD = clienteRepository.findByEmailAndAtivo(email, true);
+        Optional<Cliente> clienteBD = clienteRepository.findByEmail(email);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente ativo nao existe!");
         }
@@ -225,7 +225,7 @@ public class ClienteService {
     }
 
     public ClienteDto consultarIdCliente(Long idCliente) throws ClienteNaoExisteException {
-        Optional<Cliente> clienteBD = clienteRepository.findByIdClienteAndAtivo(idCliente, true);
+        Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
         if (!clienteBD.isPresent()) {
             throw new ClienteNaoExisteException("Cliente ativo nao existe!");
         }
