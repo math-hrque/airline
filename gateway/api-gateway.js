@@ -10,10 +10,12 @@ const port = process.env.PORT || 3000;
 const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
 const reservaServiceUrl = process.env.MS_RESERVA_URL; // URL do microserviço de reserva
 const voosServiceUrl = process.env.MS_VOOS_URL;
+const clienteServiceUrl = process.env.MS_CLIENTE_URL;
 
 // SAGA
 const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
 const voosServiceSagaUrl = process.env.MS_VOOS_SAGA_URL;
+const clienteServiceSagaUrl = process.env.MS_CLIENTE_SAGA_URL;
 
 // Middleware para configurar CORS globalmente
 app.use(
@@ -30,6 +32,38 @@ app.use((req, res, next) => {
   console.log(`Recebido pedido para ${req.url}`);
   next();
 });
+
+// ==============================================[CLIENTE]==============================================
+
+// Rota para consultar endereço por CEP
+app.get(
+  "/api/clientes/consultar-endereco/:cep",
+  createProxyMiddleware({
+    target: clienteServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/clientes/consultar-endereco",
+        `/ms-cliente/consultar-endereco`
+      ),
+  })
+);
+
+// Rota para cadastrar um cliente
+app.post(
+  "/api/clientes/cadastrar-cliente", // Rota da API Gateway
+  createProxyMiddleware({
+    target: clienteServiceSagaUrl, // URL do serviço de cliente real
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/clientes/cadastrar-cliente", // URL que será acessada pela API Gateway
+        "/saga/ms-cliente/cadastrar-cliente" // URL do serviço real
+      ),
+  })
+);
+
+// ==============================================[CLIENTE]==============================================
 
 // ==============================================[FUNCIONARIOS]==============================================
 
@@ -151,8 +185,6 @@ app.put(
       path.replace("/api/voos/realizar-voo", "/saga/ms-voos/realizar-voo"), // Reescreve para o novo endpoint
   })
 );
-
-//localhost:8085/saga/ms-voos/cancelar-voo/TADS0081
 
 // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
 http: app.post(
