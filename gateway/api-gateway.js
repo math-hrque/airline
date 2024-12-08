@@ -95,6 +95,20 @@ app.put(
   })
 );
 
+// Rota para criar um funcionário (com proxy para o Saga)
+app.post(
+  "/api/funcionarios",
+  createProxyMiddleware({
+    target: funcionarioServiceSagaUrl, // URL do microserviço Saga
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/funcionarios",
+        "/saga/ms-funcionario/cadastrar-funcionario"
+      ), // Reescreve a URL
+  })
+);
+
 // Rota para listar voos nas próximas 48 horas
 app.get(
   "/api/voos",
