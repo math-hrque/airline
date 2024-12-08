@@ -6,11 +6,14 @@ const cors = require("cors"); // Importar o middleware CORS
 const app = express();
 const port = process.env.PORT || 3000;
 
-// URLs dos microserviços do arquivo .env
+// COMUM
 const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
 const reservaServiceUrl = process.env.MS_RESERVA_URL; // URL do microserviço de reserva
-const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
 const voosServiceUrl = process.env.MS_VOOS_URL;
+
+// SAGA
+const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
+const voosServiceSagaUrl = process.env.MS_VOOS_SAGA_URL;
 
 // Middleware para configurar CORS globalmente
 app.use(
@@ -128,8 +131,21 @@ app.get(
   })
 );
 
+// Rota para cancelar voo
+app.put(
+  "/api/voos/cancelar-voo/:codigoVoo", // Recebe o código do voo como parâmetro na URL
+  createProxyMiddleware({
+    target: voosServiceSagaUrl, // URL do microserviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos/cancelar-voo", "/saga/ms-voos/cancelar-voo"),
+  })
+);
+
+//localhost:8085/saga/ms-voos/cancelar-voo/TADS0081
+
 // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
-app.post(
+http: app.post(
   "/api/voos/cadastrar",
   createProxyMiddleware({
     target: voosServiceUrl,
@@ -176,7 +192,10 @@ app.get(
     target: reservaServiceUrl, // URL do microserviço de reserva
     changeOrigin: true,
     pathRewrite: (path, req) =>
-      path.replace("/api/reservas/consultar-reserva", "/ms-reserva/consultar-reserva"),
+      path.replace(
+        "/api/reservas/consultar-reserva",
+        "/ms-reserva/consultar-reserva"
+      ),
   })
 );
 
