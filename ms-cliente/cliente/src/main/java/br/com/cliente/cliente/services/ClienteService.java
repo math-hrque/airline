@@ -212,4 +212,26 @@ public class ClienteService {
         return extratoDeMilhas;
 
     }
+
+    public ClienteDto consultarEmail(String email) throws ClienteNaoExisteException {
+        Optional<Cliente> clienteBD = clienteRepository.findByEmailAndAtivo(email, true);
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente ativo nao existe!");
+        }
+
+        Cliente clienteConsultadoBD = clienteBD.get();
+        ClienteDto clienteConsultadoDto = mapper.map(clienteConsultadoBD, ClienteDto.class);
+        return clienteConsultadoDto;
+    }
+
+    public ClienteDto consultarIdCliente(Long idCliente) throws ClienteNaoExisteException {
+        Optional<Cliente> clienteBD = clienteRepository.findByIdClienteAndAtivo(idCliente, true);
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente ativo nao existe!");
+        }
+
+        Cliente clienteConsultadoBD = clienteBD.get();
+        ClienteDto clienteConsultadoDto = mapper.map(clienteConsultadoBD, ClienteDto.class);
+        return clienteConsultadoDto;
+    }
 }

@@ -1,14 +1,24 @@
 {
-  "configurations": [
-    {
-      "type": "java",
-      "name": "Spring Boot-VoosApplication<voos>",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "mainClass": "br.com.voos.voos.VoosApplication",
-      "projectName": "voos",
-      "args": "",
-      "envFile": "${workspaceFolder}/.env"
-    }
-  ]
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AuthApplication<auth>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "br.com.auth.auth.AuthApplication",
+            "projectName": "auth",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ClienteApplication<cliente>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "br.com.cliente.cliente.ClienteApplication",
+            "projectName": "cliente",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
 }

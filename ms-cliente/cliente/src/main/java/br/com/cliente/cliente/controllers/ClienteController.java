@@ -50,15 +50,27 @@ public class ClienteController {
         }
     }
 
-    // @GetMapping("/listar-milhas/{idCliente}")
-    // public ResponseEntity<ClienteMilhasDto>
-    //      consultarExtratoMilhas(@PathVariable("idCliente") Long idCliente) {
-    //      try {
-    //          ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
-    //          return ResponseEntity.ok(extrato);
-    //      } catch (ClienteNaoExisteException e) {
-    //      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //      }
-    // }
+    @GetMapping("/consultar-email/{email}")
+    public ResponseEntity<Object> consultarEmail(@PathVariable("email") String email) {
+        try {
+            Object clienteConsultado = clienteService.consultarEmail(email);
+            return ResponseEntity.status(HttpStatus.OK).body(clienteConsultado);
+        } catch (ClienteNaoExisteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
+    @GetMapping("/consultar-idcliente/{idCliente}")
+    public ResponseEntity<Object> consultarIdCliente(@PathVariable("idCliente") Long idCliente) {
+        try {
+            Object clienteConsultado = clienteService.consultarIdCliente(idCliente);
+            return ResponseEntity.status(HttpStatus.OK).body(clienteConsultado);
+        } catch (ClienteNaoExisteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }
