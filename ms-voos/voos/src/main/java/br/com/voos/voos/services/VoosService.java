@@ -5,10 +5,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
 import java.time.OffsetDateTime;
 
 import br.com.voos.voos.dtos.CadastrarVooDto;
+import br.com.voos.voos.dtos.CodigoVooDto;
 import br.com.voos.voos.exeptions.*;
 import br.com.voos.voos.models.Aeroporto;
 import br.com.voos.voos.repositories.AeroportoRepository;
@@ -283,5 +285,16 @@ public class VoosService {
           throw new VooNaoExisteException("Nenhum voo encontrado para o código especificado.");
       }
       return mapper.map(vooOptional.get(), VooDto.class);
+    }
+
+    public List<VooDto> listarVoosPorCodigos(List<CodigoVooDto> listaCodigoVoo) throws ListaVoosVaziaException {
+        List<String> codigosVoo = listaCodigoVoo.stream().map(CodigoVooDto::getCodigoVoo).collect(Collectors.toList());
+        List<Voo> listaVoos = vooRepository.findByCodigoVooIn(codigosVoo);
+    
+        if (listaVoos == null || listaVoos.isEmpty()) {
+            throw new ListaVoosVaziaException("Nenhum voo encontrado para os códigos especificados.");
+        }
+    
+        return listaVoos.stream().map(voo -> mapper.map(voo, VooDto.class)).collect(Collectors.toList());
     }
 }
