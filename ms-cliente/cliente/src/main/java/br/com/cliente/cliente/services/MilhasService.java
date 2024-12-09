@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,9 @@ import br.com.cliente.cliente.repositories.TransacaoRepository;
 
 @Service
 public class MilhasService {
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Autowired
     private MilhasRepository milhasRepository;
@@ -71,7 +75,7 @@ public class MilhasService {
         return reservaManterDto;
     }
 
-    public void comprarMilhas(int quantidadeMilhas, Cliente cliente){
+    public void comprarMilhas(int quantidadeMilhas, Cliente cliente) {
         Milhas milhasComprar = new Milhas();
         milhasComprar.setValorReais(quantidadeMilhas * 5.00);
         milhasComprar.setQuantidadeMilhas(quantidadeMilhas);
@@ -82,48 +86,16 @@ public class MilhasService {
         milhasRepository.save(milhasComprar);
     }
 
-    public List<MilhasDto> consultarExtratoMilhas(Cliente cliente){
+    public List<MilhasDto> consultarExtratoMilhas(Cliente cliente) {
         Optional<List<Milhas>> transacoesMilhas = milhasRepository.findByClienteIdCliente(cliente.getIdCliente());
-        
-            if(!transacoesMilhas.isPresent()){
-                return null;
-            }
+        if(!transacoesMilhas.isPresent()){
+            return null;
+        }
 
-        return transacoesMilhas.get().stream() 
-            .map(milhas -> {
-                MilhasDto milhasDTO = new MilhasDto();
-                milhasDTO.setIdMilhas(milhas.getIdMilhas());
-                milhasDTO.setDataTransacao(milhas.getDataTransacao());
-                milhasDTO.setValorReais(milhas.getValorReais());
-                milhasDTO.setQuantidadesMilhas(milhas.getQuantidadeMilhas());
-                milhasDTO.setDescricao(milhas.getDescricao());
-                milhasDTO.setCodigoReserva(milhas.getCodigoReserva());
-                milhasDTO.setTipoTransacao(milhas.getTransacao().getTipoTransacao()); 
-                return milhasDTO; 
-            })
-            .collect(Collectors.toList());
+        return transacoesMilhas.get().stream().map(milhas -> {
+            MilhasDto milhasDto = mapper.map(milhas, MilhasDto.class);
+            milhasDto.setTipoTransacao(milhas.getTransacao().getTipoTransacao()); 
+            return milhasDto; 
+        }).collect(Collectors.toList());
     }
-
-
-    /*public List<MilhasDto> consultarExtratoMilhas(Cliente cliente){
-        Optional<List<Milhas>> transacoesMilhas = milhasRepository.findByClienteIdCliente(cliente.getIdCliente());
-        
-            if(!transacoesMilhas.isPresent()){
-                return null;
-            }
-
-        return transacoesMilhas.get().stream() 
-            .map(milhas -> {
-                MilhasDto milhasDTO = new MilhasDto();
-                milhasDTO.setIdMilhas(milhas.getIdMilhas());
-                milhasDTO.setDataTransacao(milhas.getDataTransacao());
-                milhasDTO.setValorReais(milhas.getValorReais());
-                milhasDTO.setQuantidadesMilhas(milhas.getQuantidadeMilhas());
-                milhasDTO.setDescricao(milhas.getDescricao());
-                milhasDTO.setCodigoReserva(milhas.getCodigoReserva());
-                milhasDTO.setTipoTransacao(milhas.getTransacao().getTipoTransacao()); 
-                return milhasDTO; 
-            })
-            .collect(Collectors.toList());
-    } */
 }

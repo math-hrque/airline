@@ -25,18 +25,6 @@ public class ClienteController {
     @Autowired
     ClienteService clienteService;
 
-    @GetMapping("/listar-milhas/{idCliente}")
-    public ResponseEntity<ClienteMilhasDto> consultarExtratoMilhas(@PathVariable("idCliente") Long idCliente) {
-        try {
-            ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
-            return ResponseEntity.ok(extrato);
-        } catch (ClienteNaoExisteException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     @PostMapping("/comprar-milhas")
     public ResponseEntity<SaldoMilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente,
             @RequestParam("quantidadeMilhas") int quantidadeMilhas) {
@@ -46,6 +34,18 @@ public class ClienteController {
         } catch (ClienteNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/listar-milhas/{idCliente}")
+    public ResponseEntity<ClienteMilhasDto> consultarExtratoMilhas(@PathVariable("idCliente") Long idCliente) {
+        try {
+            ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
+            return ResponseEntity.ok(extrato);
+        } catch (ClienteNaoExisteException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

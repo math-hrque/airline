@@ -198,19 +198,16 @@ public class ClienteService {
         return novoSaldo;
     }
 
-    public ClienteMilhasDto consultarExtratoMilhas(Long idCliente) throws ClienteNaoExisteException{
+    public ClienteMilhasDto consultarExtratoMilhas(Long idCliente) throws ClienteNaoExisteException {
         Optional<Cliente> clienteBD = clienteRepository.findById(idCliente);
-            if (!clienteBD.isPresent()) {
-                throw new ClienteNaoExisteException("Cliente nao existe!");
-            }
-        Cliente cliente = redisClienteCache.getCache(clienteBD.get().getIdCliente());
-        ClienteMilhasDto extratoDeMilhas = new ClienteMilhasDto();
-        extratoDeMilhas.setIdCliente(cliente.getIdCliente());
-        extratoDeMilhas.setSaldoMilhas(cliente.getSaldoMilhas());
-        extratoDeMilhas.setListaMilhas(milhasService.consultarExtratoMilhas(cliente));
+        if (!clienteBD.isPresent()) {
+            throw new ClienteNaoExisteException("Cliente nao existe!");
+        }
 
-        return extratoDeMilhas;
-
+        Cliente clienteConsultadoBD = clienteBD.get();
+        ClienteMilhasDto clienteMilhasConsultadoDto = mapper.map(clienteConsultadoBD, ClienteMilhasDto.class);
+        clienteMilhasConsultadoDto.setListaMilhas(milhasService.consultarExtratoMilhas(clienteConsultadoBD));
+        return clienteMilhasConsultadoDto;
     }
 
     public ClienteDto consultarEmail(String email) throws ClienteNaoExisteException {
