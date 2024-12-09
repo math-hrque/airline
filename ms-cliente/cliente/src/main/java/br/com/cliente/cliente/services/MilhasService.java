@@ -1,6 +1,5 @@
 package br.com.cliente.cliente.services;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,11 +78,9 @@ public class MilhasService {
         Milhas milhasComprar = new Milhas();
         milhasComprar.setValorReais(quantidadeMilhas * 5.00);
         milhasComprar.setQuantidadeMilhas(quantidadeMilhas);
-        milhasComprar.setDescricao("COMPRA DE MILHAS");
         milhasComprar.setCliente(cliente);
         milhasComprar.setTransacao(transacaoRepository.findByTipoTransacao(TipoTransacao.ENTRADA));
-        milhasComprar.setDataTransacao(OffsetDateTime.now());
-        milhasRepository.save(milhasComprar);
+        milhasRepository.saveMilhas(milhasComprar);
     }
 
     public List<MilhasDto> consultarExtratoMilhas(Cliente cliente) {

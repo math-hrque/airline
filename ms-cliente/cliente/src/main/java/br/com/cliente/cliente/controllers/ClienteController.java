@@ -29,8 +29,8 @@ public class ClienteController {
     public ResponseEntity<SaldoMilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente,
             @RequestParam("quantidadeMilhas") int quantidadeMilhas) {
         try {
-            SaldoMilhasDto novoSaldo = clienteService.comprarMilhas(quantidadeMilhas, idCliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoSaldo);
+            SaldoMilhasDto novaSaldo = clienteService.comprarMilhas(quantidadeMilhas, idCliente);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novaSaldo);
         } catch (ClienteNaoExisteException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
