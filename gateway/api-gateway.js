@@ -214,6 +214,17 @@ app.post(
 
 // ==============================================[VOOS]==============================================
 
+// Nova rota para listar aeroportos
+app.get(
+  "/api/listar-aeroporto", // O endpoint que seu frontend vai acessar
+  createProxyMiddleware({
+    target: voosServiceUrl, // URL do serviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/listar-aeroporto", "/ms-voos/listar-aeroporto"), // Faz o proxy para o endpoint real do microserviço
+  })
+);
+
 // Rota para listar voos nas próximas 48 horas
 app.get(
   "/api/voos",
@@ -234,6 +245,17 @@ app.get(
     changeOrigin: true,
     pathRewrite: (path, req) =>
       path.replace("/api/voos", "/ms-voos/visualizar-voo"), // Substitui o caminho da URL para o do serviço real
+  })
+);
+
+// Nova rota para listar voos atuais
+app.get(
+  "/api/voos-atuais",
+  createProxyMiddleware({
+    target: voosServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos-atuais", "/ms-voos/listar-voos-atuais"),
   })
 );
 
