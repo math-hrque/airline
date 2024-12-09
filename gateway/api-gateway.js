@@ -11,6 +11,7 @@ const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
 const reservaServiceUrl = process.env.MS_RESERVA_URL; // URL do microserviço de reserva
 const voosServiceUrl = process.env.MS_VOOS_URL;
 const clienteServiceUrl = process.env.MS_CLIENTE_URL;
+const loginServiceUrl = process.env.MS_AUTH_URL;
 
 // SAGA
 const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
@@ -32,6 +33,24 @@ app.use((req, res, next) => {
   console.log(`Recebido pedido para ${req.url}`);
   next();
 });
+
+// ==============================================[LOGIN]==============================================
+
+// Rota para login
+app.post(
+  "/api/auth/login", // Rota na API Gateway
+  createProxyMiddleware({
+    target: loginServiceUrl, // URL do microserviço de autenticação
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/auth/login", // Rota local
+        "/ms-auth/login" // Rota real do microserviço de autenticação
+      ),
+  })
+);
+
+// ==============================================[LOGIN]==============================================
 
 // ==============================================[VOO]==============================================
 
@@ -74,6 +93,20 @@ app.post(
       path.replace(
         "/api/clientes/cadastrar-cliente", // URL que será acessada pela API Gateway
         "/saga/ms-cliente/cadastrar-cliente" // URL do serviço real
+      ),
+  })
+);
+
+// Rota para consultar cliente por email
+app.get(
+  "/api/clientes/email/:email", // Rota da API Gateway
+  createProxyMiddleware({
+    target: clienteServiceUrl, // URL do microserviço de cliente
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/clientes/email", // URL na API Gateway
+        "/ms-cliente/consultar-email" // URL real do microserviço
       ),
   })
 );
