@@ -18,6 +18,7 @@ const loginServiceUrl = process.env.MS_AUTH_URL;
 const funcionarioServiceSagaUrl = process.env.MS_FUNCIONARIO_SAGA_URL;
 const voosServiceSagaUrl = process.env.MS_VOOS_SAGA_URL;
 const clienteServiceSagaUrl = process.env.MS_CLIENTE_SAGA_URL;
+const reservaServiceSagaUrl = process.env.MS_RESERVA_SAGA_URL;
 
 // Middleware para configurar CORS globalmente
 app.use(
@@ -45,6 +46,17 @@ app.post(
     changeOrigin: true,
     pathRewrite: (path, req) =>
       path.replace("/api/comprar-milhas", "/ms-cliente/comprar-milhas"), // Reescreve o caminho para o correto no microserviço
+  })
+);
+
+// Endpoint para consultar o extrato de milhas
+app.get(
+  "/api/extrato-milhas/:idCliente",
+  createProxyMiddleware({
+    target: clienteServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/extrato-milhas", "/ms-cliente/listar-milhas"), // Reescreve o caminho para o correto no microserviço
   })
 );
 
@@ -298,6 +310,21 @@ app.put(
   })
 );
 
+// Rota para cadastrar reserva
+// aqui
+app.post(
+  "/api/reservas/cadastrar-reserva",
+  createProxyMiddleware({
+    target: reservaServiceSagaUrl, // URL do microserviço de reserva
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace(
+        "/api/reservas/cadastrar-reserva",
+        "/saga/ms-reserva/cadastrar-reserva"
+      ), // Reescreve a URL
+  })
+);
+
 // // Rota para consultar reserva sem dados do voo
 // app.get(
 //   "/api/reservas/consultar-reserva/:codigoReserva",
@@ -336,7 +363,9 @@ app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
     }
 
     // 3. Consultar o voo utilizando a URL completa
-    const vooResponse = await axios.get(`${voosServiceUrl}/ms-voos/visualizar-voo/${codigoVoo}`); // Usando a URL completa
+    const vooResponse = await axios.get(
+      `${voosServiceUrl}/ms-voos/visualizar-voo/${codigoVoo}`
+    ); // Usando a URL completa
     const vooData = vooResponse.data;
 
     if (!vooData) {
@@ -355,7 +384,6 @@ app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
       .json({ message: "Erro interno ao consultar reserva ou voo" });
   }
 });
-
 
 // ==============================================[RESERVA]==============================================
 
