@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.reserva.reserva.dtos.CodigoVooDto;
 import br.com.reserva.reserva.dtos.ReservaDto;
-import br.com.reserva.reserva.dtos.VooDto;
 import br.com.reserva.reserva.exeptions.ListaReservaVaziaException;
 import br.com.reserva.reserva.exeptions.ReservaNaoExisteException;
 import br.com.reserva.reserva.services.conta_r.ReservaRService;
@@ -26,10 +26,9 @@ public class ReservaRController {
     ReservaRService reservaRService;
 
     @GetMapping("/listar-reservas-voos-48h/{idCliente}")
-    public ResponseEntity<?> listarReservasVoos48h(@PathVariable("idCliente") Long idCliente,
-            @RequestBody List<VooDto> listaVooDto) {
+    public ResponseEntity<?> listarReservasVoos48h(@PathVariable("idCliente") Long idCliente, @RequestBody List<CodigoVooDto> listaCodigoVoo) {
         try {
-            List<ReservaDto> listaVoos = reservaRService.listarReservasVoos48h(idCliente, listaVooDto);
+            List<ReservaDto> listaVoos = reservaRService.listarReservasVoos48h(idCliente, listaCodigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaReservaVaziaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
