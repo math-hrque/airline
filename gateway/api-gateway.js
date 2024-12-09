@@ -34,6 +34,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// ==============================================[MILHAS]==============================================
+
+// Seu código para configurar os endpoints
+app.post(
+  "/api/comprar-milhas",
+  createProxyMiddleware({
+    target: clienteServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/comprar-milhas", "/ms-cliente/comprar-milhas"), // Reescreve o caminho para o correto no microserviço
+  })
+);
+
+// ==============================================[MILHAS]==============================================
+
 // ==============================================[LOGIN]==============================================
 
 // Rota para login
