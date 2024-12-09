@@ -15,7 +15,7 @@ public class MilhasDto {
     private Long idMilhas;
     private OffsetDateTime dataTransacao;
     private Double valorReais;
-    private Integer quantidadesMilhas;
+    private Integer quantidadeMilhas;
     private String descricao;
     private String codigoReserva;
     private TipoTransacao tipoTransacao;
