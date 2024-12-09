@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const cors = require("cors"); // Importar o middleware CORS
+const axios = require("axios");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -66,21 +67,6 @@ app.post(
 );
 
 // ==============================================[LOGIN]==============================================
-
-// ==============================================[VOO]==============================================
-
-// Adiciona a rota para cadastrar um voo
-app.post(
-  "/api/voos/cadastrar-voo", // Rota da API Gateway
-  createProxyMiddleware({
-    target: voosServiceUrl, // URL do serviço de voos
-    changeOrigin: true,
-    pathRewrite: (path, req) =>
-      path.replace("/api/voos/cadastrar-voo", "/ms-voos/cadastrar-voo"), // URL do serviço real
-  })
-);
-
-// ==============================================[VOO]==============================================
 
 // ==============================================[CLIENTE]==============================================
 
@@ -228,6 +214,28 @@ app.get(
   })
 );
 
+// Rota para obter voo por código do voo
+app.get(
+  "/api/voos/:codigoVoo", // Recebe o código do voo como parâmetro na URL
+  createProxyMiddleware({
+    target: voosServiceUrl, // URL do microserviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos", "/ms-voos/visualizar-voo"), // Substitui o caminho da URL para o do serviço real
+  })
+);
+
+// Adiciona a rota para cadastrar um voo
+app.post(
+  "/api/voos/cadastrar-voo", // Rota da API Gateway
+  createProxyMiddleware({
+    target: voosServiceUrl, // URL do serviço de voos
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/voos/cadastrar-voo", "/ms-voos/cadastrar-voo"), // URL do serviço real
+  })
+);
+
 // Rota para cancelar voo
 app.put(
   "/api/voos/cancelar-voo/:codigoVoo", // Recebe o código do voo como parâmetro na URL
@@ -290,19 +298,64 @@ app.put(
   })
 );
 
-// Rota para consultar reserva
-app.get(
-  "/api/reservas/consultar-reserva/:codigoReserva",
-  createProxyMiddleware({
-    target: reservaServiceUrl, // URL do microserviço de reserva
-    changeOrigin: true,
-    pathRewrite: (path, req) =>
-      path.replace(
-        "/api/reservas/consultar-reserva",
-        "/ms-reserva/consultar-reserva"
-      ),
-  })
-);
+// // Rota para consultar reserva sem dados do voo
+// app.get(
+//   "/api/reservas/consultar-reserva/:codigoReserva",
+//   createProxyMiddleware({
+//     target: reservaServiceUrl, // URL do microserviço de reserva
+//     changeOrigin: true,
+//     pathRewrite: (path, req) =>
+//       path.replace(
+//         "/api/reservas/consultar-reserva",
+//         "/ms-reserva/consultar-reserva"
+//       ),
+//   })
+// );
+
+// Rota para consultar reserva e voo
+app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
+  const { codigoReserva } = req.params;
+
+  try {
+    // 1. Consultar a reserva utilizando a URL completa
+    const reservaResponse = await axios.get(
+      `${reservaServiceUrl}/ms-reserva/consultar-reserva/${codigoReserva}` // Usando a URL completa
+    );
+    const reservaData = reservaResponse.data;
+
+    if (!reservaData) {
+      return res.status(404).json({ message: "Reserva não encontrada" });
+    }
+
+    // 2. Consultar os dados do voo utilizando o códigoVoo da reserva
+    const codigoVoo = reservaData.voo.codigoVoo;
+    if (!codigoVoo) {
+      return res
+        .status(404)
+        .json({ message: "Código de voo não encontrado na reserva" });
+    }
+
+    // 3. Consultar o voo utilizando a URL completa
+    const vooResponse = await axios.get(`${voosServiceUrl}/ms-voos/visualizar-voo/${codigoVoo}`); // Usando a URL completa
+    const vooData = vooResponse.data;
+
+    if (!vooData) {
+      return res.status(404).json({ message: "Voo não encontrado" });
+    }
+
+    // 4. Combinar as informações de reserva e voo
+    reservaData.voo = vooData;
+
+    // 5. Retornar a resposta combinada
+    return res.json(reservaData);
+  } catch (error) {
+    console.error("Erro ao consultar reserva ou voo:", error);
+    return res
+      .status(500)
+      .json({ message: "Erro interno ao consultar reserva ou voo" });
+  }
+});
+
 
 // ==============================================[RESERVA]==============================================
 
