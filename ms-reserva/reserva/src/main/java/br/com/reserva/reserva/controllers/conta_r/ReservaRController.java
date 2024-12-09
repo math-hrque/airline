@@ -50,43 +50,15 @@ public class ReservaRController {
         }
     }
 
-    @GetMapping("/cliente/{idCliente}/reservas-confirmadas")
-    public ResponseEntity<?> listarReservasConfirmadasPorCliente(@PathVariable Long idCliente) {
+    @GetMapping("/listar-reservas-cliente/{idCliente}")
+    public ResponseEntity<?> listarTodasReservasPorCliente(@PathVariable Long idCliente) {
         try {
-            List<ReservaDto> reservas = reservaRService.listarReservasConfirmadasPorCliente(idCliente);
+            List<ReservaDto> reservas = reservaRService.listarTodasReservasPorCliente(idCliente);
             return ResponseEntity.ok(reservas);
         } catch (ListaReservaVaziaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas confirmadas.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas.");
         }
     }
-
-    // @GetMapping("/consultar-reserva/{codigoReserva}")
-    // public ResponseEntity<?> visualizarReservaCliente(@PathVariable String
-    // codigoReserva) {
-    // try {
-    // ReservaDto reservaDto =
-    // reservaRService.visualizarReservaCliente(codigoReserva);
-    // return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
-    // } catch (ReservaNaoExisteException e) {
-    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    // } catch (Exception e) {
-    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao
-    // buscar a reserva.");
-    // }
-    // }
-
-    // @GetMapping("/cliente/{idCliente}")
-    // public ResponseEntity<List<ReservaCUD>> getReservasByClienteId(@PathVariable
-    // Long idCliente) {
-    // Optional<List<ReservaCUD>> reservas =
-    // reservaCUDRepository.findByIdCliente(idCliente);
-
-    // if (reservas.isPresent() && !reservas.get().isEmpty()) {
-    // return ResponseEntity.ok(reservas.get());
-    // } else {
-    // return ResponseEntity.noContent().build();
-    // }
-    // }
 }

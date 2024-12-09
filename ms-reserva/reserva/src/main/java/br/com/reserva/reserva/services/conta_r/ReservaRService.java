@@ -215,18 +215,13 @@ public class ReservaRService {
         return mapper.map(reservaOptional.get(), ReservaDto.class);
     }
 
-    public List<ReservaDto> listarReservasConfirmadasPorCliente(Long idCliente) throws ListaReservaVaziaException {
-        Optional<List<ReservaR>> reservasOptional = reservaRRepository.findByIdClienteAndTipoEstadoReserva(idCliente,
-                TipoEstadoReserva.CONFIRMADO);
+    public List<ReservaDto> listarTodasReservasPorCliente(Long idCliente) throws ListaReservaVaziaException {
+        Optional<List<ReservaR>> listaReserva = reservaRRepository.findByIdCliente(idCliente);
 
-        if (!reservasOptional.isPresent() || reservasOptional.get().isEmpty()) {
-            throw new ListaReservaVaziaException(
-                    "Nenhuma reserva confirmada encontrada para o cliente com ID: " + idCliente);
+        if (!listaReserva.isPresent() || listaReserva.get().isEmpty()) {
+            throw new ListaReservaVaziaException("Lista de Reservas vazias para idCliente: " + idCliente);
         }
 
-        return reservasOptional.get().stream()
-                .map(reserva -> mapper.map(reserva, ReservaDto.class))
-                .collect(Collectors.toList());
+        return listaReserva.get().stream().map(reserva -> mapper.map(reserva, ReservaDto.class)).collect(Collectors.toList());
     }
-
 }
