@@ -50,6 +50,18 @@ public class ReservaRController {
         }
     }
 
+    @GetMapping("/cliente/{idCliente}/reservas-confirmadas")
+    public ResponseEntity<?> listarReservasConfirmadasPorCliente(@PathVariable Long idCliente) {
+        try {
+            List<ReservaDto> reservas = reservaRService.listarReservasConfirmadasPorCliente(idCliente);
+            return ResponseEntity.ok(reservas);
+        } catch (ListaReservaVaziaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas confirmadas.");
+        }
+    }
+
     // @GetMapping("/consultar-reserva/{codigoReserva}")
     // public ResponseEntity<?> visualizarReservaCliente(@PathVariable String
     // codigoReserva) {

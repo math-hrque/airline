@@ -136,7 +136,7 @@ public class ReservaRService {
                 redisReservaRCache.saveListCache(listaReservaRBD.get(), vooManterDto.getCodigoVoo());
                 for (ReservaR reservaR : listaReservaRCache) {
                     Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaR.getCodigoReserva());
-                    if (reservaRBD.isPresent()) {    
+                    if (reservaRBD.isPresent()) {
                         reservaRBD.get().setSiglaEstadoReserva(reservaR.getSiglaEstadoReserva());
                         reservaRBD.get().setTipoEstadoReserva(reservaR.getTipoEstadoReserva());
                         listaReservaR.add(reservaR);
@@ -160,7 +160,7 @@ public class ReservaRService {
                 redisReservaRCache.saveListCache(listaReservaRBD.get(), vooManterDto.getCodigoVoo());
                 for (ReservaR reservaR : listaReservaRCache) {
                     Optional<ReservaR> reservaRBD = reservaRRepository.findById(reservaR.getCodigoReserva());
-                    if (reservaRBD.isPresent()) {    
+                    if (reservaRBD.isPresent()) {
                         reservaRBD.get().setSiglaEstadoReserva(reservaR.getSiglaEstadoReserva());
                         reservaRBD.get().setTipoEstadoReserva(reservaR.getTipoEstadoReserva());
                         listaReservaR.add(reservaR);
@@ -180,20 +180,24 @@ public class ReservaRService {
         if (listaReservaRCache != null) {
             reservaRRepository.saveAll(listaReservaRCache);
             redisReservaRCache.removeListCache(vooManterDto.getCodigoVoo());
-            listaReservaManterDto = listaReservaRCache.stream().map(reservaR -> mapper.map(reservaR, ReservaManterDto.class)).collect(Collectors.toList());
+            listaReservaManterDto = listaReservaRCache.stream()
+                    .map(reservaR -> mapper.map(reservaR, ReservaManterDto.class)).collect(Collectors.toList());
         }
         return listaReservaManterDto;
     }
 
-    public List<ReservaDto> listarReservasVoos48h(Long idCliente, List<VooDto> listaVooDto) throws ListaReservaVaziaException {
+    public List<ReservaDto> listarReservasVoos48h(Long idCliente, List<VooDto> listaVooDto)
+            throws ListaReservaVaziaException {
         List<String> listaCodigoVoo = listaVooDto.stream().map(VooDto::getCodigoVoo).collect(Collectors.toList());
-        Optional<List<ReservaR>> listaReservaRBD = reservaRRepository.findByCodigoVooInAndIdClienteAndTipoEstadoReserva(listaCodigoVoo, idCliente, TipoEstadoReserva.CONFIRMADO);
-    
+        Optional<List<ReservaR>> listaReservaRBD = reservaRRepository.findByCodigoVooInAndIdClienteAndTipoEstadoReserva(
+                listaCodigoVoo, idCliente, TipoEstadoReserva.CONFIRMADO);
+
         if (!listaReservaRBD.isPresent() || listaReservaRBD.get().isEmpty()) {
             throw new ListaReservaVaziaException("Lista de reservas vazia!");
         }
-    
-        Map<String, VooDto> vooDtoMap = listaVooDto.stream().collect(Collectors.toMap(VooDto::getCodigoVoo, vooDto -> vooDto));
+
+        Map<String, VooDto> vooDtoMap = listaVooDto.stream()
+                .collect(Collectors.toMap(VooDto::getCodigoVoo, vooDto -> vooDto));
         return listaReservaRBD.get().stream().map(reservaR -> {
             ReservaDto reservaDto = mapper.map(reservaR, ReservaDto.class);
             reservaDto.setVoo(vooDtoMap.get(reservaR.getCodigoVoo()));
@@ -202,13 +206,27 @@ public class ReservaRService {
     }
 
     public ReservaDto visualizarReservaCliente(String codigoReserva) throws ReservaNaoExisteException {
-      Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReserva(codigoReserva);
+        Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReserva(codigoReserva);
 
-      if (!reservaOptional.isPresent()) {
-          throw new ReservaNaoExisteException("Reserva não encontrada!");
-      }
+        if (!reservaOptional.isPresent()) {
+            throw new ReservaNaoExisteException("Reserva não encontrada!");
+        }
 
-      return mapper.map(reservaOptional.get(), ReservaDto.class);
+        return mapper.map(reservaOptional.get(), ReservaDto.class);
     }
-    
+
+    public List<ReservaDto> listarReservasConfirmadasPorCliente(Long idCliente) throws ListaReservaVaziaException {
+        Optional<List<ReservaR>> reservasOptional = reservaRRepository.findByIdClienteAndTipoEstadoReserva(idCliente,
+                TipoEstadoReserva.CONFIRMADO);
+
+        if (!reservasOptional.isPresent() || reservasOptional.get().isEmpty()) {
+            throw new ListaReservaVaziaException(
+                    "Nenhuma reserva confirmada encontrada para o cliente com ID: " + idCliente);
+        }
+
+        return reservasOptional.get().stream()
+                .map(reserva -> mapper.map(reserva, ReservaDto.class))
+                .collect(Collectors.toList());
+    }
+
 }
