@@ -332,6 +332,35 @@ app.put(
   })
 );
 
+// Endpoint para realizar check-in
+app.put(
+  "/api/reservas/fazer-checkin/:codigoReserva",
+  createProxyMiddleware({
+    target: reservaServiceUrl, // Serviço de reservas
+    changeOrigin: true,
+    pathRewrite: (path, req) => {
+      console.log(`Redirecionando para: ${reservaServiceUrl}/ms-reserva/fazer-checkin/${req.params.codigoReserva}`);
+      return path.replace("/api/reservas/fazer-checkin", "/ms-reserva/fazer-checkin");
+    },
+  })
+);
+
+
+app.put(
+  "/api/reservas/cancelar-reserva/:codigoReserva",
+  createProxyMiddleware({
+    target: reservaServiceSagaUrl, // URL do microserviço de reservas
+    changeOrigin: true,
+    pathRewrite: (path, req) => {
+      // Reescreve a URL da requisição para o microserviço
+      return path.replace(
+        "/api/reservas/cancelar-reserva",
+        `/saga/ms-reserva/cancelar-reserva`
+      );
+    },
+  })
+);
+
 // Rota para cadastrar reserva
 // aqui
 app.post(
@@ -404,6 +433,77 @@ app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
     return res
       .status(500)
       .json({ message: "Erro interno ao consultar reserva ou voo" });
+  }
+});
+
+// Rota para listar voos das próximas 48 horas e enviar o resultado para o endpoint de reservas
+// Rota para listar voos das próximas 48 horas e enviar o resultado para o endpoint de reservas
+app.get("/api/reservas-voos-48h/:idUsuario", async (req, res) => {
+  const { idUsuario } = req.params;
+
+  try {
+    // 1. Consultar os voos das próximas 48 horas
+    const voosResponse = await axios.get(
+      `${voosServiceUrl}/ms-voos/listar-voos-48h`
+    );
+    const voosData = voosResponse.data;
+
+    if (!voosData || voosData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum voo encontrado nas próximas 48 horas" });
+    }
+
+    // 3. Enviar a lista de voos com os dados detalhados para o endpoint de reservas
+    console.log("Dados dos voos com detalhes:", voosData); // Log para verificar se os voos foram preenchidos corretamente
+
+    const reservasResponse = await axios({
+      method: "get",
+      url: `${reservaServiceUrl}/ms-reserva/listar-reservas-voos-48h/${idUsuario}`,
+      data: voosData, // Enviar os dados dos voos no corpo da requisição GET
+      headers: { "Content-Type": "application/json" },
+    });
+    const reservasData = reservasResponse.data;
+
+    // 2. Preencher os dados de cada voo
+    for (let i = 0; i < reservasData.length; i++) {
+      const voo = reservasData[i];
+
+      // Consultar os dados detalhados de cada voo utilizando o código do voo
+      try {
+        const vooDetailsResponse = await axios.get(
+          `${voosServiceUrl}/ms-voos/visualizar-voo/${voo.voo.codigoVoo}`
+        );
+        const vooDetails = vooDetailsResponse.data;
+
+        // Log para verificar a resposta da API de voos
+        // console.log('Resposta do voo:', vooDetails);
+
+        // Verificar se os dados do voo foram encontrados
+        if (vooDetails && Object.keys(vooDetails).length > 0) {
+          // Adicionar os dados detalhados ao voo
+          reservasData[i].voo = { ...vooDetails };
+        } else {
+          // Caso não encontre os detalhes do voo, podemos continuar sem preencher
+          console.log(`Detalhes não encontrados para o voo ${voo.codigoVoo}`);
+          reservasData[i].voo = { ...voo, detalhes: null };
+        }
+      } catch (error) {
+        console.error(
+          `Erro ao consultar detalhes do voo ${voo.codigoVoo}:`,
+          error
+        );
+        reservasData[i].voo = { ...voo, detalhes: null }; // Caso de erro, manter os dados sem detalhes
+      }
+    }
+
+    // 4. Retornar a resposta combinada
+    return res.json(reservasData);
+  } catch (error) {
+    console.error("Erro ao consultar voos ou reservas:", error);
+    return res
+      .status(500)
+      .json({ message: "Erro interno ao consultar voos ou reservas" });
   }
 });
 
