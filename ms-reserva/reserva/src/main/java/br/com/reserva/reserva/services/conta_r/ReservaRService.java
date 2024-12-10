@@ -199,6 +199,20 @@ public class ReservaRService {
         }).collect(Collectors.toList());
     }
 
+    public List<ReservaDto> listarReservasVoosRealizadosCancelados(Long idCliente, List<CodigoVooDto> listaCodigoVoo) throws ListaReservaVaziaException {
+        List<String> codigosVoo = listaCodigoVoo.stream().map(CodigoVooDto::getCodigoVoo).collect(Collectors.toList());
+        Optional<List<ReservaR>> listaReservaRBD = reservaRRepository.findByCodigoVooInAndIdCliente(codigosVoo, idCliente);
+
+        if (!listaReservaRBD.isPresent() || listaReservaRBD.get().isEmpty()) {
+            throw new ListaReservaVaziaException("Lista de reservas vazia!");
+        }
+
+        return listaReservaRBD.get().stream().map(reservaR -> {
+            ReservaDto reservaDto = mapper.map(reservaR, ReservaDto.class);
+            return reservaDto;
+        }).collect(Collectors.toList());
+    }
+
     public ReservaDto visualizarReservaCliente(String codigoReserva) throws ReservaNaoExisteException {
         Optional<ReservaR> reservaOptional = reservaRRepository.findByCodigoReserva(codigoReserva);
 
