@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import br.com.cliente.cliente.dtos.ClienteDto;
 import br.com.cliente.cliente.dtos.UsuarioRequestCadastrarDto;
 import br.com.cliente.cliente.exeptions.ClienteNaoExisteException;
-import br.com.cliente.cliente.exeptions.OutroClienteDadosJaExistenteException;
 import br.com.cliente.cliente.services.ClienteService;
 
 @Component

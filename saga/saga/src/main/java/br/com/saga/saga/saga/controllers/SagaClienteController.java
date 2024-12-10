@@ -52,16 +52,11 @@ public class SagaClienteController {
             String errorMessage = (String) executionResponseJson.get("errorMessage");
 
             if (errorMessage != null) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/json")
-                        .body(executionResponseJson);
+                executionResponseJson.remove("email");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("Content-Type", "application/json").body(executionResponseJson);
             }
 
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header("Content-Type", "application/json")
-                    .body(executionResponseJson);
+            return ResponseEntity.status(HttpStatus.CREATED).header("Content-Type", "application/json").body(executionResponseJson);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de cliente com erro ao iniciar o processo: " + e.getMessage());
         }

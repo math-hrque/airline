@@ -46,6 +46,7 @@ public class SagaReservaController {
 
         try {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cadastrar", reservaManterDto);
+            
             Map<String, Object> executionResponseJson = executionResponseFuture.get(FUTURE_RESPONSE_TIMEOUT, TimeUnit.SECONDS);
             container.stop();
 
@@ -53,17 +54,10 @@ public class SagaReservaController {
 
             if (errorMessage != null) {
                 executionResponseJson.remove("reservaManterDto");
-
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/json")
-                        .body(executionResponseJson);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("Content-Type", "application/json").body(executionResponseJson);
             }
 
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header("Content-Type", "application/json")
-                    .body(executionResponseJson);
+            return ResponseEntity.status(HttpStatus.CREATED).header("Content-Type", "application/json").body(executionResponseJson);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de reserva com erro: " + e.getMessage());
         }

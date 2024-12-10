@@ -86,4 +86,16 @@ public class VoosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar o voos.");
         }
     }
+
+    @GetMapping("/listar-voos-realizados-cancelados")
+    public ResponseEntity<?> listarVoosRealizadosCancelados() {
+        try {
+            List<VooDto> listaVoos = vooService.listarVoosRealizadosCancelados();
+            return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
+        } catch (ListaVoosVaziaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface VoosRepository extends JpaRepository<Voo, String> {
     List<Voo> findByCodigoVooIn(List<String> codigosVoo);
+    List<Voo> findByEstadoVooTipoEstadoVooIn(List<TipoEstadoVoo> listaTipoEstadoVoo);
     @Query("SELECT v FROM Voo v " +
     "WHERE v.dataVoo >= :dataAtual " +
     "AND v.estadoVoo.tipoEstadoVoo = 'CONFIRMADO' " +

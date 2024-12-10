@@ -296,4 +296,14 @@ public class VoosService {
     
         return listaVoos.stream().map(voo -> mapper.map(voo, VooDto.class)).collect(Collectors.toList());
     }
+
+    public List<VooDto> listarVoosRealizadosCancelados() throws ListaVoosVaziaException {
+        List<Voo> listaVoos = vooRepository.findByEstadoVooTipoEstadoVooIn(List.of(TipoEstadoVoo.REALIZADO, TipoEstadoVoo.CANCELADO));
+    
+        if (listaVoos == null || listaVoos.isEmpty()) {
+            throw new ListaVoosVaziaException("Nenhum voo realizado ou confirmado encontrado.");
+        }
+    
+        return listaVoos.stream().map(voo -> mapper.map(voo, VooDto.class)).collect(Collectors.toList());
+    }
 }
