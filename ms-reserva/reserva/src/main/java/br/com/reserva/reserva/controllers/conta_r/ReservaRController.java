@@ -72,4 +72,16 @@ public class ReservaRController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas.");
         }
     }
+
+    @GetMapping("/listar-reservas-confirmadas-cliente/{idCliente}")
+    public ResponseEntity<?> listarTodasReservasConfirmadasPorCliente(@PathVariable Long idCliente) {
+        try {
+            List<ReservaDto> reservas = reservaRService.listarTodasReservasConfirmadasPorCliente(idCliente);
+            return ResponseEntity.ok(reservas);
+        } catch (ListaReservaVaziaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas.");
+        }
+    }
 }

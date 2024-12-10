@@ -232,4 +232,14 @@ public class ReservaRService {
 
         return listaReserva.get().stream().map(reserva -> mapper.map(reserva, ReservaDto.class)).collect(Collectors.toList());
     }
+
+    public List<ReservaDto> listarTodasReservasConfirmadasPorCliente(Long idCliente) throws ListaReservaVaziaException {
+        Optional<List<ReservaR>> listaReserva = reservaRRepository.findByIdClienteAndTipoEstadoReserva(idCliente, TipoEstadoReserva.CONFIRMADO);
+
+        if (!listaReserva.isPresent() || listaReserva.get().isEmpty()) {
+            throw new ListaReservaVaziaException("Lista de Reservas confirmadas vazias para idCliente: " + idCliente);
+        }
+
+        return listaReserva.get().stream().map(reserva -> mapper.map(reserva, ReservaDto.class)).collect(Collectors.toList());
+    }
 }
