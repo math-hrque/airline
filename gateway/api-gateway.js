@@ -291,6 +291,74 @@ app.put(
   })
 );
 
+
+// AQUI
+app.get("/api/voos-realizados-cancelados/:idUsuario", async (req, res) => {
+  const { idUsuario } = req.params;
+
+  try {
+    // 1. Consultar os voos realizados e cancelados
+    const voosResponse = await axios.get(
+      `${voosServiceUrl}/ms-voos/listar-voos-realizados-cancelados`
+    );
+    const voosData = voosResponse.data;
+
+    if (!voosData || voosData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum voo encontrado" });
+    }
+
+    // 2. Enviar a lista de voos para o endpoint de reservas
+    const reservasResponse = await axios({
+      method: "get",
+      url: `${reservaServiceUrl}/ms-reserva/listar-reservas-voos-realizados-cancelados/${idUsuario}`,
+      headers: { "Content-Type": "application/json" },
+      data: voosData, // Enviar os dados dos voos no corpo da requisição GET
+    });
+
+    const reservasData = reservasResponse.data;
+
+    // 3. Preencher os dados de cada voo
+    for (let i = 0; i < reservasData.length; i++) {
+      const voo = reservasData[i];
+
+      // Consultar os dados detalhados de cada voo utilizando o código do voo
+      try {
+        const vooDetailsResponse = await axios.get(
+          `${voosServiceUrl}/ms-voos/visualizar-voo/${voo.voo.codigoVoo}`
+        );
+        const vooDetails = vooDetailsResponse.data;
+
+        // Verificar se os dados do voo foram encontrados
+        if (vooDetails && Object.keys(vooDetails).length > 0) {
+          // Adicionar os dados detalhados ao voo
+          reservasData[i].voo = { ...vooDetails };
+        } else {
+          // Caso não encontre os detalhes do voo, podemos continuar sem preencher
+          console.log(`Detalhes não encontrados para o voo ${voo.codigoVoo}`);
+          reservasData[i].voo = { ...voo, detalhes: null };
+        }
+      } catch (error) {
+        console.error(
+          `Erro ao consultar detalhes do voo ${voo.codigoVoo}:`,
+          error
+        );
+        reservasData[i].voo = { ...voo, detalhes: null }; // Caso de erro, manter os dados sem detalhes
+      }
+    }
+
+    // 4. Retornar a resposta com os dados detalhados dos voos
+    return res.json(reservasData);
+  } catch (error) {
+    console.error("Erro ao consultar voos ou reservas:", error);
+    return res
+      .status(500)
+      .json({ message: "Erro interno ao consultar voos ou reservas" });
+  }
+});
+
+
 // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
 http: app.post(
   "/api/voos/cadastrar",
@@ -339,12 +407,16 @@ app.put(
     target: reservaServiceUrl, // Serviço de reservas
     changeOrigin: true,
     pathRewrite: (path, req) => {
-      console.log(`Redirecionando para: ${reservaServiceUrl}/ms-reserva/fazer-checkin/${req.params.codigoReserva}`);
-      return path.replace("/api/reservas/fazer-checkin", "/ms-reserva/fazer-checkin");
+      console.log(
+        `Redirecionando para: ${reservaServiceUrl}/ms-reserva/fazer-checkin/${req.params.codigoReserva}`
+      );
+      return path.replace(
+        "/api/reservas/fazer-checkin",
+        "/ms-reserva/fazer-checkin"
+      );
     },
   })
 );
-
 
 app.put(
   "/api/reservas/cancelar-reserva/:codigoReserva",
@@ -389,6 +461,57 @@ app.post(
 //       ),
 //   })
 // );
+
+app.get("/api/listar-reservas-cliente/:idUsuario", async (req, res) => {
+  const { idUsuario } = req.params;
+
+  try {
+    // 1. Consultar as reservas do usuário no serviço ms-reserva
+    const reservasResponse = await axios.get(
+      `${reservaServiceUrl}/ms-reserva/listar-reservas-cliente/${idUsuario}`
+    );
+    const reservasData = reservasResponse.data;
+
+    if (!reservasData || reservasData.length === 0) {
+      return res.status(404).json({ message: "Nenhuma reserva encontrada" });
+    }
+
+    // 2. Preencher os dados de cada voo
+    for (let i = 0; i < reservasData.length; i++) {
+      const reserva = reservasData[i];
+      const vooCodigo = reserva.voo.codigoVoo; // Assumindo que o código do voo está aqui
+
+      // Consultar os dados detalhados de cada voo utilizando o código do voo
+      try {
+        const vooDetailsResponse = await axios.get(
+          `${voosServiceUrl}/ms-voos/visualizar-voo/${vooCodigo}`
+        );
+        const vooDetails = vooDetailsResponse.data;
+
+        // Verificar se os dados do voo foram encontrados
+        if (vooDetails && Object.keys(vooDetails).length > 0) {
+          // Adicionar os dados detalhados ao voo
+          reservasData[i].voo = { ...vooDetails };
+        } else {
+          // Caso não encontre os detalhes do voo, continuar sem preencher
+          console.log(`Detalhes não encontrados para o voo ${vooCodigo}`);
+          reservasData[i].voo = { ...reserva.voo, detalhes: null };
+        }
+      } catch (error) {
+        console.error(`Erro ao consultar detalhes do voo ${vooCodigo}:`, error);
+        reservasData[i].voo = { ...reserva.voo, detalhes: null }; // Caso de erro, manter os dados sem detalhes
+      }
+    }
+
+    // 3. Retornar a resposta com os dados detalhados dos voos
+    return res.json(reservasData);
+  } catch (error) {
+    console.error("Erro ao consultar reservas ou voos:", error);
+    return res.status(500).json({ message: "Erro interno ao consultar reservas ou voos" });
+  }
+});
+
+
 
 // Rota para consultar reserva e voo
 app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
@@ -436,7 +559,7 @@ app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
   }
 });
 
-// Rota para listar voos das próximas 48 horas e enviar o resultado para o endpoint de reservas
+// OUTRO
 // Rota para listar voos das próximas 48 horas e enviar o resultado para o endpoint de reservas
 app.get("/api/reservas-voos-48h/:idUsuario", async (req, res) => {
   const { idUsuario } = req.params;
