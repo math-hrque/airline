@@ -1,0 +1,79 @@
+<div class="container">
+  <h1 class="t_blue text-center">Voos nas próximas 48hrs</h1>
+  <div class="card shadow-lg custom-card border-0">
+    <div class="card-body">
+      <div class="container-manutencao-roupas-texto">
+        <h6 class="manutencao-roupas-phrase card-subtitle">
+          Gerencie aqui os voos.
+        </h6>
+      </div>
+      <div class="container-table alarm-table table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr class="custom-headers">
+              <th scope="col">Data/hora</th>
+              <th scope="col">Aeroporto Origem</th>
+              <th scope="col">Aeroporto Destino</th>
+              <th scope="col" [colSpan]="3">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="table-items-body custom-tr-items">
+            <tr *ngFor="let item of voosGateway">
+              <td style="width: 15%">
+                {{ item.dataVoo | date : "dd/MM/yyyy - HH:mm" }}
+              </td>
+              <td style="width: 15%">
+                {{ item.aeroportoOrigem.codigoAeroporto }}
+              </td>
+              <td style="width: 15%">
+                {{ item.aeroportoDestino.codigoAeroporto }}
+              </td>
+
+              <td style="width: 5%; text-align: center; border-right: none">
+                <button
+                  type="button"
+                  class="btn-table btn_blue btn-edit"
+                  (click)="abrirModalConfirmacaoEmbarque(item)"
+                >
+                  Confirmação de embarque
+                </button>
+              </td>
+
+              <td style="width: 5%; text-align: center; border-right: none">
+                <button
+                  type="button"
+                  class="btn-table btn btn-danger"
+                  (click)="abrirModalCancelamentoVoo(item)"
+                >
+                  Cancelamento do voo
+                </button>
+              </td>
+
+              <td
+                style="width: 5%; text-align: center; border-right: none"
+                (click)="abrirModalRealizacaoVoo(item)"
+              >
+                <button type="button" class="btn-table btn-add">
+                  Realização do voo
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="voosGateway.length === 0" class="alert-container">
+      <div class="alert-container row justify-content-center">
+        <div class="alert alert-danger mt-3 text-center">
+          <p class="mb-0">Nenhum voo encontrado!</p>
+          <p class="mb-0">Volte quando tiver voos.</p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="container-button-voltar d-flex justify-content-end mt-auto"
+    ></div>
+  </div>
+</div>

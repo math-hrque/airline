@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">
+    Reserva {{ reserva.codigoReserva }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <p>
+    Data e hora da reserva:
+    {{ reserva.dataReserva | date : "dd/MM/yyyy HH:mm" }}
+  </p>
+  <p>
+    Data e hora do voo: {{ reserva.voo.dataVoo | date : "dd/MM/yyyy HH:mm" }}
+  </p>
+  <p>Código: {{ reserva.voo.codigoVoo }}</p>
+  <p>Origem: {{ reserva.voo.aeroportoOrigem.codigoAeroporto }}</p>
+  <p>Destino: {{ reserva.voo.aeroportoDestino.codigoAeroporto }}</p>
+  <p>Valor em reais: {{ reserva.voo.valorPassagem | currency : "BRL" }}</p>
+  <p>Valor em milhas: {{ reserva.voo.valorPassagem / 5 }}</p>
+  <p>Situação: {{ formatarEstadoReserva(reserva.tipoEstadoReserva) }}</p>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="cancelarReserva(reserva)"
+  >
+    Cancelar
+  </button>
+  <button type="button" class="btn btn_blue" (click)="activeModal.close()">
+    Voltar
+  </button>
+</div>

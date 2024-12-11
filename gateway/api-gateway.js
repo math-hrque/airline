@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const cors = require("cors"); // Importar o middleware CORS
+const cors = require("cors");
 const axios = require("axios");
 
 const app = express();
@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 
 // COMUM
 const funcionarioServiceUrl = process.env.MS_FUNCIONARIO_URL;
-const reservaServiceUrl = process.env.MS_RESERVA_URL; // URL do microserviço de reserva
+const reservaServiceUrl = process.env.MS_RESERVA_URL;
 const voosServiceUrl = process.env.MS_VOOS_URL;
 const clienteServiceUrl = process.env.MS_CLIENTE_URL;
 const loginServiceUrl = process.env.MS_AUTH_URL;
@@ -35,32 +35,6 @@ app.use((req, res, next) => {
   console.log(`Recebido pedido para ${req.url}`);
   next();
 });
-
-// ==============================================[MILHAS]==============================================
-
-// Seu código para configurar os endpoints
-app.post(
-  "/api/comprar-milhas",
-  createProxyMiddleware({
-    target: clienteServiceUrl,
-    changeOrigin: true,
-    pathRewrite: (path, req) =>
-      path.replace("/api/comprar-milhas", "/ms-cliente/comprar-milhas"), // Reescreve o caminho para o correto no microserviço
-  })
-);
-
-// Endpoint para consultar o extrato de milhas
-app.get(
-  "/api/extrato-milhas/:idCliente",
-  createProxyMiddleware({
-    target: clienteServiceUrl,
-    changeOrigin: true,
-    pathRewrite: (path, req) =>
-      path.replace("/api/extrato-milhas", "/ms-cliente/listar-milhas"), // Reescreve o caminho para o correto no microserviço
-  })
-);
-
-// ==============================================[MILHAS]==============================================
 
 // ==============================================[LOGIN]==============================================
 
@@ -125,6 +99,32 @@ app.get(
 );
 
 // ==============================================[CLIENTE]==============================================
+
+// ==============================================[MILHAS]==============================================
+
+// Seu código para configurar os endpoints
+app.post(
+  "/api/comprar-milhas",
+  createProxyMiddleware({
+    target: clienteServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/comprar-milhas", "/ms-cliente/comprar-milhas"), // Reescreve o caminho para o correto no microserviço
+  })
+);
+
+// Endpoint para consultar o extrato de milhas
+app.get(
+  "/api/extrato-milhas/:idCliente",
+  createProxyMiddleware({
+    target: clienteServiceUrl,
+    changeOrigin: true,
+    pathRewrite: (path, req) =>
+      path.replace("/api/extrato-milhas", "/ms-cliente/listar-milhas"), // Reescreve o caminho para o correto no microserviço
+  })
+);
+
+// ==============================================[MILHAS]==============================================
 
 // ==============================================[FUNCIONARIOS]==============================================
 
@@ -291,8 +291,6 @@ app.put(
   })
 );
 
-
-// AQUI
 app.get("/api/voos-realizados-cancelados/:idUsuario", async (req, res) => {
   const { idUsuario } = req.params;
 
@@ -358,30 +356,6 @@ app.get("/api/voos-realizados-cancelados/:idUsuario", async (req, res) => {
   }
 });
 
-
-// MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
-http: app.post(
-  "/api/voos/cadastrar",
-  createProxyMiddleware({
-    target: voosServiceUrl,
-    changeOrigin: true,
-    pathRewrite: (path, req) =>
-      path.replace("/api/voos", "/ms-voos/cadastrar-voo"),
-  })
-);
-
-app.get(
-  "/api/voos/listar",
-  createProxyMiddleware({
-    target: voosServiceUrl,
-    changeOrigin: true,
-    pathRewrite: {
-      "^/api/voos": "/ms-voos/listar",
-    },
-  })
-);
-// MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS // MATHEUS
-
 // ==============================================[VOOS]==============================================
 
 // ==============================================[RESERVA]==============================================
@@ -434,7 +408,6 @@ app.put(
 );
 
 // Rota para cadastrar reserva
-// aqui
 app.post(
   "/api/reservas/cadastrar-reserva",
   createProxyMiddleware({
@@ -447,20 +420,6 @@ app.post(
       ), // Reescreve a URL
   })
 );
-
-// // Rota para consultar reserva sem dados do voo
-// app.get(
-//   "/api/reservas/consultar-reserva/:codigoReserva",
-//   createProxyMiddleware({
-//     target: reservaServiceUrl, // URL do microserviço de reserva
-//     changeOrigin: true,
-//     pathRewrite: (path, req) =>
-//       path.replace(
-//         "/api/reservas/consultar-reserva",
-//         "/ms-reserva/consultar-reserva"
-//       ),
-//   })
-// );
 
 app.get("/api/listar-reservas-cliente/:idUsuario", async (req, res) => {
   const { idUsuario } = req.params;
@@ -511,8 +470,6 @@ app.get("/api/listar-reservas-cliente/:idUsuario", async (req, res) => {
   }
 });
 
-
-
 // Rota para consultar reserva e voo
 app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
   const { codigoReserva } = req.params;
@@ -559,7 +516,6 @@ app.get("/api/reservas/consultar-reserva/:codigoReserva", async (req, res) => {
   }
 });
 
-// OUTRO
 // Rota para listar voos das próximas 48 horas e enviar o resultado para o endpoint de reservas
 app.get("/api/reservas-voos-48h/:idUsuario", async (req, res) => {
   const { idUsuario } = req.params;

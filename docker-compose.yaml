@@ -19,7 +19,6 @@ services:
       environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-        # POSTGRES_DB: cliente
       volumes:
         - ./init-db:/docker-entrypoint-initdb.d
       networks:
@@ -47,6 +46,20 @@ services:
     command: ["redis-server", "--requirepass", "redis"]
     networks:
       - company-network
+
+
+  # ANGULAR FRONT-END
+  # angular-frontend:
+  #   container_name: angular-frontend
+  #   build:
+  #     context: ./angular
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "4200:4200"
+  #   depends_on:
+  #     - api-gateway
+  #   networks:
+  #     - company-network
 
 
   # API GATEWAY
@@ -80,20 +93,6 @@ services:
 
 
   # MICROSERVICES
-  ms-cliente:
-    container_name: ms-cliente
-    build:
-      context: ./ms-cliente/cliente
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    depends_on:
-      - postgres-db
-      - rabbitmq
-      - redis
-    networks:
-      - company-network
-  
   ms-auth:
     container_name: ms-auth
     build:
@@ -103,6 +102,20 @@ services:
       - "8080:8080"
     depends_on:
       - mongo-db
+      - rabbitmq
+      - redis
+    networks:
+      - company-network
+  
+  ms-cliente:
+    container_name: ms-cliente
+    build:
+      context: ./ms-cliente/cliente
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-db
       - rabbitmq
       - redis
     networks:

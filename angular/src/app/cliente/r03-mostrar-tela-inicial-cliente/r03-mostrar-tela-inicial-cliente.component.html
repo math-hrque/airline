@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="header-com-milhas">
+    <h1 class="text-center t_blue">TADS Company</h1>
+    <div class="mb-4">
+      <div class="card shadow-sm bg-white rounded" style="width: 12rem">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Saldo em Milhas</h6>
+          <p class="card-text h5 text-primary mb-0">{{ qntMilhasCliente }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button
+      (click)="selectTab('reservas')"
+      [class.active]="selectedTab === 'reservas'"
+    >
+      Reservas
+    </button>
+    <button (click)="selectTab('voos')" [class.active]="selectedTab === 'voos'">
+      Voos
+    </button>
+  </div>
+
+  <div
+    *ngIf="selectedTab === 'reservas'"
+    class="shadow-lg p-3 mb-5 bg-white rounded"
+  >
+    <div class="text-center mb-4">
+      <label for="estadoReserva">Filtrar por estado de reserva:</label>
+      <select
+        id="estadoReserva"
+        class="form-select w-50 mx-auto"
+        (change)="filtrarReservas($event)"
+      >
+        <option value="CONFIRMADO">Confirmado</option>
+        <option value="NAO_REALIZADO">Não Realizado</option>
+        <option value="CHECK_IN">Check-in</option>
+        <option value="EMBARCADO">Embarcado</option>
+      </select>
+    </div>
+
+    <div id="listaPedidos" *ngIf="!exibeLista">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Data Viagem</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Aeroporto Origem</th>
+            <th scope="col">Aeroporto Destino</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reserva of reservasFiltradas">
+            <td>{{ reserva.voo.dataVoo | date : "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ formatarEstadoReserva(reserva.tipoEstadoReserva) }}</td>
+            <td>{{ reserva.voo.aeroportoOrigem.codigoAeroporto }}</td>
+            <td>{{ reserva.voo.aeroportoDestino.codigoAeroporto }}</td>
+            <td>
+              <button class="btn btn_blue" (click)="visualizarReserva(reserva)">
+                Visualizar
+              </button>
+              <button
+                class="btn btn-danger"
+                *ngIf="reserva.tipoEstadoReserva == 'CONFIRMADO'"
+                (click)="cancelarReserva(reserva.codigoReserva)"
+              >
+                Cancelar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center" *ngIf="exibeLista">
+      <p>Não há reservas a serem exibidas</p>
+    </div>
+  </div>
+
+  <div
+    *ngIf="selectedTab === 'voos'"
+    class="shadow-lg p-3 mb-5 bg-white rounded"
+  >
+    <div id="listaPedidos" *ngIf="!exibeLista">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Data Viagem</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Aeroporto Origem</th>
+            <th scope="col">Aeroporto Destino</th>
+            <th scope="col">Código Voo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reserva of reservasVoos">
+            <td>{{ reserva.voo.dataVoo | date : "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ formatarEstadoReserva(reserva.tipoEstadoReserva) }}</td>
+            <td>{{ reserva.voo.aeroportoOrigem.codigoAeroporto }}</td>
+            <td>{{ reserva.voo.aeroportoDestino.codigoAeroporto }}</td>
+            <td>{{ reserva.voo.codigoVoo }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center" *ngIf="exibeLista">
+      <p>Não há voos a serem exibidos</p>
+    </div>
+  </div>
+</div>
