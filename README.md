@@ -177,7 +177,7 @@
 - Models que mapeiam o banco de dados pra buscar e alterar objetos, está na pasta **models**.
 
 #### 10.10. Noções básicas do projeto:
-- [Modelo lógico do Projeto](https://drive.google.com/drive/folders/1dPCeFZOM-aIzSE9JUP48XEaB17qoqNc4?usp=sharing);
+- [Documentos do Projeto](https://drive.google.com/drive/folders/1dPCeFZOM-aIzSE9JUP48XEaB17qoqNc4?usp=sharing);
 - \configs: Contém classes de configuração do Spring, como configuração de beans, segurança, etc;
 - \consumers: Contém os consumidores dos microsserviços;
 - \controllers: Contém os controladores REST que lidam com as requisições HTTP, no caso os end-points;

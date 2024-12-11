@@ -49,17 +49,20 @@ services:
 
 
   # ANGULAR FRONT-END
-  # angular-frontend:
-  #   container_name: angular-frontend
-  #   build:
-  #     context: ./angular
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "4200:4200"
-  #   depends_on:
-  #     - api-gateway
-  #   networks:
-  #     - company-network
+  angular-frontend:
+    container_name: angular-frontend
+    build:
+      context: ./angular
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./angular:/app
+      - /app/node_modules
+    depends_on:
+      - api-gateway
+    networks:
+      - company-network
 
 
   # API GATEWAY
