@@ -48,6 +48,37 @@ services:
     networks:
       - company-network
 
+
+  # API GATEWAY
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3015:3015"
+    depends_on:
+      - ms-auth
+      - ms-cliente
+      - ms-funcionario
+      - ms-reserva
+      - ms-voos
+      - saga
+    networks:
+      - company-network
+    environment:
+      PORT: 3015
+      MS_AUTH_URL: http://ms-auth:8080
+      MS_CLIENTE_URL: http://ms-cliente:8081
+      MS_FUNCIONARIO_URL: http://ms-funcionario:8082
+      MS_RESERVA_URL: http://ms-reserva:8083
+      MS_VOOS_URL: http://ms-voos:8084
+      MS_FUNCIONARIO_SAGA_URL: http://saga:8085
+      MS_VOOS_SAGA_URL: http://saga:8085
+      MS_CLIENTE_SAGA_URL: http://saga:8085
+      MS_RESERVA_SAGA_URL: http://saga:8085
+
+
   # MICROSERVICES
   ms-cliente:
     container_name: ms-cliente
