@@ -78,18 +78,22 @@
           <table class="table table-hover" *ngIf="voosAtuais.length > 0">
             <tbody>
               <tr>
-                <th>Codigo do voo</th>
                 <th>Data do Voo</th>
-                <th>Aeroporto origem</th>
-                <th>Aeroporto destino</th>
+                <th>Codigo Voo</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>Preço do Assento</th>
+                <th>Assentos Disponíveis</th>
                 <th>Ações</th>
               </tr>
               <tr *ngFor="let voo of voosAtuais">
-                <td>{{ voo.codigoVoo }}</td>
                 <td>{{ voo.dataVoo | date : "dd/MM/yyyy - HH:mm" }}</td>
+                <td>{{ voo.codigoVoo }}</td>
                 <td>{{ voo.aeroportoOrigem.codigoAeroporto }}</td>
                 <td>{{ voo.aeroportoDestino.codigoAeroporto }}</td>
-                <td style="width: 300px">
+                <td>{{ voo.valorPassagem | currency : "BRL" }}</td>
+                <td>{{ voo.quantidadePoltronasTotal - voo.quantidadePoltronasOcupadas }}</td>
+                <td style="width: 110px">
                   <a
                     href="#"
                     (click)="selecionarVoo(voo, $event)"

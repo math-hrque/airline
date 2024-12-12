@@ -19,15 +19,17 @@
       <table class="table table-striped table-bordered table-hover">
         <tbody>
           <tr>
+            <th>Código Voo</th>
+            <th>Data/hora</th>
             <th>Origem</th>
             <th>Destino</th>
-            <th>Data/hora</th>
             <th>Preço do Assento</th>
           </tr>
           <tr>
+            <td>{{ vooSelecionado.codigoVoo }}</td>
+            <td>{{ vooSelecionado.dataVoo | date : "dd/MM/yyyy - HH:mm" }}</td>
             <td>{{ vooSelecionado.aeroportoOrigem.cidade }}</td>
             <td>{{ vooSelecionado.aeroportoDestino.cidade }}</td>
-            <td>{{ vooSelecionado.dataVoo | date : "dd/MM/yyyy - HH:mm" }}</td>
             <td>{{ vooSelecionado.valorPassagem | currency : "BRL" }}</td>
           </tr>
         </tbody>
@@ -86,7 +88,7 @@
             title="Reservar"
             class="btn btn_blue"
             [disabled]="
-              qntMilhasPagamento > valorMilhas || qntMilhasPagamento < 1
+              qntMilhasPagamento > valorMilhas || qntMilhasPagamento < 0
             "
             (click)="pagarReserva()"
           >
@@ -105,8 +107,8 @@
           <tbody>
             <tr>
               <th>Valor total das passagens</th>
-              <th>Valor total das passagens em Milhas</th>
-              <th>Quantidade de milhas para pagamento</th>
+              <th>Quantidade total em Milhas</th>
+              <th>Quantidade de Milhas utilizadas</th>
               <th>Valor para pagar em dinheiro</th>
             </tr>
             <tr>

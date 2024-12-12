@@ -46,6 +46,7 @@
         <thead>
           <tr>
             <th scope="col">Data Viagem</th>
+            <th scope="col">Código Reserva</th>
             <th scope="col">Situação</th>
             <th scope="col">Aeroporto Origem</th>
             <th scope="col">Aeroporto Destino</th>
@@ -55,6 +56,7 @@
         <tbody>
           <tr *ngFor="let reserva of reservasFiltradas">
             <td>{{ reserva.voo.dataVoo | date : "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ reserva.codigoReserva }}</td>
             <td>{{ formatarEstadoReserva(reserva.tipoEstadoReserva) }}</td>
             <td>{{ reserva.voo.aeroportoOrigem.codigoAeroporto }}</td>
             <td>{{ reserva.voo.aeroportoDestino.codigoAeroporto }}</td>
@@ -88,19 +90,19 @@
         <thead>
           <tr>
             <th scope="col">Data Viagem</th>
+            <th scope="col">Código Voo</th>
             <th scope="col">Situação</th>
             <th scope="col">Aeroporto Origem</th>
             <th scope="col">Aeroporto Destino</th>
-            <th scope="col">Código Voo</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let reserva of reservasVoos">
             <td>{{ reserva.voo.dataVoo | date : "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ reserva.voo.codigoVoo }}</td>
             <td>{{ formatarEstadoReserva(reserva.tipoEstadoReserva) }}</td>
             <td>{{ reserva.voo.aeroportoOrigem.codigoAeroporto }}</td>
             <td>{{ reserva.voo.aeroportoDestino.codigoAeroporto }}</td>
-            <td>{{ reserva.voo.codigoVoo }}</td>
           </tr>
         </tbody>
       </table>

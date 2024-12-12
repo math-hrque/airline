@@ -12,8 +12,9 @@
           <thead>
             <tr class="custom-headers">
               <th scope="col">Data/hora</th>
-              <th scope="col">Aeroporto Origem</th>
-              <th scope="col">Aeroporto Destino</th>
+              <th scope="col">Código</th>
+              <th scope="col">Origem</th>
+              <th scope="col">Destino</th>
               <th scope="col" [colSpan]="3">Ações</th>
             </tr>
           </thead>
@@ -22,6 +23,7 @@
               <td style="width: 15%">
                 {{ item.dataVoo | date : "dd/MM/yyyy - HH:mm" }}
               </td>
+              <td style="width: 15%"> {{ item.codigoVoo }} </td>
               <td style="width: 15%">
                 {{ item.aeroportoOrigem.codigoAeroporto }}
               </td>

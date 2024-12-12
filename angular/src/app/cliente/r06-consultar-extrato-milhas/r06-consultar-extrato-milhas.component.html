@@ -32,15 +32,15 @@
     *ngIf="selectedTab === 'compras'"
     class="shadow-lg p-3 mb-5 bg-white rounded"
   >
-    <h5 class="custom-header-text">Compras de milhas</h5>
+    <h5 class="custom-header-text">Entradas</h5>
     <div class="container-table">
       <table class="table table-hover">
         <thead>
           <tr>
             <th>Dia/Hora</th>
             <th>Tipo</th>
+            <th>Quantidade</th>
             <th>Valor</th>
-            <th>Quantidade de milhas</th>
             <th>Descrição</th>
           </tr>
         </thead>
@@ -48,8 +48,8 @@
           <tr *ngFor="let milha of entradas">
             <td>{{ milha.dataTransacao | date : "dd/MM/yyyy HH:mm" }}</td>
             <td>{{ milha.tipoTransacao }}</td>
-            <td>{{ milha.quantidadeMilhas * 5 | currency : "BRL" }}</td>
             <td>{{ milha.quantidadeMilhas }}</td>
+            <td>{{ milha.quantidadeMilhas * 5 | currency : "BRL" }}</td>
             <td>{{ milha.descricao }}</td>
           </tr>
         </tbody>
@@ -61,20 +61,24 @@
     *ngIf="selectedTab === 'utilizacao'"
     class="shadow-lg p-3 mb-5 bg-white rounded"
   >
-    <h5 class="custom-header-text">Utilização de milhas</h5>
+    <h5 class="custom-header-text">Saídas</h5>
     <div class="container-table">
       <table class="table table-hover">
         <thead>
           <tr>
             <th>Dia/Hora</th>
-            <th>Quantidade de milhas</th>
+            <th>Tipo</th>
+            <th>Quantidade</th>
+            <th>Valor</th>
             <th>Origem/Destino</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let milha of saidas">
             <td>{{ milha.dataTransacao | date : "dd/MM/yyyy HH:mm" }}</td>
+            <td>{{ milha.tipoTransacao }}</td>
             <td>{{ milha.quantidadeMilhas }}</td>
+            <td>{{ milha.quantidadeMilhas * 5 | currency : "BRL" }}</td>
             <td>{{ milha.descricao }}</td>
           </tr>
         </tbody>

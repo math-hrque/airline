@@ -88,14 +88,12 @@ export class R07EfetuarReserva02Component implements OnInit {
   }
 
   calculaValorPassagem(): void {
-    this.valorTotal =
-      this.reserva.quantidadePoltronas * this.vooSelecionado.valorPassagem;
+    this.valorTotal = this.reserva.quantidadePoltronas * this.vooSelecionado.valorPassagem;
     this.valorMilhas = this.valorTotal / 5;
   }
 
   pagarReserva(): void {
-    this.qntMilhasSaldoFinal =
-      this.valorTotal - this.reserva.milhasUtilizadas * 5;
+    this.qntMilhasSaldoFinal = this.valorTotal - this.qntMilhasPagamento * 5;
     this.mostradados1 = true;
   }
 
@@ -104,17 +102,15 @@ export class R07EfetuarReserva02Component implements OnInit {
 
     this.reserva.codigoReserva = null;
     this.reserva.dataReserva = null;
-    this.reserva.valorReserva = this.valorTotal;
+    this.reserva.valorReserva = this.qntMilhasSaldoFinal;
     this.reserva.milhasUtilizadas = this.qntMilhasPagamento;
     this.reserva.quantidadePoltronas = this.reserva.quantidadePoltronas;
     this.reserva.idCliente = this.idCliente;
     this.reserva.siglaEstadoReserva = null;
     this.reserva.tipoEstadoReserva = null;
     this.reserva.codigoVoo = this.vooSelecionado.codigoVoo;
-    this.reserva.codigoAeroportoOrigem =
-      this.vooSelecionado.aeroportoOrigem.codigoAeroporto;
-    this.reserva.codigoAeroportoDestino =
-      this.vooSelecionado.aeroportoDestino.codigoAeroporto;
+    this.reserva.codigoAeroportoOrigem = this.vooSelecionado.aeroportoOrigem.codigoAeroporto;
+    this.reserva.codigoAeroportoDestino = this.vooSelecionado.aeroportoDestino.codigoAeroporto;
 
     this.reservaGatewayService.criarReserva(this.reserva).subscribe({
       next: (response) => {
