@@ -40,7 +40,7 @@ build_images() {
 # Função para iniciar os containers
 start_containers() {
   echo "🔧⚙️ Subindo serviços com Docker Compose..."
-  docker-compose up --build -d
+  docker-compose up -d
   echo "✅🎯 Todos os serviços estão em execução! Confira os logs usando 'docker-compose logs'."
 }
 
