@@ -1,6 +1,9 @@
 package br.com.saga.saga.saga.controllers;
 
 import br.com.saga.saga.saga.utils.DirectMessageListenerContainerBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
@@ -28,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/saga/ms-reserva")
 @CrossOrigin(origins = "http://localhost:4200")
 public class SagaReservaController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SagaReservaController.class);
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -59,6 +64,7 @@ public class SagaReservaController {
 
             return ResponseEntity.status(HttpStatus.CREATED).header("Content-Type", "application/json").body(executionResponseJson);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de reserva com erro: " + e.getMessage());
         }
     }
@@ -69,6 +75,7 @@ public class SagaReservaController {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-reserva-reserva-cancelar", codigoReserva);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: cancelamento de reserva iniciado. Acompanhe o status.");
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cancelamento de reserva com erro ao iniciar o processo: " + e.getMessage());
         }
     }

@@ -1,5 +1,7 @@
 package br.com.cliente.cliente.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +24,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
+
     @Autowired
     ClienteService clienteService;
 
     @PostMapping("/comprar-milhas")
-    public ResponseEntity<SaldoMilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente,
-            @RequestParam("quantidadeMilhas") int quantidadeMilhas) {
+    public ResponseEntity<SaldoMilhasDto> comprarMilhas(@RequestParam("idCliente") Long idCliente, @RequestParam("quantidadeMilhas") int quantidadeMilhas) {
         try {
             SaldoMilhasDto novaSaldo = clienteService.comprarMilhas(quantidadeMilhas, idCliente);
             return ResponseEntity.status(HttpStatus.CREATED).body(novaSaldo);
         } catch (ClienteNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -44,8 +49,10 @@ public class ClienteController {
             ClienteMilhasDto extrato = clienteService.consultarExtratoMilhas(idCliente);
             return ResponseEntity.ok(extrato);
         } catch (ClienteNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e){
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -56,8 +63,10 @@ public class ClienteController {
             Object clienteConsultado = clienteService.consultarEmail(email);
             return ResponseEntity.status(HttpStatus.OK).body(clienteConsultado);
         } catch (ClienteNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -68,8 +77,10 @@ public class ClienteController {
             Object clienteConsultado = clienteService.consultarIdCliente(idCliente);
             return ResponseEntity.status(HttpStatus.OK).body(clienteConsultado);
         } catch (ClienteNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

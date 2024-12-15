@@ -5,7 +5,7 @@ services:
     image: mongo
     container_name: mongo-db
     ports:
-      - "27018:27017"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
@@ -16,7 +16,7 @@ services:
       image: postgres
       container_name: postgres-db
       ports:
-        - "5433:5432"
+        - "5432:5432"
       environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
@@ -39,7 +39,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: redis-container
+    container_name: redis
     ports:
       - "6379:6379"
     environment:

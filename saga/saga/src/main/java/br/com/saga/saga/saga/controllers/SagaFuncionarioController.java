@@ -1,5 +1,7 @@
 package br.com.saga.saga.saga.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:4200")
 public class SagaFuncionarioController {
 
+    private static final Logger logger = LoggerFactory.getLogger(SagaFuncionarioController.class);
+
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -33,6 +37,7 @@ public class SagaFuncionarioController {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-cadastrar", funcionarioRequestDto);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: cadastro de funcionario iniciado. Acompanhe o status.");
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de funcionario com erro ao iniciar o processo: " + e.getMessage());
         }
     }
@@ -43,6 +48,7 @@ public class SagaFuncionarioController {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-atualizar", funcionarioRequestDto);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: atualização de funcionario iniciado. Acompanhe o status.");
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: atualização de funcionario com erro ao iniciar o processo: " + e.getMessage());
         }
     }
@@ -53,6 +59,7 @@ public class SagaFuncionarioController {
             rabbitTemplate.convertAndSend(EXCHANGE_NAME, "ms-funcionario-funcionario-inativar", email);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("SAGA: inativação de funcionario iniciado. Acompanhe o status.");
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: inativação de funcionario com erro ao iniciar o processo: " + e.getMessage());
         }
     }

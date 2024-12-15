@@ -1,6 +1,9 @@
 package br.com.saga.saga.saga.controllers;
 
 import br.com.saga.saga.saga.utils.DirectMessageListenerContainerBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
@@ -26,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/saga/ms-cliente")
 @CrossOrigin(origins = "http://localhost:4200")
 public class SagaClienteController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SagaClienteController.class);
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -58,6 +63,7 @@ public class SagaClienteController {
 
             return ResponseEntity.status(HttpStatus.CREATED).header("Content-Type", "application/json").body(executionResponseJson);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SAGA: cadastro de cliente com erro ao iniciar o processo: " + e.getMessage());
         }
     }

@@ -1,5 +1,7 @@
 package br.com.reserva.reserva.controllers.conta_cud;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import br.com.reserva.reserva.services.conta_cud.ReservaCUDService;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ReservaCUDController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReservaCUDController.class);
+
     @Autowired
     ReservaCUDService reservaCUDService;
 
@@ -28,10 +32,13 @@ public class ReservaCUDController {
             Object reservaCheckin = reservaCUDService.fazerCheckinReservaCUD(codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaCheckin);
         } catch (ReservaNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (MudancaEstadoReservaInvalidaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -42,10 +49,13 @@ public class ReservaCUDController {
             Object reservaEmbarcada = reservaCUDService.confirmarEmbarqueReservaCUD(codigoVoo, codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaEmbarcada);
         } catch (ReservaNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (MudancaEstadoReservaInvalidaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -1,4 +1,3 @@
-# Etapa 1: Construir a aplicação usando uma imagem com Maven
 FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 COPY . .

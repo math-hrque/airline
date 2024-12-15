@@ -1,6 +1,9 @@
 package br.com.reserva.reserva.controllers.conta_r;
 
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import br.com.reserva.reserva.services.conta_r.ReservaRService;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ReservaRController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReservaRController.class);
+
     @Autowired
     ReservaRService reservaRService;
 
@@ -31,8 +36,10 @@ public class ReservaRController {
             List<ReservaDto> listaVoos = reservaRService.listarReservasVoos48h(idCliente, listaCodigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaReservaVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -43,8 +50,10 @@ public class ReservaRController {
             List<ReservaDto> listaVoos = reservaRService.listarReservasVoosRealizadosCancelados(idCliente, listaCodigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaReservaVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -55,8 +64,10 @@ public class ReservaRController {
             ReservaDto reservaDto = reservaRService.visualizarReservaCliente(codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaDto);
         } catch (ReservaNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar a reserva.");
         }
     }
@@ -67,8 +78,10 @@ public class ReservaRController {
             List<ReservaDto> reservas = reservaRService.listarTodasReservasPorCliente(idCliente);
             return ResponseEntity.ok(reservas);
         } catch (ListaReservaVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas.");
         }
     }
@@ -79,8 +92,10 @@ public class ReservaRController {
             List<ReservaDto> reservas = reservaRService.listarTodasReservasConfirmadasPorCliente(idCliente);
             return ResponseEntity.ok(reservas);
         } catch (ListaReservaVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar reservas.");
         }
     }

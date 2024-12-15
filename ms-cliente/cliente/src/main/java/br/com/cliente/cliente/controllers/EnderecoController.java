@@ -1,5 +1,7 @@
 package br.com.cliente.cliente.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,8 @@ import br.com.cliente.cliente.services.EnderecoService;
 @CrossOrigin(origins = "http://localhost:4200")
 public class EnderecoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EnderecoController.class);
+
     @Autowired
     EnderecoService enderecoService;
 
@@ -27,10 +31,13 @@ public class EnderecoController {
             Object enderecoConsultado  = enderecoService.consultar(cep);
             return ResponseEntity.status(HttpStatus.OK).body(enderecoConsultado);
         } catch(CepNaoExisteException e){
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch(CepInvalidoException e){
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch(Exception e){
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

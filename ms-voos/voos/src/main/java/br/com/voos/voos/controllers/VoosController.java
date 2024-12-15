@@ -6,6 +6,9 @@ import br.com.voos.voos.exeptions.AeroportoNaoExisteException;
 import br.com.voos.voos.exeptions.VooJaExisteException;
 import br.com.voos.voos.exeptions.VooNaoExisteException;
 import br.com.voos.voos.exeptions.VooValidationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:4200")
 public class VoosController {
 
+    private static final Logger logger = LoggerFactory.getLogger(VoosController.class);
+
     @Autowired
     VoosService vooService;
 
@@ -30,11 +35,11 @@ public class VoosController {
         try {
             VooDto vooCadastrado = vooService.cadastrarVoo(cadastrarVooDto);
             return ResponseEntity.status(HttpStatus.OK).body(vooCadastrado);
-        }
-        catch (VooValidationException | VooJaExisteException | AeroportoNaoExisteException e) {
+        } catch (VooValidationException | VooJaExisteException | AeroportoNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -45,8 +50,10 @@ public class VoosController {
             List<VooDto> listaVoos = vooService.listarVoosConfirmados48h();
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaVoosVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -57,8 +64,10 @@ public class VoosController {
             List<VooDto> listaVoos = vooService.listarVoosAtuais(codigoAeroportoOrigem, codigoAeroportoDestino);
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaVoosVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -69,8 +78,10 @@ public class VoosController {
             VooDto vooDto = vooService.visualizarVoo(codigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(vooDto);
         } catch (VooNaoExisteException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar o voo.");
         }
     }
@@ -81,8 +92,10 @@ public class VoosController {
             List<VooDto> vooDto = vooService.listarVoosPorCodigos(listaCodigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(vooDto);
         } catch (ListaVoosVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar o voos.");
         }
     }
@@ -93,8 +106,10 @@ public class VoosController {
             List<VooDto> listaVoos = vooService.listarVoosRealizadosCancelados();
             return ResponseEntity.status(HttpStatus.OK).body(listaVoos);
         } catch (ListaVoosVaziaException e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
