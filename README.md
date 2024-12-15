@@ -32,10 +32,11 @@ The system supports two user profiles, **customers** and **employees**, with det
 ### Clone the Repository
 
 1. Clone this repository:
+
     ```bash
     git clone https://github.com/math-hrque/airline.git
     ```
-2. Open a terminal and navigate to the directory where the project files are located.
+3. Open a terminal and navigate to the directory where the project files are located.
 
 ### Run the Project
 
@@ -100,14 +101,15 @@ The system sends a randomly generated 4-digit password to the user's email when 
 
 1. Open the `application.properties` file in the **ms-auth** directory.
 2. Replace the placeholders in the email configuration section with your email credentials:
+
     ```properties
     spring.mail.username=your-email@gmail.com  # Replace with your email
     spring.mail.password=your-email-password   # Replace with your email password
     ```
 
-3. Ensure that your email account allows less secure app access (or configure an app password if using Gmail with 2FA). Refer to your email provider's documentation for details.
+4. Ensure that your email account allows less secure app access (or configure an app password if using Gmail with 2FA). Refer to your email provider's documentation for details.
 
-4. Save the changes and restart the **ms-auth** to apply the new configuration.
+5. Save the changes and restart the **ms-auth** to apply the new configuration.
 
 ---
 
@@ -121,7 +123,8 @@ The system sends a randomly generated 4-digit password to the user's email when 
 
 - **MongoDB**:  
   MongoDB is running on port `27017`. You can connect using a MongoDB client like **MongoDB Compass** or the command line.  
-  - **Connection String**:  
+  - **Connection String**:
+
     ```bash
     mongodb://mongo:mongo@localhost:27017/usuario?authSource=admin
     ```
