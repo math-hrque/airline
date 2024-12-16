@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
     networks:
-      - company-network
+      - airline-network
 
   postgres-db:
       image: postgres
@@ -23,7 +23,7 @@ services:
       volumes:
         - ./init-db:/docker-entrypoint-initdb.d
       networks:
-        - company-network
+        - airline-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -35,7 +35,7 @@ services:
       RABBITMQ_DEFAULT_USER: rabbitmq
       RABBITMQ_DEFAULT_PASS: rabbitmq
     networks:
-      - company-network
+      - airline-network
 
   redis:
     image: redis:latest
@@ -46,7 +46,7 @@ services:
       - REDIS_PASSWORD=redis
     command: ["redis-server", "--requirepass", "redis"]
     networks:
-      - company-network
+      - airline-network
 
 
   # MICROSERVICES
@@ -62,7 +62,7 @@ services:
       - rabbitmq
       - redis
     networks:
-      - company-network
+      - airline-network
   
   ms-cliente:
     container_name: ms-cliente
@@ -76,7 +76,7 @@ services:
       - rabbitmq
       - redis
     networks:
-      - company-network
+      - airline-network
   
   ms-funcionario:
     container_name: ms-funcionario
@@ -90,7 +90,7 @@ services:
       - rabbitmq
       - redis
     networks:
-      - company-network
+      - airline-network
 
   ms-reserva:
     container_name: ms-reserva
@@ -104,7 +104,7 @@ services:
       - rabbitmq
       - redis
     networks:
-      - company-network
+      - airline-network
 
   ms-voos:
     container_name: ms-voos
@@ -118,7 +118,7 @@ services:
       - rabbitmq
       - redis
     networks:
-      - company-network
+      - airline-network
 
 
   # SAGA ORCHESTRATOR
@@ -133,7 +133,7 @@ services:
       - postgres-db
       - rabbitmq
     networks:
-      - company-network
+      - airline-network
 
 
   # API GATEWAY
@@ -152,7 +152,7 @@ services:
       - ms-voos
       - saga
     networks:
-      - company-network
+      - airline-network
     environment:
       PORT: 3015
       MS_AUTH_URL: http://ms-auth:8080
@@ -180,9 +180,9 @@ services:
     depends_on:
       - api-gateway
     networks:
-      - company-network
+      - airline-network
 
 
 networks:
-  company-network:
+  airline-network:
     driver: bridge
