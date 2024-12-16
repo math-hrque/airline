@@ -36,7 +36,7 @@ The system supports two user profiles, **customers** and **employees**, with det
     ```bash
     git clone https://github.com/math-hrque/airline.git
     ```
-3. Open a terminal and navigate to the directory where the project files are located.
+2. Open a terminal and navigate to the directory where the project files are located.
 
 ### Run the Project
 
@@ -61,6 +61,7 @@ The system supports two user profiles, **customers** and **employees**, with det
     ```bash
     docker-compose up --build -d
     ```
+
 ---
 
 ## Access the Application
