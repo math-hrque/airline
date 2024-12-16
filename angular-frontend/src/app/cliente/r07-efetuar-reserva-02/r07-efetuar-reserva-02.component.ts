@@ -1,14 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Cliente } from '../../shared/models/prototipo/cliente.model';
-import { Usuario } from '../../shared/models/prototipo/usuario.model';
-import { Voo } from '../../shared/models/prototipo/voo.model';
-import { ClientesService } from '../../services/prototipo/clientes.service';
-import { LoginService } from '../../services/prototipo/login.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ReservasService } from '../../services/prototipo/reservas.service';
-import { Reserva } from '../../shared/models/prototipo/reserva.model';
 import { PipeDinheiroBRPipe } from '../../shared/pipes/pipe-dinheiro-br.pipe';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { VooGateway } from '../../shared/models/api-gateway/voo-gateway';

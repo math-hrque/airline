@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { EnderecoGateway } from '../../shared/models/api-gateway/endereco-gateway.model';
-import { ClienteGateway } from '../../shared/models/api-gateway/cliente-gateway.model';
 import { CadastroGateway } from '../../shared/models/api-gateway/cadastro-gateway.model';
 
 @Injectable({

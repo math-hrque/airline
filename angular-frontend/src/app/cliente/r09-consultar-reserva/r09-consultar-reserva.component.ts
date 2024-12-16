@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { ReservasService } from '../../services/prototipo/reservas.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -7,9 +6,6 @@ import { ClientesService } from '../../services/prototipo/clientes.service';
 import { LoginService } from '../../services/prototipo/login.service';
 import { Usuario } from '../../shared/models/prototipo/usuario.model';
 import { Cliente } from '../../shared/models/prototipo/cliente.model';
-import { Reserva } from '../../shared/models/prototipo/reserva.model';
-import { Voo } from '../../shared/models/prototipo/voo.model';
-import { VoosService } from '../../services/prototipo/voos.service';
 import { R08CancelarReservaComponent } from '../r08-cancelar-reserva/r08-cancelar-reserva.component';
 import { ModalCheckinComponent } from '../r10-fazer-check-in/confirmacao/modal-checkin/modal-checkin.component';
 import { ReservaGatewayService } from '../../services/api-gateway/reserva-gateway.service';

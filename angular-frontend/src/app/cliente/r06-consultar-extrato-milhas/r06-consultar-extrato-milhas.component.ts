@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MilhasService } from '../../services/prototipo/milhas.service';
 import { Milha } from '../../shared/models/prototipo/milha.model';
-import { VoosService } from '../../services/prototipo/voos.service';
 import { Voo } from '../../shared/models/prototipo/voo.model';
 import { PipeDinheiroBRPipe } from '../../shared/pipes/pipe-dinheiro-br.pipe';
 import { MilhasGatewayService } from '../../services/api-gateway/milhas-gateway.service';

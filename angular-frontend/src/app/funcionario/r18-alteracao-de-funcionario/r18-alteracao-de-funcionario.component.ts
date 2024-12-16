@@ -5,9 +5,6 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Funcionario } from '../../shared/models/prototipo/funcionario.model';
-import { FuncionarioService } from '../../services/prototipo/funcionarios.service';
-import { Router } from '@angular/router';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { LetrasSomenteDirective } from '../../shared/directives/letras-somente.directive';
 import { NgxMaskDirective } from 'ngx-mask';

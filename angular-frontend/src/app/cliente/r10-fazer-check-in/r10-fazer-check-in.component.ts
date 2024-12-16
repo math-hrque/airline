@@ -1,16 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { VoosService } from '../../services/prototipo/voos.service';
-import { Reserva } from '../../shared/models/prototipo/reserva.model';
 import { Voo } from '../../shared/models/prototipo/voo.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AlteracaoEstadoReservasService } from '../../services/prototipo/alteracao-estado-reservas.service';
 import { ReservaGateway } from '../../shared/models/api-gateway/reserva-gateway.model';
 import { ReservaGatewayService } from '../../services/api-gateway/reserva-gateway.service';
 import { AuthGatewayService } from '../../services/api-gateway/auth-gateway.service';
 import { ModalCheckinComponent } from './confirmacao/modal-checkin/modal-checkin.component';
 import { ModalSuccessCheckinComponent } from './confirmacao/modal-success-checkin/modal-success-checkin.component';
-import { VooGateway } from '../../shared/models/api-gateway/voo-gateway';
 
 @Component({
   selector: 'app-r10-fazer-check-in',

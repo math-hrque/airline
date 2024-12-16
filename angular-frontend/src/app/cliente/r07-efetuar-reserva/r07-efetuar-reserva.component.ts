@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ReservasService } from '../../services/prototipo/reservas.service';
 import { CommonModule } from '@angular/common';
 import { Voo } from '../../shared/models/prototipo/voo.model';
 import { FormsModule } from '@angular/forms';

@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { VoosService } from '../../services/prototipo/voos.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { VooGatewayService } from '../../services/api-gateway/voo-gateway.service';
-import { VooGateway } from '../../shared/models/api-gateway/voo-gateway';
 import { CadastroVooGateway } from '../../shared/models/api-gateway/cadastro-voo-gateway.model';
 
 @Component({

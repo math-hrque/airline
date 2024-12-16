@@ -5,7 +5,6 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FuncionarioService } from '../../services/prototipo/funcionarios.service';
 
 import { FuncionarioSemId } from '../../shared/models/prototipo/funcionario-sem-id.model';
 import { FuncionarioGateway } from '../../shared/models/api-gateway/funcionario-gateway.model';

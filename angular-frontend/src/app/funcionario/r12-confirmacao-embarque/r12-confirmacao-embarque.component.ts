@@ -1,11 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { VoosService } from '../../services/prototipo/voos.service';
 import { CommonModule } from '@angular/common';
-import { ReservasService } from '../../services/prototipo/reservas.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Voo } from '../../shared/models/prototipo/voo.model';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Reserva } from '../../shared/models/prototipo/reserva.model';
 import { ReservaGatewayService } from '../../services/api-gateway/reserva-gateway.service';
 import { VooGateway } from '../../shared/models/api-gateway/voo-gateway';
 import { ReservaGateway } from '../../shared/models/api-gateway/reserva-gateway.model';

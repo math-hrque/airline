@@ -1,9 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { FuncionarioService } from '../../services/prototipo/funcionarios.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { Funcionario } from '../../shared/models/prototipo/funcionario.model';
 import { R17InsercaoDeFuncionarioComponent } from '../r17-insercao-de-funcionario/r17-insercao-de-funcionario.component';
 import { R18AlteracaoDeFuncionarioComponent } from '../r18-alteracao-de-funcionario/r18-alteracao-de-funcionario.component';
 import { NgForm } from '@angular/forms';
