@@ -45,7 +45,7 @@ public class FuncionarioController {
     @GetMapping("/consultar-email/{email}")
     public ResponseEntity<Object> consultarEmail(@PathVariable("email") String email) {
         try {
-            Object funcionarioConsultado = funcionarioService.consultarEmail(email);
+            FuncionarioResponseDto funcionarioConsultado = funcionarioService.consultarEmail(email);
             return ResponseEntity.status(HttpStatus.OK).body(funcionarioConsultado);
         } catch (FuncionarioNaoExisteException e) {
             logger.error(e.getMessage());
@@ -59,7 +59,7 @@ public class FuncionarioController {
     @GetMapping("/consultar-idfuncionario/{idFuncionario}")
     public ResponseEntity<Object> consultarIdFuncionario(@PathVariable("idFuncionario") Long idFuncionario) {
         try {
-            Object funcionarioConsultado = funcionarioService.consultarIdFuncionario(idFuncionario);
+            FuncionarioResponseDto funcionarioConsultado = funcionarioService.consultarIdFuncionario(idFuncionario);
             return ResponseEntity.status(HttpStatus.OK).body(funcionarioConsultado);
         } catch (FuncionarioNaoExisteException e) {
             logger.error(e.getMessage());

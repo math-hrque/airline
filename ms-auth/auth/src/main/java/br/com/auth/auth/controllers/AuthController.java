@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.auth.auth.dtos.LoginDto;
+import br.com.auth.auth.dtos.TokenDto;
 import br.com.auth.auth.services.AuthService;
 import jakarta.validation.Valid;
 
@@ -29,7 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody @Valid LoginDto loginDto) {
         try {
-            Object token = authService.login(loginDto);
+            TokenDto token = authService.login(loginDto);
             return ResponseEntity.status(HttpStatus.OK).body(token);
         } catch (BadCredentialsException e) {
             logger.error(e.getMessage());

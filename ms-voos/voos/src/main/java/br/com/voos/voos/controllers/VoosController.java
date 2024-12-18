@@ -31,7 +31,7 @@ public class VoosController {
     VoosService vooService;
 
     @PostMapping("/cadastrar-voo")
-    public ResponseEntity<?> cadastrarVoo(@RequestBody CadastrarVooDto cadastrarVooDto) {
+    public ResponseEntity<Object> cadastrarVoo(@RequestBody CadastrarVooDto cadastrarVooDto) {
         try {
             VooDto vooCadastrado = vooService.cadastrarVoo(cadastrarVooDto);
             return ResponseEntity.status(HttpStatus.OK).body(vooCadastrado);
@@ -73,7 +73,7 @@ public class VoosController {
     }
 
     @GetMapping("/visualizar-voo/{codigoVoo}")
-    public ResponseEntity<?> visualizarVoo(@PathVariable String codigoVoo) {
+    public ResponseEntity<Object> visualizarVoo(@PathVariable String codigoVoo) {
         try {
             VooDto vooDto = vooService.visualizarVoo(codigoVoo);
             return ResponseEntity.status(HttpStatus.OK).body(vooDto);

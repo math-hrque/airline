@@ -59,7 +59,7 @@ public class ReservaRController {
     }
 
     @GetMapping("/consultar-reserva/{codigoReserva}")
-    public ResponseEntity<?> visualizarReservaCliente(@PathVariable String codigoReserva) {
+    public ResponseEntity<Object> visualizarReservaCliente(@PathVariable String codigoReserva) {
         try {
             ReservaDto reservaDto = reservaRService.visualizarReservaCliente(codigoReserva);
             return ResponseEntity.status(HttpStatus.OK).body(reservaDto);

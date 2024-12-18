@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cliente.cliente.dtos.EnderecoDto;
 import br.com.cliente.cliente.exeptions.CepInvalidoException;
 import br.com.cliente.cliente.exeptions.CepNaoExisteException;
 import br.com.cliente.cliente.services.EnderecoService;
@@ -28,12 +29,9 @@ public class EnderecoController {
     @GetMapping("/consultar-endereco/{cep}")
     public ResponseEntity<Object> consultar(@PathVariable("cep") String cep) {
         try {
-            Object enderecoConsultado  = enderecoService.consultar(cep);
+            EnderecoDto enderecoConsultado = enderecoService.consultar(cep);
             return ResponseEntity.status(HttpStatus.OK).body(enderecoConsultado);
-        } catch(CepNaoExisteException e){
-            logger.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch(CepInvalidoException e){
+        } catch(CepNaoExisteException | CepInvalidoException e){
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch(Exception e){

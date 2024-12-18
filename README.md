@@ -1,6 +1,6 @@
 # Airline
 
-_Airline Project: A microservices-based airline management system._
+_Airline Project: A microservices-based airline management system_
 
 ## Introduction
 **Airline** is an airline management system built on a microservices architecture, designed for scalability, security, and an efficient user experience. The system manages customers, employees, bookings, flights, and mileage, leveraging modern technologies and best practices in software development.
